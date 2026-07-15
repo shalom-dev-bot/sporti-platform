@@ -1,0 +1,14 @@
+Django==5.1.4
+django-environ==0.11.2
+psycopg[binary]==3.2.3
+channels==4.1.0
+channels-redis==4.2.1
+daphne==4.1.2
+django-redis==5.4.0
+celery==5.4.0
+django-allauth==65.3.0
+django-otp==1.5.4
+Pillow==11.0.0
+django-storages==1.14.4
+requests==2.32.3
+PyJWT==2.9.0

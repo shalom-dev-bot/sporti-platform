@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.company",
     "apps.chat",
+    "apps.dashboard",
 ]
 
 MIDDLEWARE = [

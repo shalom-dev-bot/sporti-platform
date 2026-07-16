@@ -10,6 +10,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("", include("apps.chat.urls")),
     path("entreprise/", include("apps.company.urls")),
+    path("gestion/", include("apps.dashboard.urls")),
 ]
 
 if settings.DEBUG:

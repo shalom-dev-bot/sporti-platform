@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SPORTI -- Espace de gestion</title>
+</head>
+<body>
+    <h1>SPORTI</h1>
+    <h2>Espace de gestion</h2>
+
+    {% if form.errors %}
+        <p style="color:red;">Identifiants incorrects. Reessayez.</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <p>
+            <label for="id_username">Nom d'utilisateur</label><br>
+            <input type="text" name="username" id="id_username" required>
+        </p>
+        <p>
+            <label for="id_password">Mot de passe</label><br>
+            <input type="password" name="password" id="id_password" required>
+        </p>
+        <button type="submit">Se connecter</button>
+    </form>
+</body>
+</html>

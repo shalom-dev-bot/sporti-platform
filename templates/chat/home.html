@@ -6,6 +6,13 @@
 </head>
 <body>
     <h1>SPORTI</h1>
-    <p>Page d'accueil en construction — design a venir.</p>
+
+    {% if user.is_authenticated %}
+        <p>Connecte en tant que {{ user }}</p>
+        <a href="{% url 'account_logout' %}">Se deconnecter</a>
+    {% else %}
+        <p>Page d'accueil en construction -- design a venir.</p>
+        <a href="{% url 'google_login' %}">Se connecter avec Google</a>
+    {% endif %}
 </body>
 </html>

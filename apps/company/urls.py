@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path  # noqa: F401 - sera utilise des la premiere vue
 
 app_name = "company"
 

@@ -6,6 +6,7 @@ acces croise n'est possible entre clients -- chaque requete et chaque
 connexion WebSocket doivent verifier la propriete de la conversation avant
 tout acces.
 """
+
 from django.conf import settings
 from django.db import models
 

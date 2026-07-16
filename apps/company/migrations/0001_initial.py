@@ -7,58 +7,84 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CompanyProfile',
+            name="CompanyProfile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='SPORTI', max_length=150)),
-                ('logo', models.ImageField(blank=True, null=True, upload_to='company/')),
-                ('cover_image', models.ImageField(blank=True, null=True, upload_to='company/')),
-                ('description', models.TextField(blank=True)),
-                ('contact_email', models.EmailField(blank=True, max_length=254)),
-                ('contact_phone', models.CharField(blank=True, max_length=30)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(default="SPORTI", max_length=150)),
+                ("logo", models.ImageField(blank=True, null=True, upload_to="company/")),
+                ("cover_image", models.ImageField(blank=True, null=True, upload_to="company/")),
+                ("description", models.TextField(blank=True)),
+                ("contact_email", models.EmailField(blank=True, max_length=254)),
+                ("contact_phone", models.CharField(blank=True, max_length=30)),
             ],
             options={
-                'verbose_name': 'Profil entreprise',
-                'verbose_name_plural': 'Profil entreprise',
+                "verbose_name": "Profil entreprise",
+                "verbose_name_plural": "Profil entreprise",
             },
         ),
         migrations.CreateModel(
-            name='ExternalLink',
+            name="ExternalLink",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('platform', models.CharField(choices=[('whatsapp', 'WhatsApp'), ('telegram', 'Telegram'), ('facebook', 'Facebook Messenger'), ('instagram', 'Instagram'), ('other', 'Autre')], max_length=20)),
-                ('label', models.CharField(blank=True, max_length=100)),
-                ('url', models.URLField()),
-                ('is_active', models.BooleanField(default=True)),
-                ('order', models.PositiveSmallIntegerField(default=0)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "platform",
+                    models.CharField(
+                        choices=[
+                            ("whatsapp", "WhatsApp"),
+                            ("telegram", "Telegram"),
+                            ("facebook", "Facebook Messenger"),
+                            ("instagram", "Instagram"),
+                            ("other", "Autre"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("label", models.CharField(blank=True, max_length=100)),
+                ("url", models.URLField()),
+                ("is_active", models.BooleanField(default=True)),
+                ("order", models.PositiveSmallIntegerField(default=0)),
             ],
             options={
-                'verbose_name': 'Lien externe',
-                'verbose_name_plural': 'Liens externes',
-                'ordering': ['order'],
+                "verbose_name": "Lien externe",
+                "verbose_name_plural": "Liens externes",
+                "ordering": ["order"],
             },
         ),
         migrations.CreateModel(
-            name='WelcomeMessage',
+            name="WelcomeMessage",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text_fr', models.TextField()),
-                ('text_en', models.TextField(blank=True)),
-                ('audio_file', models.FileField(blank=True, null=True, upload_to='welcome/audio/')),
-                ('video_file', models.FileField(blank=True, null=True, upload_to='welcome/video/')),
-                ('is_text_enabled', models.BooleanField(default=True)),
-                ('is_audio_enabled', models.BooleanField(default=False)),
-                ('is_video_enabled', models.BooleanField(default=False)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("text_fr", models.TextField()),
+                ("text_en", models.TextField(blank=True)),
+                ("audio_file", models.FileField(blank=True, null=True, upload_to="welcome/audio/")),
+                ("video_file", models.FileField(blank=True, null=True, upload_to="welcome/video/")),
+                ("is_text_enabled", models.BooleanField(default=True)),
+                ("is_audio_enabled", models.BooleanField(default=False)),
+                ("is_video_enabled", models.BooleanField(default=False)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'verbose_name': "Message d'accueil",
-                'verbose_name_plural': "Message d'accueil",
+                "verbose_name": "Message d'accueil",
+                "verbose_name_plural": "Message d'accueil",
             },
         ),
     ]

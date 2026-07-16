@@ -15,72 +15,144 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Conversation',
+            name="Conversation",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('is_archived', models.BooleanField(default=False)),
-                ('client', models.OneToOneField(help_text="Un client ne possede qu'une seule conversation avec l'entreprise.", on_delete=django.db.models.deletion.CASCADE, related_name='conversation', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("is_archived", models.BooleanField(default=False)),
+                (
+                    "client",
+                    models.OneToOneField(
+                        help_text="Un client ne possede qu'une seule conversation avec l'entreprise.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="conversation",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Conversation',
-                'verbose_name_plural': 'Conversations',
-                'ordering': ['-updated_at'],
+                "verbose_name": "Conversation",
+                "verbose_name_plural": "Conversations",
+                "ordering": ["-updated_at"],
             },
         ),
         migrations.CreateModel(
-            name='Message',
+            name="Message",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content', models.TextField(blank=True)),
-                ('status', models.CharField(choices=[('sent', 'Envoye'), ('delivered', 'Distribue'), ('read', 'Lu')], default='sent', max_length=20)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('conversation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='messages', to='chat.conversation')),
-                ('sender', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sent_messages', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("content", models.TextField(blank=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("sent", "Envoye"), ("delivered", "Distribue"), ("read", "Lu")],
+                        default="sent",
+                        max_length=20,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True, db_index=True)),
+                (
+                    "conversation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="messages",
+                        to="chat.conversation",
+                    ),
+                ),
+                (
+                    "sender",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sent_messages",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Message',
-                'verbose_name_plural': 'Messages',
-                'ordering': ['created_at'],
+                "verbose_name": "Message",
+                "verbose_name_plural": "Messages",
+                "ordering": ["created_at"],
             },
         ),
         migrations.CreateModel(
-            name='Attachment',
+            name="Attachment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to='attachments/%Y/%m/')),
-                ('file_name', models.CharField(max_length=255)),
-                ('file_type', models.CharField(max_length=100)),
-                ('file_size', models.PositiveIntegerField(help_text='Taille en octets')),
-                ('uploaded_at', models.DateTimeField(auto_now_add=True)),
-                ('message', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='attachments', to='chat.message')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("file", models.FileField(upload_to="attachments/%Y/%m/")),
+                ("file_name", models.CharField(max_length=255)),
+                ("file_type", models.CharField(max_length=100)),
+                ("file_size", models.PositiveIntegerField(help_text="Taille en octets")),
+                ("uploaded_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "message",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="attachments",
+                        to="chat.message",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Piece jointe',
-                'verbose_name_plural': 'Pieces jointes',
+                "verbose_name": "Piece jointe",
+                "verbose_name_plural": "Pieces jointes",
             },
         ),
         migrations.CreateModel(
-            name='MessageReaction',
+            name="MessageReaction",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('emoji', models.CharField(max_length=10)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('message', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reactions', to='chat.message')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("emoji", models.CharField(max_length=10)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "message",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="reactions",
+                        to="chat.message",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Reaction',
-                'verbose_name_plural': 'Reactions',
+                "verbose_name": "Reaction",
+                "verbose_name_plural": "Reactions",
             },
         ),
         migrations.AddIndex(
-            model_name='message',
-            index=models.Index(fields=['conversation', 'created_at'], name='chat_messag_convers_3154fc_idx'),
+            model_name="message",
+            index=models.Index(
+                fields=["conversation", "created_at"], name="chat_messag_convers_3154fc_idx"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='messagereaction',
-            constraint=models.UniqueConstraint(fields=('message', 'user', 'emoji'), name='unique_reaction_per_user'),
+            model_name="messagereaction",
+            constraint=models.UniqueConstraint(
+                fields=("message", "user", "emoji"), name="unique_reaction_per_user"
+            ),
         ),
     ]

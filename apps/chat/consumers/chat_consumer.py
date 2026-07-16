@@ -5,6 +5,7 @@ Securite : a la connexion, l'utilisateur ne rejoint QUE le groupe
 correspondant a SA PROPRE conversation. Aucun autre groupe n'est accessible,
 ce qui garantit qu'aucun client ne peut recevoir les messages d'un autre.
 """
+
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from apps.chat.models import Conversation

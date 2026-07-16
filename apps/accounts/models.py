@@ -5,6 +5,7 @@ Un meme modele sert pour les deux profils de la plateforme :
 - is_staff=True  -> compte administrateur (entreprise), email + mot de passe (+2FA)
 - is_staff=False -> client, connexion via Google OAuth en priorite
 """
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 

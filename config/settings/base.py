@@ -2,7 +2,7 @@
 Reglages communs a tous les environnements (dev, prod).
 Les valeurs sensibles viennent exclusivement des variables d'environnement.
 """
-import os
+
 from pathlib import Path
 
 import environ
@@ -119,7 +119,10 @@ SOCIALACCOUNT_PROVIDERS = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 10}},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 10},
+    },
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]

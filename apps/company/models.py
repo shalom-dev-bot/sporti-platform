@@ -2,6 +2,7 @@
 Modeles gerant l'identite de l'entreprise, son message d'accueil et ses
 liens externes -- entierement pilotables depuis le tableau de bord admin.
 """
+
 from django.db import models
 
 

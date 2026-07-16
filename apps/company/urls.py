@@ -1,7 +1,9 @@
-from django.urls import path  # noqa: F401 - sera utilise des la premiere vue
+from django.urls import path
+
+from . import api_views
 
 app_name = "company"
 
 urlpatterns = [
-    # Vues a venir : presentation entreprise publique
+    path("api/config/", api_views.company_config, name="api_config"),
 ]

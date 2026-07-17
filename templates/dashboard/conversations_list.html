@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SPORTI -- Conversations</title>
+</head>
+<body>
+    <header>
+        <h1>Conversations</h1>
+        <nav>
+            <a href="{% url 'dashboard:home' %}">Vue d'ensemble</a> |
+            <a href="{% url 'dashboard:conversations_list' %}">Conversations</a> |
+            <a href="{% url 'dashboard:logout' %}">Se deconnecter</a>
+        </nav>
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Client</th>
+                <th>Dernier message</th>
+                <th>Date</th>
+                <th>Non lus</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in conversations_data %}
+            <tr>
+                <td>
+                    <a href="{% url 'dashboard:conversation_detail' item.conversation.id %}">
+                        {{ item.conversation.client }}
+                    </a>
+                </td>
+                <td>
+                    {% if item.last_message %}
+                        {{ item.last_message.content|default:"[Piece jointe]"|truncatechars:50 }}
+                    {% else %}
+                        <em>Aucun message</em>
+                    {% endif %}
+                </td>
+                <td>{{ item.conversation.updated_at|date:"d/m/Y H:i" }}</td>
+                <td>
+                    {% if item.unread_count > 0 %}
+                        <strong>{{ item.unread_count }}</strong>
+                    {% else %}
+                        0
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Aucune conversation pour le moment.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

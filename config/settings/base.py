@@ -150,4 +150,17 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
-ALLOWED_UPLOAD_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".pdf", ".doc", ".docx"]
+ALLOWED_UPLOAD_EXTENSIONS = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".webp",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".webm",
+    ".ogg",
+    ".mp3",
+    ".m4a",
+]

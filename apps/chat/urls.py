@@ -12,4 +12,9 @@ urlpatterns = [
         api_views.ConversationHistoryView.as_view(),
         name="api_conversation_history",
     ),
+    path(
+        "api/conversations/<int:conversation_id>/attachments/",
+        api_views.AttachmentUploadView.as_view(),
+        name="api_attachment_upload",
+    ),
 ]

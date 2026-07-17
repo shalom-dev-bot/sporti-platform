@@ -1,5 +1,6 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <title>SPORTI</title>
@@ -7,12 +8,26 @@
 <body>
     <h1>SPORTI</h1>
 
+    <form action="{% url 'set_language' %}" method="post">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="{{ request.path }}">
+        <select name="language" onchange="this.form.submit()">
+            {% get_current_language as CURRENT_LANGUAGE %}
+            {% get_available_languages as LANGUAGES %}
+            {% for lang_code, lang_name in LANGUAGES %}
+                <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANGUAGE %}selected{% endif %}>
+                    {{ lang_name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
     {% if user.is_authenticated %}
-        <p>Connecte en tant que {{ user }}</p>
-        <a href="{% url 'account_logout' %}">Se deconnecter</a>
+        <p>{% trans "Connecte en tant que" %} {{ user }}</p>
+        <a href="{% url 'account_logout' %}">{% trans "Se deconnecter" %}</a>
     {% else %}
-        <p>Page d'accueil en construction -- design a venir.</p>
-        <a href="{% url 'google_login' %}">Se connecter avec Google</a>
+        <p>{% trans "Page d'accueil en construction -- design a venir." %}</p>
+        <a href="{% url 'google_login' %}">{% trans "Se connecter avec Google" %}</a>
     {% endif %}
 </body>
 </html>

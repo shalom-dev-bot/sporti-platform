@@ -164,3 +164,10 @@ ALLOWED_UPLOAD_EXTENSIONS = [
     ".mp3",
     ".m4a",
 ]
+
+# --- Celery (taches en arriere-plan, ex: compression d'images) ---
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE

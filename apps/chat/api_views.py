@@ -2,17 +2,25 @@
 Vues API du chat :
 - Liste des conversations (reservee au staff, pour le dashboard).
 - Historique paginee par curseur d'une conversation precise.
+- Upload de pieces jointes (images, documents, messages vocaux).
 
 Securite : chaque vue verifie explicitement que l'utilisateur a le droit
-de voir la conversation demandee (isolation stricte client <-> entreprise).
+de voir/modifier la conversation demandee (isolation stricte client <-> entreprise).
 """
 
+import os
+
+from django.conf import settings
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from rest_framework import permissions, status
 from rest_framework.pagination import CursorPagination
+from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Conversation, Message
+from .models import Attachment, Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 
 
@@ -80,3 +88,77 @@ class ConversationHistoryView(APIView):
         page = paginator.paginate_queryset(messages, request, view=self)
         serializer = MessageSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+class AttachmentUploadView(APIView):
+    """Upload d'une piece jointe (image, document, ou message vocal) dans
+    une conversation. Cree le Message + l'Attachment, puis diffuse le
+    resultat en temps reel aux deux parties via WebSocket."""
+
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser]
+
+    def post(self, request, conversation_id):
+        conversation = Conversation.objects.filter(id=conversation_id).first()
+        if conversation is None:
+            return Response(
+                {"detail": "Conversation introuvable."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        is_owner = conversation.client_id == request.user.id
+        if not (is_owner or request.user.is_staff):
+            return Response(
+                {"detail": "Vous n'avez pas acces a cette conversation."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        uploaded_file = request.FILES.get("file")
+        if uploaded_file is None:
+            return Response({"detail": "Aucun fichier fourni."}, status=status.HTTP_400_BAD_REQUEST)
+
+        extension = os.path.splitext(uploaded_file.name)[1].lower()
+        if extension not in settings.ALLOWED_UPLOAD_EXTENSIONS:
+            return Response(
+                {"detail": f"Type de fichier non autorise : {extension}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if uploaded_file.size > settings.FILE_UPLOAD_MAX_MEMORY_SIZE:
+            return Response(
+                {"detail": "Fichier trop volumineux (max 10 Mo)."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        message = Message.objects.create(conversation=conversation, sender=request.user, content="")
+        attachment = Attachment.objects.create(
+            message=message,
+            file=uploaded_file,
+            file_name=uploaded_file.name,
+            file_type=uploaded_file.content_type or "application/octet-stream",
+            file_size=uploaded_file.size,
+        )
+
+        payload = {
+            "id": message.id,
+            "sender_id": request.user.id,
+            "sender_name": str(request.user),
+            "is_staff": request.user.is_staff,
+            "content": "",
+            "status": message.status,
+            "created_at": message.created_at.isoformat(),
+            "attachment": {
+                "id": attachment.id,
+                "file_url": attachment.file.url,
+                "file_name": attachment.file_name,
+                "file_type": attachment.file_type,
+                "file_size": attachment.file_size,
+            },
+        }
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"conversation_{conversation.id}",
+            {"type": "chat.message", "payload": payload},
+        )
+
+        return Response(payload, status=status.HTTP_201_CREATED)

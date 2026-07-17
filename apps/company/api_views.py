@@ -26,5 +26,5 @@ def company_config(request):
         "welcome_message": welcome_message,
         "external_links": external_links,
     }
-    serializer = CompanyConfigSerializer(data)
+    serializer = CompanyConfigSerializer(data, context={"request": request})
     return Response(serializer.data)

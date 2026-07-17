@@ -22,6 +22,7 @@ from rest_framework.views import APIView
 
 from .models import Attachment, Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
+from .tasks import compress_image_attachment
 
 
 class MessageCursorPagination(CursorPagination):
@@ -154,6 +155,9 @@ class AttachmentUploadView(APIView):
                 "file_size": attachment.file_size,
             },
         }
+
+        if attachment.file_type.startswith("image/") and attachment.file_type != "image/gif":
+            compress_image_attachment.delay(attachment.id)
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(

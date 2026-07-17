@@ -3,10 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>SPORTI -- Tableau de bord</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 </head>
 <body>
-    <h1>Tableau de bord SPORTI</h1>
-    <p>Bienvenue, {{ user }}.</p>
-    <a href="{% url 'dashboard:logout' %}">Se deconnecter</a>
+    <header>
+        <h1>Tableau de bord SPORTI</h1>
+        <nav>
+            <a href="{% url 'dashboard:home' %}">Vue d'ensemble</a> |
+            <a href="{% url 'dashboard:conversations_list' %}">Conversations</a> |
+            <a href="{% url 'dashboard:logout' %}">Se deconnecter</a>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Statistiques cles</h2>
+        <div>
+            <div>
+                <p>Total clients</p>
+                <strong>{{ total_clients }}</strong>
+            </div>
+            <div>
+                <p>Conversations totales</p>
+                <strong>{{ total_conversations }}</strong>
+            </div>
+            <div>
+                <p>Messages aujourd'hui</p>
+                <strong>{{ messages_today }}</strong>
+            </div>
+            <div>
+                <p>Conversations non lues</p>
+                <strong>{{ unread_conversations }}</strong>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Evolution du nombre de clients</h2>
+        <canvas id="growthChart" width="600" height="300"></canvas>
+    </section>
+
+    <script>
+        const ctx = document.getElementById('growthChart');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ growth_labels|safe }},
+                datasets: [{
+                    label: 'Nouveaux clients',
+                    data: {{ growth_values|safe }},
+                    borderColor: '#2D6CDF',
+                    backgroundColor: 'rgba(45, 108, 223, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+    </script>
 </body>
 </html>

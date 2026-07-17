@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SPORTI -- Conversation avec {{ conversation.client }}</title>
+</head>
+<body>
+    <header>
+        <h1>Conversation avec {{ conversation.client }}</h1>
+        <nav>
+            <a href="{% url 'dashboard:conversations_list' %}">&laquo; Retour aux conversations</a>
+        </nav>
+    </header>
+
+    <div id="messages">
+        {% for message in messages %}
+        <div class="message {% if message.sender.is_staff %}from-staff{% else %}from-client{% endif %}"
+             data-message-id="{{ message.id }}">
+            <strong>{{ message.sender }}</strong>
+            <p>{{ message.content }}</p>
+            <span class="status">{{ message.status }}</span>
+            <span class="time">{{ message.created_at|date:"H:i" }}</span>
+        </div>
+        {% empty %}
+        <p>Aucun message pour le moment.</p>
+        {% endfor %}
+    </div>
+
+    <div id="typing-indicator" style="display:none;"></div>
+
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Ecrire une reponse..." autocomplete="off">
+        <button type="submit">Envoyer</button>
+    </form>
+
+    <script>
+        const conversationId = {{ conversation.id }};
+        const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/${conversationId}/`);
+
+        const messagesContainer = document.getElementById("messages");
+        const form = document.getElementById("message-form");
+        const input = document.getElementById("message-input");
+        const typingIndicator = document.getElementById("typing-indicator");
+
+        let typingTimeout = null;
+
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+
+            if (data.type === "typing") {
+                if (data.is_typing) {
+                    typingIndicator.textContent = `${data.sender_name} est en train d'ecrire...`;
+                    typingIndicator.style.display = "block";
+                } else {
+                    typingIndicator.style.display = "none";
+                }
+                return;
+            }
+
+            if (data.type === "presence" || data.type === "read_receipt") {
+                return;
+            }
+
+            // Nouveau message de chat.
+            const div = document.createElement("div");
+            div.className = "message " + (data.is_staff ? "from-staff" : "from-client");
+            div.dataset.messageId = data.id;
+            div.innerHTML = `<strong>${data.sender_name}</strong><p>${data.content}</p>
+                              <span class="status">${data.status}</span>`;
+            messagesContainer.appendChild(div);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        };
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+            socket.send(JSON.stringify({ message: text }));
+            input.value = "";
+            socket.send(JSON.stringify({ type: "typing", is_typing: false }));
+        });
+
+        input.addEventListener("input", function () {
+            socket.send(JSON.stringify({ type: "typing", is_typing: true }));
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                socket.send(JSON.stringify({ type: "typing", is_typing: false }));
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

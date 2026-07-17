@@ -6,12 +6,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from apps.chat import views as chat_views
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
     path("entreprise/", include("apps.company.urls")),
     path("gestion/", include("apps.dashboard.urls")),
+    path("service-worker.js", chat_views.service_worker, name="service_worker"),
 ]
 
 urlpatterns += i18n_patterns(

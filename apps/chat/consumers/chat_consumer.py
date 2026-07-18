@@ -116,6 +116,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         message = await self._save_message(self.conversation, user, text, initial_status)
 
+        if not recipient_connected:
+            await self._notify_recipient_offline(user, text)
+
         await self.channel_layer.group_send(
             self.group_name,
             {
@@ -171,6 +174,29 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         connections = _active_connections.get(self.group_name, set())
         others = connections - {sender.id}
         return len(others) > 0
+
+    @sync_to_async
+    def _notify_recipient_offline(self, sender, text):
+        """Envoie une notification push au destinataire du message quand
+        il n'est pas connecte au moment de l'envoi."""
+        if sender.is_staff:
+            recipient = self.conversation.client
+        else:
+            from apps.accounts.models import User
+
+            recipient = User.objects.filter(is_staff=True).first()
+
+        if recipient is None:
+            return
+
+        from apps.accounts.push import send_push_notification
+
+        send_push_notification(
+            recipient,
+            title=f"Nouveau message de {sender}",
+            body=text[:100],
+            url="/gestion/" if sender.is_staff is False and recipient.is_staff else "/",
+        )
 
     @sync_to_async
     def _get_or_create_own_conversation(self, user):

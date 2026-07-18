@@ -194,3 +194,8 @@ else:
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
     }
+
+# --- Notifications push (Web Push API) ---
+VAPID_PRIVATE_KEY = env("VAPID_PRIVATE_KEY", default="").replace("\\n", "\n")
+VAPID_PUBLIC_KEY = env("VAPID_PUBLIC_KEY", default="")
+VAPID_CLAIMS_EMAIL = env("VAPID_CLAIMS_EMAIL", default="mailto:contact@sporti.app")

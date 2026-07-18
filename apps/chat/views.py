@@ -7,8 +7,6 @@ def home(request):
 
 
 def service_worker(request):
-    """Sert le service worker a la racine du site (/service-worker.js),
-    obligatoire pour que son 'scope' couvre l'integralite du site."""
     from django.conf import settings
     from django.http import HttpResponse
 

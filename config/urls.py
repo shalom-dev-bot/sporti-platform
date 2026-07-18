@@ -14,6 +14,7 @@ urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
     path("entreprise/", include("apps.company.urls")),
     path("gestion/", include("apps.dashboard.urls")),
+    path("comptes/", include("apps.accounts.urls")),
     path("service-worker.js", chat_views.service_worker, name="service_worker"),
 ]
 

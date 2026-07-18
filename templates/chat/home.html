@@ -3,7 +3,10 @@
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SPORTI</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#2D6CDF">
 </head>
 <body>
     <h1>SPORTI</h1>
@@ -29,5 +32,19 @@
         <p>{% trans "Page d'accueil en construction -- design a venir." %}</p>
         <a href="{% url 'google_login' %}">{% trans "Se connecter avec Google" %}</a>
     {% endif %}
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("/service-worker.js")
+                    .then((registration) => {
+                        console.log("Service Worker enregistre :", registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log("Echec enregistrement Service Worker :", error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>

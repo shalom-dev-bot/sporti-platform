@@ -27,3 +27,23 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.get_full_name() or self.email or self.username
+
+
+class PushSubscription(models.Model):
+    """Abonnement push d'un utilisateur, cree par son navigateur. Un meme
+    utilisateur peut avoir plusieurs abonnements (plusieurs appareils)."""
+
+    user = models.ForeignKey(
+        "accounts.User", on_delete=models.CASCADE, related_name="push_subscriptions"
+    )
+    endpoint = models.URLField(max_length=500, unique=True)
+    p256dh_key = models.CharField(max_length=255)
+    auth_key = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Abonnement push"
+        verbose_name_plural = "Abonnements push"
+
+    def __str__(self):
+        return f"Abonnement push de {self.user}"

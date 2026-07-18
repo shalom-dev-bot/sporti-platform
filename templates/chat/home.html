@@ -3,7 +3,10 @@
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SPORTI</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#2D6CDF">
 </head>
 <body>
     <h1>SPORTI</h1>
@@ -29,5 +32,52 @@
         <p>{% trans "Page d'accueil en construction -- design a venir." %}</p>
         <a href="{% url 'google_login' %}">{% trans "Se connecter avec Google" %}</a>
     {% endif %}
+
+    <script>
+        const VAPID_PUBLIC_KEY = "BADV9JSLdUH2Le2D-bXyMeZbedSC8cfyiXc7aH4ieUmJne8aMU1xptDYjgmFqJ4Tb9ZY7rCzUAv1aUKvYCUcICo";
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = "=".repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+            const rawData = window.atob(base64);
+            return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+        }
+
+        async function subscribeToPush(registration) {
+            if (Notification.permission === "denied") return;
+
+            const permission = await Notification.requestPermission();
+            if (permission !== "granted") return;
+
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+            });
+
+            await fetch("/comptes/api/push/subscribe/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "",
+                },
+                body: JSON.stringify(subscription),
+            });
+        }
+
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("/service-worker.js")
+                    .then((registration) => {
+                        console.log("Service Worker enregistre :", registration.scope);
+                        {% if user.is_authenticated %}
+                        subscribeToPush(registration);
+                        {% endif %}
+                    })
+                    .catch((error) => {
+                        console.log("Echec enregistrement Service Worker :", error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>

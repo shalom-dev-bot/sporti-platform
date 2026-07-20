@@ -115,6 +115,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         initial_status = Message.Status.DELIVERED if recipient_connected else Message.Status.SENT
 
         message = await self._save_message(self.conversation, user, text, initial_status)
+        await self._invalidate_dashboard_cache()
 
         if not recipient_connected:
             await self._notify_recipient_offline(user, text)
@@ -197,6 +198,12 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             body=text[:100],
             url="/gestion/" if sender.is_staff is False and recipient.is_staff else "/",
         )
+
+    @sync_to_async
+    def _invalidate_dashboard_cache(self):
+        from django.core.cache import cache
+
+        cache.delete("dashboard:stats")
 
     @sync_to_async
     def _get_or_create_own_conversation(self, user):

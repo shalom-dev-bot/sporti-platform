@@ -11,12 +11,20 @@ from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+
+from django_ratelimit.decorators import ratelimit
 
 from apps.accounts.models import User
 from apps.chat.models import Conversation, Message
 
 
+@method_decorator(ratelimit(key="ip", rate="5/m", method="POST", block=True), name="post")
 class DashboardLoginView(LoginView):
+    """Connexion admin limitee a 5 tentatives par minute et par IP,
+    pour se proteger contre les attaques par force brute sur le mot
+    de passe."""
+
     template_name = "dashboard/login.html"
     redirect_authenticated_user = True
 

@@ -15,3 +15,4 @@ PyJWT==2.9.0
 djangorestframework==3.15.2
 boto3==1.35.68
 pywebpush==2.0.1
+django-ratelimit==4.1.0

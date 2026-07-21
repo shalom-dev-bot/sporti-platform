@@ -11,9 +11,11 @@ de voir/modifier la conversation demandee (isolation stricte client <-> entrepri
 import os
 
 from django.conf import settings
+from django.utils.decorators import method_decorator
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django_ratelimit.decorators import ratelimit
 from rest_framework import permissions, status
 from rest_framework.pagination import CursorPagination
 from rest_framework.parsers import MultiPartParser
@@ -91,10 +93,14 @@ class ConversationHistoryView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 
+@method_decorator(ratelimit(key="user", rate="20/m", method="POST", block=True), name="post")
 class AttachmentUploadView(APIView):
     """Upload d'une piece jointe (image, document, ou message vocal) dans
     une conversation. Cree le Message + l'Attachment, puis diffuse le
-    resultat en temps reel aux deux parties via WebSocket."""
+    resultat en temps reel aux deux parties via WebSocket.
+
+    Limite a 20 uploads par minute et par utilisateur, pour eviter le
+    spam et la saturation du stockage/traitement Celery."""
 
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser]

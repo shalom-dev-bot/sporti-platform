@@ -7,6 +7,7 @@ from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import LoginView
+from django.core.cache import cache
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from django.shortcuts import get_object_or_404, render
@@ -14,6 +15,10 @@ from django.utils import timezone
 
 from apps.accounts.models import User
 from apps.chat.models import Conversation, Message
+
+CACHE_KEY_DASHBOARD_STATS = "dashboard:stats"
+CACHE_TTL_DASHBOARD_STATS = 60  # secondes : assez court pour rester a jour,
+# assez long pour eviter de recalculer a chaque chargement de page.
 
 
 class DashboardLoginView(LoginView):
@@ -31,7 +36,14 @@ def _is_staff(user):
 @login_required(login_url="/gestion/connexion/")
 @user_passes_test(_is_staff, login_url="/gestion/connexion/")
 def dashboard_home(request):
-    """Vue d'ensemble : statistiques cles et evolution du nombre de clients."""
+    """Vue d'ensemble : statistiques cles et evolution du nombre de clients.
+    Mise en cache Redis : les statistiques ne sont recalculees qu'une fois
+    par minute maximum, meme si plusieurs admins consultent la page en
+    meme temps."""
+    context = cache.get(CACHE_KEY_DASHBOARD_STATS)
+    if context is not None:
+        return render(request, "dashboard/home.html", context)
+
     total_clients = User.objects.filter(is_staff=False).count()
     total_conversations = Conversation.objects.count()
 
@@ -39,13 +51,12 @@ def dashboard_home(request):
     messages_today = Message.objects.filter(created_at__gte=today_start).count()
 
     unread_conversations = (
-        Conversation.objects.exclude(messages__status=Message.Status.READ)
-        .filter(messages__sender__is_staff=False)
+        Conversation.objects.filter(messages__sender__is_staff=False)
+        .exclude(messages__status=Message.Status.READ)
         .distinct()
         .count()
     )
 
-    # Evolution du nombre de clients inscrits, mois par mois (12 derniers mois).
     twelve_months_ago = timezone.now() - timedelta(days=365)
     growth_qs = (
         User.objects.filter(is_staff=False, date_joined__gte=twelve_months_ago)
@@ -65,33 +76,41 @@ def dashboard_home(request):
         "growth_labels": growth_labels,
         "growth_values": growth_values,
     }
+    cache.set(CACHE_KEY_DASHBOARD_STATS, context, CACHE_TTL_DASHBOARD_STATS)
     return render(request, "dashboard/home.html", context)
 
 
 @login_required(login_url="/gestion/connexion/")
 @user_passes_test(_is_staff, login_url="/gestion/connexion/")
 def conversations_list(request):
-    """Liste complete et organisee de tous les clients qui discutent
-    avec l'entreprise, triee par activite la plus recente."""
+    """Liste complete et organisee des conversations, triee par activite
+    recente. 3 requetes au total, peu importe le nombre de conversations."""
     conversations = (
         Conversation.objects.select_related("client")
         .prefetch_related("messages")
         .order_by("-updated_at")
     )
 
+    unread_rows = (
+        Message.objects.filter(sender__is_staff=False)
+        .exclude(status=Message.Status.READ)
+        .values("conversation_id")
+        .annotate(count=Count("id"))
+    )
+    unread_by_conversation = {row["conversation_id"]: row["count"] for row in unread_rows}
+
     conversations_data = []
     for conversation in conversations:
-        last_message = conversation.messages.order_by("-created_at").first()
-        unread_count = (
-            conversation.messages.filter(sender__is_staff=False)
-            .exclude(status=Message.Status.READ)
-            .count()
+        sorted_messages = sorted(
+            conversation.messages.all(), key=lambda m: m.created_at, reverse=True
         )
+        last_message = sorted_messages[0] if sorted_messages else None
+
         conversations_data.append(
             {
                 "conversation": conversation,
                 "last_message": last_message,
-                "unread_count": unread_count,
+                "unread_count": unread_by_conversation.get(conversation.id, 0),
             }
         )
 
@@ -103,9 +122,7 @@ def conversations_list(request):
 @login_required(login_url="/gestion/connexion/")
 @user_passes_test(_is_staff, login_url="/gestion/connexion/")
 def conversation_detail(request, conversation_id):
-    """Vue d'une conversation precise : historique + reponse en temps reel
-    (la connexion WebSocket se fait cote client, en JavaScript, vers
-    ws/chat/<conversation_id>/)."""
+    """Vue d'une conversation precise : historique + reponse en temps reel."""
     conversation = get_object_or_404(Conversation, id=conversation_id)
     messages = conversation.messages.select_related("sender").order_by("created_at")
     return render(

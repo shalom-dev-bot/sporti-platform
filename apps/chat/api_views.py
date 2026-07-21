@@ -124,6 +124,24 @@ class AttachmentUploadView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Validation du contenu reel du fichier, pas seulement de son
+        # extension : un fichier malveillant renomme en .jpg doit etre
+        # rejete, meme si l'extension semble correcte.
+        image_extensions = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+        if extension in image_extensions:
+            from PIL import Image, UnidentifiedImageError
+
+            try:
+                uploaded_file.seek(0)
+                with Image.open(uploaded_file) as img:
+                    img.verify()
+                uploaded_file.seek(0)
+            except (UnidentifiedImageError, OSError):
+                return Response(
+                    {"detail": "Le fichier ne correspond pas a une image valide."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
         if uploaded_file.size > settings.FILE_UPLOAD_MAX_MEMORY_SIZE:
             return Response(
                 {"detail": "Fichier trop volumineux (max 10 Mo)."},

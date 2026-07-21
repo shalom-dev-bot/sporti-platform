@@ -16,3 +16,10 @@ class I18nTests(TestCase):
         response = self.client.get("/en/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Sign in with Google")
+
+
+class OfflinePageTests(TestCase):
+    def test_page_offline_est_accessible(self):
+        response = self.client.get("/offline/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "hors ligne")

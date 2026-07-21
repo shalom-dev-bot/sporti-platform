@@ -13,3 +13,9 @@ def service_worker(request):
     with open(settings.BASE_DIR / "static" / "service-worker.js", "rb") as f:
         content = f.read()
     return HttpResponse(content, content_type="application/javascript")
+
+
+def offline(request):
+    """Page de secours affichee par le service worker quand le
+    navigateur est hors ligne et que la page demandee n'est pas en cache."""
+    return render(request, "offline/offline.html")

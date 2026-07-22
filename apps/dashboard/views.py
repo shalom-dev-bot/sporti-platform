@@ -5,12 +5,15 @@ distincte de l'admin Django par defaut (reserve aux developpeurs sur /admin/).
 
 from datetime import timedelta
 
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from apps.accounts.models import User
@@ -117,6 +120,24 @@ def conversations_list(request):
     return render(
         request, "dashboard/conversations_list.html", {"conversations_data": conversations_data}
     )
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def change_password(request):
+    """Permet a l'administrateur de changer son mot de passe depuis
+    l'espace de gestion, sans devoir passer par /admin/."""
+    if request.method == "POST":
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Mot de passe modifie avec succes.")
+            return redirect("dashboard:change_password")
+    else:
+        form = PasswordChangeForm(user=request.user)
+
+    return render(request, "dashboard/change_password.html", {"form": form})
 
 
 @login_required(login_url="/gestion/connexion/")

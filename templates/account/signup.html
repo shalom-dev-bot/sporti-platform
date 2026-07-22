@@ -1,0 +1,24 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>SPORTI -- Inscription</title>
+</head>
+<body>
+    <h1>SPORTI</h1>
+    <h2>{% trans "Creer un compte" %}</h2>
+
+    <a href="{% url 'google_login' %}">{% trans "Continuer avec Google" %}</a>
+
+    <hr>
+
+    <form method="post" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% trans "S'inscrire" %}</button>
+    </form>
+
+    <p><a href="{% url 'account_login' %}">{% trans "Deja un compte ? Connectez-vous" %}</a></p>
+</body>
+</html>

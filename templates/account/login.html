@@ -1,0 +1,26 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>SPORTI -- Connexion</title>
+</head>
+<body>
+    <h1>SPORTI</h1>
+    <h2>{% trans "Se connecter" %}</h2>
+
+    <a href="{% url 'google_login' %}">{% trans "Continuer avec Google" %}</a>
+
+    <hr>
+
+    <p>{% trans "Ou avec votre e-mail" %}</p>
+    <form method="post" action="{% url 'account_login' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% trans "Se connecter" %}</button>
+    </form>
+
+    <p><a href="{% url 'account_signup' %}">{% trans "Pas encore de compte ? Inscrivez-vous" %}</a></p>
+    <p><a href="{% url 'account_reset_password' %}">{% trans "Mot de passe oublie ?" %}</a></p>
+</body>
+</html>

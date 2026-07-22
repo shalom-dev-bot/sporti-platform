@@ -37,3 +37,35 @@ class LoginRateLimitTests(TestCase):
             url, {"username": "ratelimit_staff", "password": "MotDePasseSolide123"}
         )
         self.assertEqual(response.status_code, 403)
+
+
+class UploadRateLimitTests(TestCase):
+    def setUp(self):
+        from apps.chat.models import Conversation
+
+        self.client_user = User.objects.create_user(
+            username="ratelimit_upload_client", password="MotDePasseSolide123", is_staff=False
+        )
+        self.conversation = Conversation.objects.create(client=self.client_user)
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_21eme_upload_est_bloque(self):
+        """La limite est de 20 uploads par minute et par utilisateur --
+        le 21eme doit etre refuse."""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.urls import reverse
+
+        self.client.login(username="ratelimit_upload_client", password="MotDePasseSolide123")
+        url = reverse("chat:api_attachment_upload", args=[self.conversation.id])
+
+        for i in range(20):
+            fichier = SimpleUploadedFile(f"test{i}.mp3", b"contenu", content_type="audio/mpeg")
+            response = self.client.post(url, {"file": fichier})
+            self.assertNotEqual(response.status_code, 403)
+
+        fichier_21 = SimpleUploadedFile("test21.mp3", b"contenu", content_type="audio/mpeg")
+        response = self.client.post(url, {"file": fichier_21})
+        self.assertEqual(response.status_code, 403)

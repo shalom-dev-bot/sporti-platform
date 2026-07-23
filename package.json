@@ -1,0 +1,28 @@
+{
+  "name": "sporti-platform",
+  "version": "1.0.0",
+  "description": "Plateforme web (PWA) permettant a une entreprise de communiquer en prive et en temps reel avec chacun de ses clients : chat interne, gestion des medias, tableau de bord administrateur, themes clair/sombre, internationalisation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-css": "tailwindcss -i ./static/css/src/input.css -o ./static/css/dist/sporti.css --minify",
+    "watch-css": "tailwindcss -i ./static/css/src/input.css -o ./static/css/dist/sporti.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shalom-dev-bot/sporti-platform.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/shalom-dev-bot/sporti-platform/issues"
+  },
+  "homepage": "https://github.com/shalom-dev-bot/sporti-platform#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.5.4",
+    "postcss": "^8.5.22",
+    "tailwindcss": "^3.4.19"
+  }
+}

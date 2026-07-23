@@ -1,67 +1,165 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>SPORTI -- Tableau de bord</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-</head>
-<body>
-    <header>
-        <h1>Tableau de bord SPORTI</h1>
-        <nav>
-            <a href="{% url 'dashboard:home' %}">Vue d'ensemble</a> |
-            <a href="{% url 'dashboard:conversations_list' %}">Conversations</a> |
-            <a href="{% url 'dashboard:logout' %}">Se deconnecter</a>
-        </nav>
-    </header>
+{% extends 'base.html' %}
+{% load static %}
 
-    <section>
-        <h2>Statistiques cles</h2>
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="flex min-h-screen bg-[#F4F7FC] dark:bg-[#060913] text-gray-900 dark:text-white font-sans transition-colors duration-300">
+
+  <!-- ================= BARRE LATÉRALE (SIDEBAR) ================= -->
+  <aside class="w-64 bg-white dark:bg-[#0E1626] border-r border-gray-200 dark:border-gray-800/80 flex flex-col justify-between h-screen sticky top-0 z-30 transition-colors duration-300">
+    <div>
+      <!-- Header Logo SPORTI -->
+      <div class="p-5 border-b border-gray-100 dark:border-gray-800/80 flex items-center gap-3">
+        <img src="{% static 'images/logo.jpeg' %}" alt="SPORTI Logo" class="h-10 w-10 rounded-full drop-shadow-[0_0_8px_rgba(0,163,255,0.6)] object-cover">
         <div>
-            <div>
-                <p>Total clients</p>
-                <strong>{{ total_clients }}</strong>
-            </div>
-            <div>
-                <p>Conversations totales</p>
-                <strong>{{ total_conversations }}</strong>
-            </div>
-            <div>
-                <p>Messages aujourd'hui</p>
-                <strong>{{ messages_today }}</strong>
-            </div>
-            <div>
-                <p>Conversations non lues</p>
-                <strong>{{ unread_conversations }}</strong>
-            </div>
+          <h1 class="text-base font-black tracking-wider text-gray-900 dark:text-white uppercase leading-none">
+            SPORT<span class="text-[#00A3FF]">I</span>
+          </h1>
+          <span class="text-[9px] font-bold text-[#00A3FF] tracking-widest uppercase">Espace Gestion</span>
         </div>
-    </section>
+      </div>
 
-    <section>
-        <h2>Evolution du nombre de clients</h2>
-        <canvas id="growthChart" width="600" height="300"></canvas>
-    </section>
+      <!-- Navigation -->
+      <nav class="p-4 space-y-2">
+        <a href="/gestion/" class="flex items-center gap-3 px-3.5 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-[#0057FF] to-[#00A3FF] text-white shadow-[0_0_15px_rgba(0,163,255,0.3)] transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 00-1 1m-6 0h6"/></svg>
+          Vue d'ensemble
+        </a>
 
-    <script>
-        const ctx = document.getElementById('growthChart');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {{ growth_labels|safe }},
-                datasets: [{
-                    label: 'Nouveaux clients',
-                    data: {{ growth_values|safe }},
-                    borderColor: '#2D6CDF',
-                    backgroundColor: 'rgba(45, 108, 223, 0.1)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
-    </script>
-</body>
-</html>
+        <a href="/gestion/conversations/" class="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#060913] hover:text-[#00A3FF] transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          Conversations
+        </a>
+      </nav>
+    </div>
+
+    <!-- Profil Gestionnaire & Déconnexion -->
+    <div class="p-4 border-t border-gray-100 dark:border-gray-800/80 flex items-center justify-between">
+      <div class="flex items-center gap-2.5 truncate">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0057FF] to-[#00A3FF] text-white flex items-center justify-center font-black text-xs shadow-md">
+          {{ user.username|slice:":1"|upper|default:"G" }}
+        </div>
+        <div class="truncate">
+          <p class="text-xs font-bold text-gray-900 dark:text-white truncate">{{ user.username|default:"Gestionnaire" }}</p>
+          <p class="text-[9px] text-[#00A3FF] font-semibold">En ligne</p>
+        </div>
+      </div>
+      
+      <a href="/accounts/logout/" class="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors" title="Se déconnecter">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </a>
+    </div>
+  </aside>
+
+
+  <!-- ================= CONTENU PRINCIPAL ================= -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    
+    <!-- En-tête -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-2xl font-black uppercase tracking-wide">
+          Tableau de bord <span class="text-[#00A3FF]">SPORTI</span>
+        </h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Aperçu global et configuration des messages.</p>
+      </div>
+
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00A3FF]/10 border border-[#00A3FF]/30 text-[#00A3FF] text-xs font-bold">
+        <span class="w-2 h-2 rounded-full bg-[#00A3FF] animate-pulse"></span>
+        Système Opérationnel
+      </span>
+    </div>
+
+    <!-- CARTES STATISTIQUES -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      
+      <!-- Stat 1 : Total Clients -->
+      <div class="bg-white dark:bg-[#0E1626] border border-gray-200 dark:border-[#00A3FF]/30 rounded-2xl p-6 shadow-sm dark:shadow-[0_0_20px_rgba(0,163,255,0.1)] transition-all hover:border-[#00A3FF]/60">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Clients</p>
+          <div class="p-2.5 rounded-xl bg-[#0057FF]/10 text-[#00A3FF]">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          </div>
+        </div>
+        <div class="text-3xl font-black text-gray-900 dark:text-white">
+          {{ total_clients|default:0 }}
+        </div>
+        <p class="text-[10px] text-[#00A3FF] font-semibold mt-1">Comptes enregistrés sur la plateforme</p>
+      </div>
+
+      <!-- Stat 2 : Conversations Totales -->
+      <div class="bg-white dark:bg-[#0E1626] border border-gray-200 dark:border-[#00A3FF]/30 rounded-2xl p-6 shadow-sm dark:shadow-[0_0_20px_rgba(0,163,255,0.1)] transition-all hover:border-[#00A3FF]/60">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Conversations Totales</p>
+          <div class="p-2.5 rounded-xl bg-[#0057FF]/10 text-[#00A3FF]">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          </div>
+        </div>
+        <div class="text-3xl font-black text-gray-900 dark:text-white">
+          {{ total_conversations|default:0 }}
+        </div>
+        <p class="text-[10px] text-[#00A3FF] font-semibold mt-1">Échanges clients enregistrés</p>
+      </div>
+
+    </div>
+
+    <!-- ================= SECTION : CONFIGURATION DU MESSAGE & LIENS CLIENT ================= -->
+<div class="bg-white dark:bg-[#0E1626] border border-gray-200 dark:border-[#00A3FF]/30 rounded-2xl p-6 shadow-sm mb-8">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h2 class="text-sm font-bold uppercase tracking-wider text-gray-900 dark:text-white">
+        Paramètres de l'Espace Client
+      </h2>
+      <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+        Définissez le message d'accueil et les liens réseaux sociaux affichés aux clients.
+      </p>
+    </div>
+    <span class="px-2.5 py-1 rounded-md bg-[#00A3FF]/10 text-[#00A3FF] text-[10px] font-bold uppercase">Configuration Admin</span>
+  </div>
+
+  <form method="post" action="" class="space-y-4">
+    {% csrf_token %}
+    
+    <!-- Message de bienvenue -->
+    <div>
+      <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Message de bienvenue</label>
+      <textarea name="welcome_message" rows="3" class="w-full bg-gray-50 dark:bg-[#060913] border border-gray-200 dark:border-gray-800 focus:border-[#00A3FF] focus:ring-1 focus:ring-[#00A3FF] text-gray-900 dark:text-white rounded-xl p-3 text-xs outline-none transition duration-200" placeholder="Entrez le message de bienvenue...">{{ welcome_message|default:"Bienvenue sur SPORTI ! Nous sommes ravis de vous compter parmi nous. N'hésitez pas à nous rejoindre sur nos canaux officiels." }}</textarea>
+    </div>
+
+    <!-- Liens Telegram & WhatsApp -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Lien Telegram du Gestionnaire</label>
+        <div class="relative">
+          <input type="url" name="telegram_url" value="{{ telegram_url|default:'' }}" placeholder="https://t.me/username" class="w-full bg-gray-50 dark:bg-[#060913] border border-gray-200 dark:border-gray-800 focus:border-[#00A3FF] text-gray-900 dark:text-white rounded-xl pl-9 pr-3 py-2 text-xs outline-none">
+          <span class="absolute left-3 top-2.5 text-[#0088cc]">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-2.03 9.56c-.15.68-.55.84-1.12.52l-3.1-2.28-1.5 1.44c-.17.17-.31.31-.63.31l.22-3.17 5.77-5.21c.25-.22-.05-.34-.39-.12l-7.14 4.49-3.07-.96c-.67-.21-.68-.67.14-.99l12.01-4.63c.56-.21 1.05.13.84.86z"/></svg>
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Lien Chaine WhatsApp</label>
+        <div class="relative">
+          <input type="url" name="whatsapp_url" value="{{ whatsapp_url|default:'' }}" placeholder="https://whatsapp.com/channel/..." class="w-full bg-gray-50 dark:bg-[#060913] border border-gray-200 dark:border-gray-800 focus:border-[#00A3FF] text-gray-900 dark:text-white rounded-xl pl-9 pr-3 py-2 text-xs outline-none">
+          <span class="absolute left-3 top-2.5 text-[#25D366]">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <button type="submit" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0057FF] to-[#00A3FF] hover:from-[#0046CC] hover:to-[#0088DD] text-white text-xs font-bold transition-all shadow-[0_0_15px_rgba(0,163,255,0.3)]">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        Enregistrer les modifications
+      </button>
+    </div>
+  </form>
+</div>
+        
+
+  </main>
+</div>
+{% endblock %}

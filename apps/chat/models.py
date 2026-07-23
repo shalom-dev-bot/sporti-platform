@@ -97,3 +97,30 @@ class MessageReaction(models.Model):
                 fields=["message", "user", "emoji"], name="unique_reaction_per_user"
             )
         ]
+class AppSettings(models.Model):
+    welcome_message = models.TextField(
+        default="Bienvenue sur SPORTI ! Nous sommes ravis de vous compter parmi nous. Rejoignez nos canaux officiels pour toute question ou mise à jour."
+    )
+    telegram_url = models.URLField(
+        blank=True, 
+        null=True, 
+        help_text="Lien Telegram du gestionnaire"
+    )
+    whatsapp_url = models.URLField(
+        blank=True, 
+        null=True, 
+        help_text="Lien de la chaîne WhatsApp"
+    )
+
+    class Meta:
+        verbose_name = "Configuration de l'application"
+        verbose_name_plural = "Configurations de l'application"
+
+    def __str__(self):
+        return "Configuration Générale SPORTI"
+
+    @classmethod
+    def get_settings(cls):
+        """Récupère l'unique instance de configuration ou en crée une par défaut."""
+        settings, _ = cls.objects.get_or_create(id=1)
+        return settings

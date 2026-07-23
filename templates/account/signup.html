@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen bg-[#F4F7FC] dark:bg-[#060913] text-gray-900 dark:text-white flex flex-col justify-center items-center px-4 py-6 relative overflow-hidden transition-colors duration-300">
+  
+  <!-- Halos lumineux Néon -->
+  <div class="absolute top-1/4 -right-28 w-80 h-80 bg-[#00A3FF]/20 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-1/4 -left-28 w-80 h-80 bg-[#0057FF]/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+  <!-- Carte Compacte d'Inscription -->
+  <div class="w-full max-w-sm bg-white dark:bg-[#0E1626]/95 backdrop-blur-xl border border-gray-200 dark:border-[#00A3FF]/30 rounded-2xl p-6 shadow-xl dark:shadow-[0_0_25px_rgba(0,163,255,0.2)] relative z-10 transition-all duration-300 hover:border-[#00A3FF]/50">
+    
+    <!-- Header Logo -->
+    <div class="text-center mb-4">
+      <img src="{% static 'images/logo.jpeg' %}" alt="SPORTI Logo" class="h-16 mx-auto mb-1 drop-shadow-[0_0_12px_rgba(0,163,255,0.6)] transition-transform duration-300 hover:scale-105 rounded-full">
+      <h1 class="text-base font-black tracking-wider text-gray-900 dark:text-white uppercase">Créer un Compte <span class="text-[#00A3FF]">SPORTI</span></h1>
+    </div>
+
+    <!-- Formulaire -->
+    <form method="post" action="" class="space-y-3">
+      {% csrf_token %}
+      
+      <div>
+        <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Nom d'utilisateur</label>
+        <input type="text" name="username" required placeholder="ex: alex_sporti" class="w-full bg-gray-50 dark:bg-[#060913] border border-gray-200 dark:border-gray-800 focus:border-[#00A3FF] focus:ring-1 focus:ring-[#00A3FF] text-gray-900 dark:text-white rounded-lg px-3 py-2 text-xs outline-none transition duration-200">
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Adresse E-mail</label>
+        <input type="email" name="email" required placeholder="nom@exemple.com" class="w-full bg-gray-50 dark:bg-[#060913] border border-gray-200 dark:border-gray-800 focus:border-[#00A3FF] focus:ring-1 focus:ring-[#00A3FF] text-gray-900 dark:text-white rounded-lg px-3 py-2 text-xs outline-none transition duration-200">
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Mot de passe</label>
+        <input type="password" name="password1" required placeholder="••••••••" class="w-full bg-gray-50 dark:bg-[#060913] border border-gray-200 dark:border-gray-800 focus:border-[#00A3FF] focus:ring-1 focus:ring-[#00A3FF] text-gray-900 dark:text-white rounded-lg px-3 py-2 text-xs outline-none transition duration-200">
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Confirmation du mot de passe</label>
+        <input type="password" name="password2" required placeholder="••••••••" class="w-full bg-gray-50 dark:bg-[#060913] border border-gray-200 dark:border-gray-800 focus:border-[#00A3FF] focus:ring-1 focus:ring-[#00A3FF] text-gray-900 dark:text-white rounded-lg px-3 py-2 text-xs outline-none transition duration-200">
+      </div>
+
+      <button type="submit" class="w-full bg-gradient-to-r from-[#0057FF] to-[#00A3FF] hover:from-[#0046CC] hover:to-[#0088DD] text-white font-bold py-2.5 px-3 rounded-lg shadow-[0_0_15px_rgba(0,163,255,0.35)] transition-all duration-200 text-xs uppercase tracking-wider mt-2">
+        S'inscrire
+      </button>
+    </form>
+
+    <div class="mt-4 text-center">
+      <a href="/accounts/login/" class="text-[11px] text-gray-500 dark:text-gray-400 hover:text-[#00A3FF] transition-colors">Déjà un compte ? <span class="text-[#00A3FF] font-semibold">Se connecter</span></a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

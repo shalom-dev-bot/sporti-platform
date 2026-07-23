@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="min-h-screen bg-[#F4F7FC] dark:bg-[#060913] text-gray-900 dark:text-white font-sans transition-colors duration-300 flex flex-col">
+
+  <!-- ================= BARRE DE NAVIGATION (CLIENT) ================= -->
+  <header class="bg-white dark:bg-[#0E1626] border-b border-gray-200 dark:border-gray-800/80 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <img src="{% static 'images/logo.jpeg' %}" alt="SPORTI Logo" class="h-9 w-9 rounded-full drop-shadow-[0_0_8px_rgba(0,163,255,0.6)] object-cover">
+      <div>
+        <h1 class="text-base font-black tracking-wider uppercase leading-none">SPORT<span class="text-[#00A3FF]">I</span></h1>
+        <span class="text-[9px] font-bold text-[#00A3FF] tracking-widest uppercase">Espace Client</span>
+      </div>
+    </div>
+
+    <!-- Profil Client & Déconnexion -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0057FF] to-[#00A3FF] text-white flex items-center justify-center font-black text-xs shadow-md">
+          {{ user.username|slice:":1"|upper|default:"C" }}
+        </div>
+        <span class="text-xs font-bold hidden sm:inline">{{ user.username|default:"Client" }}</span>
+      </div>
+
+      <a href="/accounts/logout/" class="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors" title="Se déconnecter">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- ================= CONTENU PRINCIPAL ================= -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-6 space-y-6">
+
+    <!-- BANNIÈRE DE BIENVENUE -->
+    <div class="relative bg-gradient-to-br from-[#0E1626] to-[#060913] border border-[#00A3FF]/30 rounded-3xl p-6 md:p-8 shadow-[0_0_30px_rgba(0,163,255,0.15)] overflow-hidden">
+      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-[#00A3FF]/20 rounded-full blur-[80px] pointer-events-none"></div>
+
+      <div class="relative z-10 space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00A3FF]/10 border border-[#00A3FF]/30 text-[#00A3FF] text-[10px] font-bold uppercase tracking-wider">
+          👋 Message d'accueil
+        </div>
+        <h2 class="text-xl md:text-2xl font-black uppercase text-white">
+          Bienvenue, <span class="text-[#00A3FF]">{{ user.username|default:"Cher Client" }}</span> !
+        </h2>
+        <p class="text-xs md:text-sm text-gray-300 leading-relaxed max-w-2xl">
+          {{ welcome_message }}
+        </p>
+      </div>
+    </div>
+
+    <!-- CARTES CANAUX (TELEGRAM ET WHATSAPP) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Carte Telegram du Gestionnaire -->
+      <div class="bg-white dark:bg-[#0E1626] border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm hover:border-[#0088cc]/60 transition-all flex flex-col justify-between">
+        <div class="space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-[#0088cc]/10 text-[#0088cc] flex items-center justify-center shadow-inner">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-2.03 9.56c-.15.68-.55.84-1.12.52l-3.1-2.28-1.5 1.44c-.17.17-.31.31-.63.31l.22-3.17 5.77-5.21c.25-.22-.05-.34-.39-.12l-7.14 4.49-3.07-.96c-.67-.21-.68-.67.14-.99l12.01-4.63c.56-.21 1.05.13.84.86z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-gray-900 dark:text-white">Contact Telegram</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Échangez directement avec le gestionnaire sur Telegram.</p>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          {% if telegram_url %}
+            <a href="{{ telegram_url }}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0088cc] hover:bg-[#0077b5] text-white text-xs font-bold transition-all shadow-md">
+              Ouvrir Telegram
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+          {% else %}
+            <button disabled class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-400 text-xs font-bold cursor-not-allowed">
+              Lien non configuré
+            </button>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Carte Chaîne WhatsApp -->
+      <div class="bg-white dark:bg-[#0E1626] border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm hover:border-[#25D366]/60 transition-all flex flex-col justify-between">
+        <div class="space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-[#25D366]/10 text-[#25D366] flex items-center justify-center shadow-inner">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-gray-900 dark:text-white">Chaîne WhatsApp</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Rejoignez notre chaîne pour suivre toutes les actualités.</p>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          {% if whatsapp_url %}
+            <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold transition-all shadow-md">
+              Rejoindre la chaîne
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+          {% else %}
+            <button disabled class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-400 text-xs font-bold cursor-not-allowed">
+              Lien non configuré
+            </button>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+{% endblock %}

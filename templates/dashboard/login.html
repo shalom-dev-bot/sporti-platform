@@ -1,28 +1,69 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>SPORTI -- Espace de gestion</title>
-</head>
-<body>
-    <h1>SPORTI</h1>
-    <h2>Espace de gestion</h2>
+{% extends 'base.html' %}
+{% load static %}
 
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="min-h-screen bg-[#F4F7FC] dark:bg-[#060913] text-gray-900 dark:text-white flex flex-col justify-center items-center px-4 py-6 relative overflow-hidden transition-colors duration-300">
+  
+  <!-- Halos lumineux Néon Cyan/Bleu -->
+  <div class="absolute top-1/4 -left-28 w-80 h-80 bg-[#00A3FF]/20 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-1/4 -right-28 w-80 h-80 bg-[#0057FF]/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+  <!-- Carte Connexion Administration / Gestion -->
+  <div class="w-full max-w-sm bg-white dark:bg-[#0E1626]/95 backdrop-blur-xl border border-gray-200 dark:border-[#00A3FF]/30 rounded-2xl p-6 shadow-xl dark:shadow-[0_0_25px_rgba(0,163,255,0.2)] relative z-10">
+    
+    <!-- Header Logo SPORTI -->
+    <div class="text-center mb-6">
+      <img src="{% static 'images/logo.jpeg' %}" alt="SPORTI Logo" class="h-16 mx-auto mb-2 drop-shadow-[0_0_12px_rgba(0,163,255,0.6)] rounded-full">
+      <h1 class="text-xl font-black tracking-wider text-gray-900 dark:text-white uppercase">SPORT<span class="text-[#00A3FF]">I</span></h1>
+      <p class="text-[10px] font-bold tracking-widest text-[#00A3FF] uppercase mt-1">Espace de gestion</p>
+    </div>
+
+    <!-- Affichage des erreurs éventuelles -->
     {% if form.errors %}
-        <p style="color:red;">Identifiants incorrects. Reessayez.</p>
+      <div class="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-semibold">
+        Identifiants incorrects. Veuillez réessayer.
+      </div>
     {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
-        <p>
-            <label for="id_username">Nom d'utilisateur</label><br>
-            <input type="text" name="username" id="id_username" required>
-        </p>
-        <p>
-            <label for="id_password">Mot de passe</label><br>
-            <input type="password" name="password" id="id_password" required>
-        </p>
-        <button type="submit">Se connecter</button>
+    <!-- Formulaire de Connexion -->
+    <form method="post" action="" class="space-y-4">
+      {% csrf_token %}
+      
+      {% if form %}
+        <!-- Si la vue passe un objet Form Django -->
+        {% for field in form %}
+          <div>
+            <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
+              {{ field.label }}
+            </label>
+            <div class="[&>input]:w-full [&>input]:bg-gray-50 [&>input]:dark:bg-[#060913] [&>input]:border [&>input]:border-gray-200 [&>input]:dark:border-gray-800 [&>input]:focus:border-[#00A3FF] [&>input]:text-gray-900 [&>input]:dark:text-white [&>input]:rounded-lg [&>input]:px-3 [&>input]:py-2 [&>input]:text-xs [&>input]:outline-none">
+              {{ field }}
+            </div>
+            {% if field.errors %}
+              <p class="text-[10px] text-red-400 mt-1">{{ field.errors.0 }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <!-- Mode Manuel Standard -->
+        <div>
+          <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Nom d'utilisateur</label>
+          <input type="text" name="username" required placeholder="Ex: sami" class="w-full bg-gray-50 dark:bg-[#060913] border border-gray-200 dark:border-gray-800 focus:border-[#00A3FF] text-gray-900 dark:text-white rounded-lg px-3 py-2 text-xs outline-none">
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Mot de passe</label>
+          <input type="password" name="password" required placeholder="••••••••" class="w-full bg-gray-50 dark:bg-[#060913] border border-gray-200 dark:border-gray-800 focus:border-[#00A3FF] text-gray-900 dark:text-white rounded-lg px-3 py-2 text-xs outline-none">
+        </div>
+      {% endif %}
+
+      <button type="submit" class="w-full bg-gradient-to-r from-[#0057FF] to-[#00A3FF] hover:from-[#0046CC] hover:to-[#0088DD] text-white font-bold py-2.5 px-3 rounded-lg shadow-[0_0_15px_rgba(0,163,255,0.35)] transition-all duration-200 text-xs uppercase tracking-wider mt-2">
+        Se connecter
+      </button>
     </form>
-</body>
-</html>
+
+  </div>
+</div>
+{% endblock %}

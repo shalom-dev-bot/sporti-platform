@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-body antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* Coins en equerre facon HUD -- element signature de l'identite SPORTI,
+     utilise sur les avatars en ligne et les elements actifs. */
+  .hud-corners {
+    position: relative;
+  }
+  .hud-corners::before,
+  .hud-corners::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: theme('colors.accent.500');
+    transition: all 0.2s ease;
+  }
+  .hud-corners::before {
+    top: -3px;
+    left: -3px;
+    border-top: 2px solid;
+    border-left: 2px solid;
+  }
+  .hud-corners::after {
+    bottom: -3px;
+    right: -3px;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+  }
+
+  /* Bouton principal SPORTI : coins tailles (clip-path), pas de
+     bord arrondi generique -- coherent avec l'esprit angulaire du logo. */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 px-6 py-3
+           font-display font-semibold uppercase tracking-wide text-sm
+           text-white bg-accent-600 transition-all duration-200
+           hover:bg-accent-500 hover:shadow-glow
+           active:scale-[0.98];
+    clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  }
+
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center gap-2 px-6 py-3
+           font-display font-semibold uppercase tracking-wide text-sm
+           border border-navy-800 text-navy-900 dark:text-white
+           dark:border-white/20 transition-all duration-200
+           hover:border-accent-500 hover:text-accent-600;
+    clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  }
+}

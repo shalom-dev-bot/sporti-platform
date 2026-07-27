@@ -40,7 +40,7 @@ class AuthenticationTests(TestCase):
     def test_client_non_staff_ne_peut_pas_acceder_au_dashboard(self):
         """Regle de securite centrale : un client ne doit jamais entrer dans /gestion/."""
         self.client.login(username="client_test", password="MotDePasseSolide123")
-        response = self.client.get(reverse("dashboard:home"))
+        response = self.client.get(reverse("dashboard:stats"))
         # Doit rediriger vers la page de connexion, pas afficher le dashboard.
         self.assertEqual(response.status_code, 302)
         self.assertIn("/gestion/connexion/", response.url)
@@ -48,12 +48,12 @@ class AuthenticationTests(TestCase):
     def test_staff_peut_acceder_au_dashboard(self):
         """Un membre du staff (entreprise) doit pouvoir entrer dans /gestion/."""
         self.client.login(username="admin_sporti", password="MotDePasseSolide123")
-        response = self.client.get(reverse("dashboard:home"))
+        response = self.client.get(reverse("dashboard:stats"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Tableau de bord SPORTI")
 
     def test_visiteur_non_connecte_redirige_vers_connexion(self):
         """Un visiteur non authentifie ne doit jamais voir le dashboard."""
-        response = self.client.get(reverse("dashboard:home"))
+        response = self.client.get(reverse("dashboard:stats"))
         self.assertEqual(response.status_code, 302)
         self.assertIn("/gestion/connexion/", response.url)

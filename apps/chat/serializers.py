@@ -42,6 +42,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class ConversationSerializer(serializers.ModelSerializer):
     client_name = serializers.CharField(source="client.__str__", read_only=True)
+    client_is_online = serializers.BooleanField(source="client.is_online", read_only=True)
     last_message = serializers.SerializerMethodField()
     unread_count = serializers.SerializerMethodField()
 
@@ -51,6 +52,7 @@ class ConversationSerializer(serializers.ModelSerializer):
             "id",
             "client",
             "client_name",
+            "client_is_online",
             "created_at",
             "updated_at",
             "is_archived",

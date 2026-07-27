@@ -1,28 +1,38 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>SPORTI -- Espace de gestion</title>
-</head>
-<body>
-    <h1>SPORTI</h1>
-    <h2>Espace de gestion</h2>
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
 
-    {% if form.errors %}
-        <p style="color:red;">Identifiants incorrects. Reessayez.</p>
-    {% endif %}
+{% block title %}{% trans "Espace de gestion" %} — SPORTI{% endblock %}
 
-    <form method="post">
-        {% csrf_token %}
-        <p>
-            <label for="id_username">Nom d'utilisateur</label><br>
-            <input type="text" name="username" id="id_username" required>
+{% block content %}
+<div class="auth-shell">
+    <div class="relative w-full max-w-md text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 hud-corners mb-4 overflow-hidden bg-navy-950">
+            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+        </div>
+        <h1 class="font-display text-2xl font-bold tracking-wide">SPORTI</h1>
+        <p class="text-[11px] uppercase tracking-[0.2em] text-navy-900/40 dark:text-white/35 mt-1">
+            {% trans "Espace de gestion" %}
         </p>
-        <p>
-            <label for="id_password">Mot de passe</label><br>
-            <input type="password" name="password" id="id_password" required>
-        </p>
-        <button type="submit">Se connecter</button>
-    </form>
-</body>
-</html>
+    </div>
+
+    <div class="auth-card">
+        {% if form.errors %}
+            <div class="form-alert">{% trans "Identifiants incorrects. Réessayez." %}</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="field-group">
+                <label for="id_username" class="field-label">{% trans "Nom d'utilisateur" %}</label>
+                <input type="text" name="username" id="id_username" class="field-input" required autofocus>
+            </div>
+            <div class="field-group">
+                <label for="id_password" class="field-label">{% trans "Mot de passe" %}</label>
+                <input type="password" name="password" id="id_password" class="field-input" required>
+            </div>
+            <button type="submit" class="btn-primary w-full">{% trans "Se connecter" %}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

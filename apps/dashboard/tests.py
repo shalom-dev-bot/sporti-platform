@@ -25,13 +25,13 @@ class DashboardAccessTests(TestCase):
 
     def test_staff_accede_a_la_vue_densemble(self):
         self.client.login(username="dash_staff", password="MotDePasseSolide123")
-        response = self.client.get(reverse("dashboard:home"))
+        response = self.client.get(reverse("dashboard:stats"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Tableau de bord")
 
     def test_client_ne_peut_pas_acceder_a_la_vue_densemble(self):
         self.client.login(username="dash_client", password="MotDePasseSolide123")
-        response = self.client.get(reverse("dashboard:home"))
+        response = self.client.get(reverse("dashboard:stats"))
         self.assertEqual(response.status_code, 302)
 
     def test_staff_voit_la_liste_des_conversations(self):

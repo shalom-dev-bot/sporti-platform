@@ -3,6 +3,8 @@ module.exports = {
   content: [
     "./templates/**/*.html",
     "./apps/**/templates/**/*.html",
+    "./apps/**/forms.py",
+    "./static/js/**/*.js",
   ],
   darkMode: "class",
   theme: {

@@ -41,8 +41,8 @@ class WelcomeMessage(models.Model):
     audio_file = models.FileField(upload_to="welcome/audio/", blank=True, null=True)
     video_file = models.FileField(upload_to="welcome/video/", blank=True, null=True)
     is_text_enabled = models.BooleanField(default=True)
-    is_audio_enabled = models.BooleanField(default=False)
-    is_video_enabled = models.BooleanField(default=False)
+    is_audio_enabled = models.BooleanField(default=True)
+    is_video_enabled = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -59,7 +59,8 @@ class WelcomeMessage(models.Model):
 
 
 class ExternalLink(models.Model):
-    """Lien de contact externe (WhatsApp, Telegram, Facebook, Instagram...)."""
+    """Lien de contact externe (WhatsApp, Telegram, Facebook, Instagram...)
+    ou plateforme partenaire recommandee (avec code promo optionnel)."""
 
     class Platform(models.TextChoices):
         WHATSAPP = "whatsapp", "WhatsApp"
@@ -68,9 +69,15 @@ class ExternalLink(models.Model):
         INSTAGRAM = "instagram", "Instagram"
         OTHER = "other", "Autre"
 
+    class Category(models.TextChoices):
+        SOCIAL = "social", "Reseau social"
+        PLATFORM = "platform", "Plateforme recommandee"
+
+    category = models.CharField(max_length=20, choices=Category.choices, default=Category.SOCIAL)
     platform = models.CharField(max_length=20, choices=Platform.choices)
     label = models.CharField(max_length=100, blank=True)
     url = models.URLField()
+    promo_code = models.CharField(max_length=30, blank=True, verbose_name="Code promo")
     is_active = models.BooleanField(default=True)
     order = models.PositiveSmallIntegerField(default=0)
 

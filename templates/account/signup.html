@@ -1,24 +1,82 @@
+{% extends "base.html" %}
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}">
-<head>
-    <meta charset="UTF-8">
-    <title>SPORTI -- Inscription</title>
-</head>
-<body>
-    <h1>SPORTI</h1>
-    <h2>{% trans "Creer un compte" %}</h2>
+{% load static %}
+{% block title %}{% trans "Créer un compte" %} — SPORTI{% endblock %}
 
-    <a href="{% url 'google_login' %}">{% trans "Continuer avec Google" %}</a>
+{% block content %}
+<div class="auth-shell">
 
-    <hr>
 
-    <form method="post" action="{% url 'account_signup' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">{% trans "S'inscrire" %}</button>
-    </form>
+    <div class="relative w-full max-w-md text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 hud-corners mb-4 overflow-hidden bg-navy-950">
+            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+        </div>
+        <h1 class="font-display text-2xl font-bold tracking-wide">SPORTI</h1>
+        <p class="text-[11px] uppercase tracking-[0.2em] text-navy-900/40 dark:text-white/35 mt-1">
+            Vision · Speed · Strength
+        </p>
+    </div>
 
-    <p><a href="{% url 'account_login' %}">{% trans "Deja un compte ? Connectez-vous" %}</a></p>
-</body>
-</html>
+    <div class="auth-card auth-card-enter" id="auth-card">
+        <h2 class="font-display text-xl font-semibold text-center mb-1">{% trans "Créer votre compte" %}</h2>
+        <p class="text-sm text-center text-navy-900/50 dark:text-white/45 mb-7">
+            {% trans "Rejoignez SPORTI pour discuter directement avec nous." %}
+        </p>
+
+        {% if form.non_field_errors %}
+            <div class="form-alert">
+                {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+            </div>
+        {% endif %}
+
+        <a href="{% url 'google_login' %}" class="btn-google">
+            <svg class="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.47c-.28 1.5-1.13 2.78-2.4 3.63v3.01h3.89c2.28-2.1 3.56-5.19 3.56-8.83z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.89-3.01c-1.08.72-2.46 1.15-4.06 1.15-3.12 0-5.77-2.11-6.72-4.94H1.27v3.1C3.25 21.3 7.31 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.28 14.3c-.24-.72-.38-1.49-.38-2.3s.14-1.58.38-2.3v-3.1H1.27A11.96 11.96 0 000 12c0 1.94.46 3.77 1.27 5.4l4.01-3.1z"/>
+                <path fill="#EA4335" d="M12 4.77c1.76 0 3.35.6 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.6l4.01 3.1C6.23 6.88 8.88 4.77 12 4.77z"/>
+            </svg>
+            {% trans "Continuer avec Google" %}
+        </a>
+        <p class="text-center text-[11px] text-navy-900/35 dark:text-white/30 mt-2">
+            {% trans "Nom et photo récupérés automatiquement, sans mot de passe." %}
+        </p>
+
+        <div class="divider-row">{% trans "ou avec un e-mail" %}</div>
+
+        <form method="post" action="{% url 'account_signup' %}" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="field-group">
+                    <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-primary w-full">{% trans "Créer mon compte" %}</button>
+        </form>
+
+        <p class="text-center text-sm text-navy-900/50 dark:text-white/45 mt-7">
+            {% trans "Déjà un compte ?" %}
+            <a href="{% url 'account_login' %}" id="switch-auth-link" class="text-accent-600 hover:text-accent-500 font-medium">{% trans "Connectez-vous" %}</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+    const switchLink = document.getElementById("switch-auth-link");
+    const authCard = document.getElementById("auth-card");
+    if (switchLink && authCard) {
+        switchLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            authCard.classList.remove("auth-card-enter");
+            authCard.classList.add("auth-card-exit");
+            setTimeout(() => { window.location.href = switchLink.href; }, 260);
+        });
+    }
+</script>
+{% endblock %}

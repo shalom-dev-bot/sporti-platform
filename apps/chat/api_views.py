@@ -91,6 +91,28 @@ class ConversationHistoryView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 
+class MyConversationView(APIView):
+    """Renvoie (en la creant si besoin) la conversation du client connecte,
+    avec son historique complet -- point d'entree unique pour que la page
+    de chat sache a quel identifiant se connecter en WebSocket."""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        if request.user.is_staff:
+            return Response({"detail": "Reserve aux clients."}, status=status.HTTP_403_FORBIDDEN)
+
+        conversation, _ = Conversation.objects.get_or_create(client=request.user)
+        messages = (
+            Message.objects.filter(conversation=conversation)
+            .select_related("sender")
+            .prefetch_related("attachments", "reactions")
+            .order_by("created_at")
+        )
+        serializer = MessageSerializer(messages, many=True, context={"request": request})
+        return Response({"conversation_id": conversation.id, "messages": serializer.data})
+
+
 class AttachmentUploadView(APIView):
     """Upload d'une piece jointe (image, document, ou message vocal) dans
     une conversation. Cree le Message + l'Attachment, puis diffuse le

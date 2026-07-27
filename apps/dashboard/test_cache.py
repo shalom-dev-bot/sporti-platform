@@ -26,12 +26,12 @@ class DashboardCacheTests(TestCase):
         self.client.login(username="cache_staff", password="MotDePasseSolide123")
 
         # Premier appel : calcule et met en cache.
-        self.client.get(reverse("dashboard:home"))
+        self.client.get(reverse("dashboard:stats"))
 
         # Deuxieme appel : doit venir entierement du cache, sans toucher
         # les tables User/Conversation/Message pour recalculer les stats.
         with CaptureQueriesContext(connection) as ctx:
-            response = self.client.get(reverse("dashboard:home"))
+            response = self.client.get(reverse("dashboard:stats"))
 
         self.assertEqual(response.status_code, 200)
         # Seules les requetes de session/auth doivent rester (2-3 max),
@@ -43,7 +43,7 @@ class DashboardCacheTests(TestCase):
 
     def test_cache_contient_bien_les_statistiques(self):
         self.client.login(username="cache_staff", password="MotDePasseSolide123")
-        self.client.get(reverse("dashboard:home"))
+        self.client.get(reverse("dashboard:stats"))
 
         cached = cache.get("dashboard:stats")
         self.assertIsNotNone(cached)

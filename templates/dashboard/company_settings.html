@@ -1,0 +1,99 @@
+{% extends "dashboard/_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Accueil & Profil" %} — SPORTI{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="dashboard-page-title">{% trans "Accueil & Profil" %}</h1>
+<p class="dashboard-page-subtitle">
+    {% trans "Ce que voit un visiteur en arrivant sur la plateforme, avant de se connecter." %}
+</p>
+
+<div class="grid lg:grid-cols-2 gap-6">
+
+    <div class="panel">
+        <h2 class="font-display font-semibold mb-1">{% trans "Profil de l'entreprise" %}</h2>
+        <p class="text-xs text-navy-900/45 dark:text-white/40 mb-5">
+            {% trans "Logo, nom et description affichés en haut de la page d'accueil." %}
+        </p>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="profile">
+            {% for field in profile_form %}
+            <div class="field-group">
+                <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+                {% if field.name == "logo" %}
+                    {% if field.value %}
+                        <img src="{{ field.value.url }}" alt="" class="w-16 h-16 object-cover mb-2 hud-corners">
+                    {% endif %}
+                {% endif %}
+                {{ field }}
+                {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-primary">{% trans "Enregistrer le profil" %}</button>
+        </form>
+    </div>
+
+    <div class="panel">
+        <h2 class="font-display font-semibold mb-1">{% trans "Message d'accueil" %}</h2>
+        <p class="text-xs text-navy-900/45 dark:text-white/40 mb-5">
+            {% trans "Texte et audio affichés dès l'arrivée du visiteur, chacun activable indépendamment." %}
+        </p>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="welcome">
+
+            <div class="field-group">
+                <label for="{{ welcome_form.text_fr.id_for_label }}" class="field-label">{{ welcome_form.text_fr.label }}</label>
+                {{ welcome_form.text_fr }}
+            </div>
+            <div class="field-group">
+                <label for="{{ welcome_form.text_en.id_for_label }}" class="field-label">{{ welcome_form.text_en.label }}</label>
+                {{ welcome_form.text_en }}
+            </div>
+            <div class="toggle-row">
+                <span class="text-sm">{{ welcome_form.is_text_enabled.label }}</span>
+                {{ welcome_form.is_text_enabled }}
+            </div>
+
+            <div class="field-group mt-4">
+                <label for="{{ welcome_form.audio_file.id_for_label }}" class="field-label">{{ welcome_form.audio_file.label }}</label>
+                {% if welcome_form.audio_file.value %}
+                    <div id="audio-preview"></div>
+                {% endif %}
+                <div id="new-recording-preview" class="hidden mb-2"></div>
+                <div class="flex items-center gap-3 mb-2">
+                    <button type="button" id="record-welcome-btn" class="chat-round-icon-btn" style="width:2.5rem;height:2.5rem;" aria-label="{% trans 'Enregistrer un vocal' %}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                            <path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/>
+                        </svg>
+                    </button>
+                    <span id="record-welcome-status" class="text-xs text-navy-900/45 dark:text-white/40">{% trans "Cliquez pour enregistrer un message vocal directement" %}</span>
+                </div>
+                {{ welcome_form.audio_file }}
+            </div>
+            <div class="toggle-row">
+                <span class="text-sm">{{ welcome_form.is_audio_enabled.label }}</span>
+                {{ welcome_form.is_audio_enabled }}
+            </div>
+
+            <button type="submit" class="btn-primary mt-5">{% trans "Enregistrer le message d'accueil" %}</button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% load static %}
+<script src="{% static 'js/voice-player.js' %}"></script>
+{% if welcome_form.audio_file.value %}
+<script>
+    document.getElementById("audio-preview").appendChild(
+        createVoicePlayer("{{ welcome_form.audio_file.value.url }}")
+    );
+</script>
+{% endif %}
+{% endblock %}

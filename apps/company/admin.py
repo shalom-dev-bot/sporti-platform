@@ -5,12 +5,13 @@ from .models import CompanyProfile, ExternalLink, WelcomeMessage
 
 @admin.register(ExternalLink)
 class ExternalLinkAdmin(admin.ModelAdmin):
-    """Gestion des liens externes (WhatsApp, Telegram, etc.)."""
+    """Gestion des liens externes (WhatsApp, Telegram, etc.) et des
+    plateformes partenaires recommandees (avec code promo)."""
 
-    list_display = ["platform", "label", "url", "is_active", "order"]
+    list_display = ["category", "platform", "label", "promo_code", "url", "is_active", "order"]
     list_editable = ["is_active", "order"]
-    list_filter = ["platform", "is_active"]
-    search_fields = ["label", "url"]
+    list_filter = ["category", "platform", "is_active"]
+    search_fields = ["label", "url", "promo_code"]
     ordering = ["order"]
 
 

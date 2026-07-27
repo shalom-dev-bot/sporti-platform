@@ -1,0 +1,63 @@
+{% extends "dashboard/_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Liens externes" %} — SPORTI{% endblock %}
+{% block dashboard_content %}
+<div class="flex items-center justify-between mb-1">
+    <h1 class="dashboard-page-title mb-0">{% trans "Liens externes" %}</h1>
+    <a href="{% url 'dashboard:link_create' %}" class="btn-primary text-xs !px-4 !py-2.5">{% trans "+ Ajouter un lien" %}</a>
+</div>
+<p class="dashboard-page-subtitle">
+    {% trans "Réseaux sociaux et plateformes recommandées, affichés en bas de la page de chat." %}
+</p>
+<div class="panel !p-0 overflow-x-auto">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="px-6">{% trans "Catégorie" %}</th>
+                <th>{% trans "Plateforme" %}</th>
+                <th>{% trans "Lien" %}</th>
+                <th>{% trans "Code promo" %}</th>
+                <th>{% trans "Visible" %}</th>
+                <th>{% trans "Ordre" %}</th>
+                <th class="pr-6 text-right">{% trans "Actions" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for link in links %}
+            <tr>
+                <td class="px-6">
+                    {% if link.category == "platform" %}
+                        <span class="badge">{% trans "Plateforme" %}</span>
+                    {% else %}
+                        <span class="text-navy-900/50 dark:text-white/45 text-xs">{% trans "Réseau social" %}</span>
+                    {% endif %}
+                </td>
+                <td class="font-medium">{{ link.get_platform_display }}{% if link.label %} — {{ link.label }}{% endif %}</td>
+                <td class="text-navy-900/60 dark:text-white/50 max-w-xs truncate">{{ link.url }}</td>
+                <td class="text-navy-900/60 dark:text-white/50">{{ link.promo_code|default:"—" }}</td>
+                <td>
+                    {% if link.is_active %}
+                        <span class="text-emerald-500 text-xs font-semibold">{% trans "Actif" %}</span>
+                    {% else %}
+                        <span class="text-navy-900/35 dark:text-white/30 text-xs">{% trans "Masqué" %}</span>
+                    {% endif %}
+                </td>
+                <td class="text-navy-900/45 dark:text-white/40">{{ link.order }}</td>
+                <td class="pr-6 text-right whitespace-nowrap">
+                    <a href="{% url 'dashboard:link_edit' link.id %}" class="btn-ghost !px-2 !py-1 !text-xs">{% trans "Modifier" %}</a>
+                    <form method="post" action="{% url 'dashboard:link_delete' link.id %}" class="inline"
+                          onsubmit="return confirm('{% trans "Supprimer ce lien ?" %}');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-ghost !px-2 !py-1 !text-xs !text-red-500 hover:!text-red-600">{% trans "Supprimer" %}</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="px-6 py-10 text-center text-navy-900/40 dark:text-white/35">
+                {% trans "Aucun lien pour le moment." %}
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

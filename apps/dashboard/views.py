@@ -8,7 +8,6 @@ from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
 from django.db.models import Count
@@ -18,6 +17,10 @@ from django.utils import timezone
 
 from apps.accounts.models import User
 from apps.chat.models import Conversation, Message
+from apps.company.forms import CompanyProfileForm, ExternalLinkForm, WelcomeMessageForm
+from apps.company.models import CompanyProfile, ExternalLink, WelcomeMessage
+
+from .forms import AdminPasswordChangeForm, AdminUsernameForm
 
 CACHE_KEY_DASHBOARD_STATS = "dashboard:stats"
 CACHE_TTL_DASHBOARD_STATS = 60  # secondes : assez court pour rester a jour,
@@ -29,7 +32,7 @@ class DashboardLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return "/gestion/"
+        return "/gestion/conversations/"
 
 
 def _is_staff(user):
@@ -125,19 +128,37 @@ def conversations_list(request):
 @login_required(login_url="/gestion/connexion/")
 @user_passes_test(_is_staff, login_url="/gestion/connexion/")
 def change_password(request):
-    """Permet a l'administrateur de changer son mot de passe depuis
-    l'espace de gestion, sans devoir passer par /admin/."""
-    if request.method == "POST":
-        form = PasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            user = form.save()
+    """Permet a l'administrateur de changer son mot de passe et son nom
+    d'utilisateur depuis l'espace de gestion, sans devoir passer par /admin/."""
+    if request.method == "POST" and request.POST.get("form_type") == "username":
+        username_form = AdminUsernameForm(request.POST, instance=request.user)
+        password_form = AdminPasswordChangeForm(user=request.user)
+        if username_form.is_valid():
+            username_form.save()
+            messages.success(request, "Nom d'utilisateur modifie avec succes.")
+            return redirect("dashboard:change_password")
+    elif request.method == "POST":
+        password_form = AdminPasswordChangeForm(user=request.user, data=request.POST)
+        username_form = AdminUsernameForm(instance=request.user)
+        if password_form.is_valid():
+            user = password_form.save()
             update_session_auth_hash(request, user)
             messages.success(request, "Mot de passe modifie avec succes.")
             return redirect("dashboard:change_password")
     else:
-        form = PasswordChangeForm(user=request.user)
+        password_form = AdminPasswordChangeForm(user=request.user)
+        username_form = AdminUsernameForm(instance=request.user)
 
-    return render(request, "dashboard/change_password.html", {"form": form})
+    for field in password_form.fields.values():
+        field.widget.attrs.update({"class": "field-input"})
+    for field in username_form.fields.values():
+        field.widget.attrs.update({"class": "field-input"})
+
+    return render(
+        request,
+        "dashboard/change_password.html",
+        {"form": password_form, "username_form": username_form},
+    )
 
 
 @login_required(login_url="/gestion/connexion/")
@@ -145,9 +166,103 @@ def change_password(request):
 def conversation_detail(request, conversation_id):
     """Vue d'une conversation precise : historique + reponse en temps reel."""
     conversation = get_object_or_404(Conversation, id=conversation_id)
-    messages = conversation.messages.select_related("sender").order_by("created_at")
+    chat_messages = (
+        conversation.messages.select_related("sender")
+        .prefetch_related("reactions")
+        .order_by("created_at")
+    )
     return render(
         request,
         "dashboard/conversation.html",
-        {"conversation": conversation, "messages": messages},
+        {"conversation": conversation, "chat_messages": chat_messages},
     )
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def company_settings(request):
+    """Permet a l'admin de modifier l'identite entreprise et le message
+    d'accueil (texte / audio / video, chacun activable independamment)."""
+    profile, _ = CompanyProfile.objects.get_or_create(pk=1)
+    welcome, _ = WelcomeMessage.objects.get_or_create(pk=1)
+
+    if request.method == "POST" and request.POST.get("form_type") == "profile":
+        profile_form = CompanyProfileForm(request.POST, request.FILES, instance=profile)
+        welcome_form = WelcomeMessageForm(instance=welcome)
+        if profile_form.is_valid():
+            profile_form.save()
+            messages.success(request, "Profil de l'entreprise mis a jour.")
+            return redirect("dashboard:company_settings")
+    elif request.method == "POST" and request.POST.get("form_type") == "welcome":
+        welcome_form = WelcomeMessageForm(request.POST, request.FILES, instance=welcome)
+        profile_form = CompanyProfileForm(instance=profile)
+        if welcome_form.is_valid():
+            welcome_obj = welcome_form.save(commit=False)
+            # Un fichier vient d'etre televerse -> on l'active automatiquement,
+            # pour eviter qu'il reste invisible faute d'avoir coche la case.
+            if request.FILES.get("audio_file"):
+                welcome_obj.is_audio_enabled = True
+            if request.FILES.get("video_file"):
+                welcome_obj.is_video_enabled = True
+            welcome_obj.save()
+            messages.success(request, "Message d'accueil mis a jour.")
+            return redirect("dashboard:company_settings")
+    else:
+        profile_form = CompanyProfileForm(instance=profile)
+        welcome_form = WelcomeMessageForm(instance=welcome)
+
+    return render(
+        request,
+        "dashboard/company_settings.html",
+        {"profile_form": profile_form, "welcome_form": welcome_form, "profile": profile},
+    )
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def links_list(request):
+    """CRUD des liens externes (WhatsApp, Telegram, etc.) affiches sur la
+    page d'accueil publique."""
+    links = ExternalLink.objects.all().order_by("order", "id")
+    return render(request, "dashboard/links_list.html", {"links": links})
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def link_create(request):
+    if request.method == "POST":
+        form = ExternalLinkForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Lien ajoute.")
+            return redirect("dashboard:links_list")
+    else:
+        form = ExternalLinkForm()
+    return render(request, "dashboard/link_form.html", {"form": form, "is_edit": False})
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def link_edit(request, link_id):
+    link = get_object_or_404(ExternalLink, id=link_id)
+    if request.method == "POST":
+        form = ExternalLinkForm(request.POST, instance=link)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Lien mis a jour.")
+            return redirect("dashboard:links_list")
+    else:
+        form = ExternalLinkForm(instance=link)
+    return render(
+        request, "dashboard/link_form.html", {"form": form, "is_edit": True, "link": link}
+    )
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def link_delete(request, link_id):
+    link = get_object_or_404(ExternalLink, id=link_id)
+    if request.method == "POST":
+        link.delete()
+        messages.success(request, "Lien supprime.")
+    return redirect("dashboard:links_list")

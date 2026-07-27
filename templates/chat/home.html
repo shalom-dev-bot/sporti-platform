@@ -1,83 +1,555 @@
+{% extends "base.html" %}
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SPORTI</title>
-    <link rel="manifest" href="/static/manifest.json">
-    <meta name="theme-color" content="#2D6CDF">
-</head>
-<body>
-    <h1>SPORTI</h1>
-
-    <form action="{% url 'set_language' %}" method="post">
-        {% csrf_token %}
-        <input name="next" type="hidden" value="{{ request.path }}">
-        <select name="language" onchange="this.form.submit()">
-            {% get_current_language as CURRENT_LANGUAGE %}
-            {% get_available_languages as LANGUAGES %}
-            {% for lang_code, lang_name in LANGUAGES %}
-                <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANGUAGE %}selected{% endif %}>
-                    {{ lang_name }}
-                </option>
-            {% endfor %}
-        </select>
+{% load static %}
+{% block title %}SPORTI{% endblock %}
+{% block content %}
+{% if user.is_authenticated %}
+<div class="chat-shell">
+    <header class="chat-header">
+        <div id="company-logo-wrap" class="w-10 h-10 shrink-0 hud-corners bg-navy-950 flex items-center justify-center overflow-hidden">
+            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+        </div>
+        <div class="min-w-0 flex-1">
+            <p id="company-name" class="font-display font-semibold text-sm truncate">SPORTI</p>
+            <p class="flex items-center gap-1.5 text-xs text-navy-900/45 dark:text-white/40">
+                <span id="admin-presence-dot" class="presence-dot"></span>
+                <span id="admin-presence-label">{% trans "Hors ligne" %}</span>
+            </p>
+        </div>
+        <form method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-ghost">{% trans "Déconnexion" %}</button>
+        </form>
+    </header>
+    <div id="chat-thread" class="chat-thread flex flex-col"></div>
+    <div class="mobile-chat-composer-wrap" style="position: relative;">
+    <form id="composer-form" class="mobile-chat-composer">
+        <input type="file" id="attachment-input" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx">
+        <button type="button" id="attach-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Joindre un fichier' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.58a4 4 0 0 1 5.66 5.66l-8.59 8.58a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+            </svg>
+        </button>
+        <button type="button" id="emoji-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Emoji' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
+            </svg>
+        </button>
+        <textarea id="message-input" rows="1"
+                  placeholder="{% trans 'Écrivez votre message…' %}"></textarea>
+        <button type="button" id="mic-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Message vocal' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/>
+            </svg>
+        </button>
+        <button type="submit" class="mobile-send-btn" aria-label="{% trans 'Envoyer' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+            </svg>
+        </button>
     </form>
-
-    {% if user.is_authenticated %}
-        <p>{% trans "Connecte en tant que" %} {{ user }}</p>
-        <a href="{% url 'account_logout' %}">{% trans "Se deconnecter" %}</a>
-    {% else %}
-        <p>{% trans "Page d'accueil en construction -- design a venir." %}</p>
-        <a href="{% url 'google_login' %}">{% trans "Se connecter avec Google" %}</a>
-    {% endif %}
-
-    <script>
-        const VAPID_PUBLIC_KEY = "BADV9JSLdUH2Le2D-bXyMeZbedSC8cfyiXc7aH4ieUmJne8aMU1xptDYjgmFqJ4Tb9ZY7rCzUAv1aUKvYCUcICo";
-
-        function urlBase64ToUint8Array(base64String) {
-            const padding = "=".repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-            const rawData = window.atob(base64);
-            return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
-        }
-
-        async function subscribeToPush(registration) {
-            if (Notification.permission === "denied") return;
-
-            const permission = await Notification.requestPermission();
-            if (permission !== "granted") return;
-
-            const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-            });
-
-            await fetch("/comptes/api/push/subscribe/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "",
-                },
-                body: JSON.stringify(subscription),
-            });
-        }
-
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", function () {
-                navigator.serviceWorker.register("/service-worker.js")
-                    .then((registration) => {
-                        console.log("Service Worker enregistre :", registration.scope);
-                        {% if user.is_authenticated %}
-                        subscribeToPush(registration);
-                        {% endif %}
-                    })
-                    .catch((error) => {
-                        console.log("Echec enregistrement Service Worker :", error);
+    </div>
+    <div id="links-section" class="hidden px-3 sm:px-6 py-3 border-t border-navy-900/10 dark:border-white/10">
+        <div id="platforms-links" class="hidden mb-3">
+            <p class="text-xs text-navy-900/45 dark:text-white/40 mb-2">Plateformes recommandées</p>
+            <div id="platforms-list" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div id="social-links" class="hidden">
+            <p class="text-xs text-navy-900/45 dark:text-white/40 mb-2">Retrouvez-moi sur</p>
+            <div id="social-list" class="flex gap-2"></div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="max-w-2xl mx-auto px-4 py-14 animate-fade-in-up">
+    <div id="company-config" class="text-center">
+        <div id="company-logo-wrap" class="inline-flex items-center justify-center w-20 h-20 hud-corners mb-5 bg-navy-950 overflow-hidden">
+            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+        </div>
+        <h1 id="company-name" class="font-display text-3xl font-bold"></h1>
+        <p id="company-description" class="mt-3 text-navy-900/60 dark:text-white/60 max-w-lg mx-auto"></p>
+    </div>
+    <div class="mt-10 flex justify-center">
+        <div class="flex flex-col sm:flex-row gap-3">
+            <a href="{% url 'account_login' %}" class="btn-primary">{% trans "Se connecter" %}</a>
+            <a href="{% url 'account_signup' %}" class="btn-secondary">{% trans "Créer un compte" %}</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block extra_scripts %}
+<script src="{% static 'js/voice-player.js' %}"></script>
+<script src="{% static 'js/reactions.js' %}"></script>
+<script>
+    const CURRENT_USER_ID = {{ user.id|default:"null" }};
+    const IS_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
+    function getCsrfToken() {
+        return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "";
+    }
+    const PLATFORM_COLORS = {whatsapp:"#25D366", telegram:"#229ED9", facebook:"#1877F2", instagram:"#E1306C", other:"#6B7280"};
+    const PLATFORM_ICON_SVGS = {
+        whatsapp: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+        telegram: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>',
+        facebook: '<span style="font-family: Georgia, serif; font-weight:700; font-size:15px; color:white; display:inline-block; line-height:1;">f</span>',
+        instagram: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg>',
+        other: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+    };
+    function renderLinks(links) {
+        if (!links || !links.length) return;
+        const platforms = links.filter((l) => l.category === "platform" && l.is_active);
+        const socials = links.filter((l) => l.category !== "platform" && l.is_active);
+        const section = document.getElementById("links-section");
+        const platformsWrap = document.getElementById("platforms-links");
+        const platformsList = document.getElementById("platforms-list");
+        const socialWrap = document.getElementById("social-links");
+        const socialList = document.getElementById("social-list");
+        if (!section) return;
+        let hasAny = false;
+        if (platforms.length && platformsList) {
+            platformsList.innerHTML = "";
+            platforms.forEach((link) => {
+                const a = document.createElement("a");
+                a.href = link.url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.className = "inline-flex items-center gap-2 border border-navy-900/15 dark:border-white/15 px-3 py-1.5 text-xs hover:border-accent-500 transition-colors";
+                a.innerHTML = "<span class=\"inline-flex items-center justify-center w-5 h-5 rounded-full\" style=\"background-color:" + (PLATFORM_COLORS[link.platform] || PLATFORM_COLORS.other) + "\">" + (PLATFORM_ICON_SVGS[link.platform] || PLATFORM_ICON_SVGS.other) + "</span><span class=\"text-accent-600 font-medium\">" + (link.label || link.platform_label) + "</span>";
+                if (link.promo_code) {
+                    const code = document.createElement("span");
+                    code.className = "text-navy-900/50 dark:text-white/45";
+                    code.textContent = link.promo_code;
+                    a.appendChild(code);
+                    const copyBtn = document.createElement("button");
+                    copyBtn.type = "button";
+                    copyBtn.className = "text-navy-900/40 dark:text-white/35 hover:text-accent-600";
+                    copyBtn.textContent = "\ud83d\udccb";
+                    copyBtn.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        navigator.clipboard.writeText(link.promo_code).catch(() => {});
+                        copyBtn.textContent = "\u2705";
+                        setTimeout(() => { copyBtn.textContent = "\ud83d\udccb"; }, 1200);
                     });
+                    a.appendChild(copyBtn);
+                }
+                platformsList.appendChild(a);
+            });
+            platformsWrap.classList.remove("hidden");
+            hasAny = true;
+        }
+        if (socials.length && socialList) {
+            socialList.innerHTML = "";
+            socials.forEach((link) => {
+                const a = document.createElement("a");
+                a.href = link.url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.className = "btn-icon";
+                a.style.backgroundColor = PLATFORM_COLORS[link.platform] || PLATFORM_COLORS.other;
+                a.style.color = "#ffffff";
+                a.style.borderColor = "transparent";
+                a.title = link.label || link.platform_label;
+                a.innerHTML = PLATFORM_ICON_SVGS[link.platform] || PLATFORM_ICON_SVGS.other;
+                socialList.appendChild(a);
+            });
+            socialWrap.classList.remove("hidden");
+            hasAny = true;
+        }
+        if (hasAny) section.classList.remove("hidden");
+    }
+    window.__companyConfigPromise = fetch("{% url 'company:api_config' %}")
+        .then((res) => res.json())
+        .then((data) => {
+            const profile = data.profile;
+            const welcome = data.welcome_message;
+            const links = data.external_links || [];
+            const nameEl = document.getElementById("company-name");
+            if (nameEl) nameEl.textContent = profile.name;
+            const descEl = document.getElementById("company-description");
+            if (descEl) descEl.textContent = profile.description || "";
+            const logoWrap = document.getElementById("company-logo-wrap");
+            if (profile.logo && logoWrap) {
+                logoWrap.innerHTML = "";
+                const img = document.createElement("img");
+                img.src = profile.logo;
+                img.alt = profile.name;
+                img.className = "w-full h-full object-cover";
+                logoWrap.appendChild(img);
+            }
+                window.__sportiWelcome = welcome;
+                renderLinks(links);
+        })
+        .catch((err) => console.error("Erreur chargement config entreprise :", err));
+    {% if user.is_authenticated %}
+    // --- Chat en temps reel ---
+    (function () {
+        const thread = document.getElementById("chat-thread");
+        const form = document.getElementById("composer-form");
+        const input = document.getElementById("message-input");
+        const attachBtn = document.getElementById("attach-btn");
+        const attachmentInput = document.getElementById("attachment-input");
+        const presenceDot = document.getElementById("admin-presence-dot");
+        const presenceLabel = document.getElementById("admin-presence-label");
+        let conversationId = null;
+        let typingTimeout = null;
+        let typingBubble = null;
+        let socket = null;
+        function ticksFor(status) {
+            if (status === "read") {
+                return '<span class="status-tick text-white/90">✓✓</span>';
+            }
+            if (status === "delivered") {
+                return '<span class="status-tick text-white/60">✓✓</span>';
+            }
+            return '<span class="status-tick text-white/60">✓</span>';
+        }
+
+        function sendReaction(messageId, emoji) {
+            if (!socket || socket.readyState !== WebSocket.OPEN) return;
+            socket.send(JSON.stringify({ type: "reaction", message_id: messageId, emoji }));
+        }
+
+        function sendTextMessage(text) {
+            if (!socket || socket.readyState !== WebSocket.OPEN) return;
+            socket.send(JSON.stringify({ message: text }));
+        }
+
+        function renderWelcomeBubble() {
+            const welcome = window.__sportiWelcome;
+            if (!welcome) return;
+            const div = document.createElement("div");
+            div.className = "bubble-admin";
+            let hasContent = false;
+            if (welcome.is_text_enabled && welcome.text) {
+                const p = document.createElement("p");
+                p.textContent = welcome.text;
+                div.appendChild(p);
+                hasContent = true;
+            }
+            if (welcome.is_audio_enabled && welcome.audio_file) {
+                div.appendChild(createVoicePlayer(welcome.audio_file));
+                hasContent = true;
+            }
+            if (welcome.is_video_enabled && welcome.video_file) {
+                const video = document.createElement("video");
+                video.controls = true;
+                video.className = "mt-3 w-full";
+                video.src = welcome.video_file;
+                div.appendChild(video);
+                hasContent = true;
+            }
+            if (!hasContent) return;
+            thread.appendChild(div);
+        }
+        function renderMessage(msg) {
+            const isMine = msg.sender_id === CURRENT_USER_ID || (msg.sender && msg.sender === CURRENT_USER_ID);
+            const div = document.createElement("div");
+            div.className = isMine ? "bubble-client" : "bubble-admin";
+            div.dataset.messageId = msg.id;
+            let inner = "";
+            if (msg.content) {
+                inner += `<span>${escapeHtml(msg.content)}</span>`;
+            }
+            let audioAttachment = null;
+            if (msg.attachment) {
+                const att = msg.attachment;
+                if (att.file_type && att.file_type.startsWith("image/")) {
+                    inner += `<img src="${att.file_url}" class="mt-2 max-h-56 rounded-sm" alt="${att.file_name}">`;
+                } else if (att.file_type && att.file_type.startsWith("video/")) {
+                    inner += `<video controls class="mt-2 max-h-72 rounded-sm" src="${att.file_url}"></video>`;
+                } else if (att.file_type && att.file_type.startsWith("audio/")) {
+                    audioAttachment = att.file_url;
+                } else {
+                    inner += `<a href="${att.file_url}" target="_blank" class="underline text-xs">${att.file_name}</a>`;
+                }
+            } else if (msg.attachments && msg.attachments.length) {
+                msg.attachments.forEach((att) => {
+                    if (att.file_type && att.file_type.startsWith("image/")) {
+                        inner += `<img src="${att.file}" class="mt-2 max-h-56 rounded-sm" alt="${att.file_name}">`;
+                    } else if (att.file_type && att.file_type.startsWith("video/")) {
+                        inner += `<video controls class="mt-2 max-h-72 rounded-sm" src="${att.file}"></video>`;
+                    } else if (att.file_type && att.file_type.startsWith("audio/")) {
+                        audioAttachment = att.file;
+                    } else {
+                        inner += `<a href="${att.file}" target="_blank" class="underline text-xs">${att.file_name}</a>`;
+                    }
+                });
+            }
+            if (isMine) {
+                inner += ticksFor(msg.status);
+            }
+            div.innerHTML = inner;
+            if (audioAttachment) {
+                div.appendChild(createVoicePlayer(audioAttachment));
+            }
+
+            const reactionsRow = document.createElement("div");
+            reactionsRow.className = "reactions-row";
+            const initialEmojis = (msg.reactions || []).map((r) => r.emoji);
+            renderReactionBadges(reactionsRow, initialEmojis);
+            div.appendChild(reactionsRow);
+            attachReactionUI(div, msg.id, sendReaction);
+
+            thread.appendChild(div);
+        }
+        function escapeHtml(str) {
+            const div = document.createElement("div");
+            div.textContent = str;
+            return div.innerHTML;
+        }
+        function scrollToBottom() {
+            thread.scrollTop = thread.scrollHeight;
+        }
+        function updateTicks(messageIds, status) {
+            messageIds.forEach((id) => {
+                const bubble = thread.querySelector(`[data-message-id="${id}"]`);
+                if (bubble && bubble.classList.contains("bubble-client")) {
+                    const tick = bubble.querySelector(".status-tick");
+                    if (tick) tick.outerHTML = ticksFor(status);
+                }
             });
         }
-    </script>
-</body>
-</html>
+        function setPresence(isOnline) {
+            if (isOnline) {
+                presenceDot.classList.add("online");
+                presenceLabel.textContent = "{% trans 'En ligne' %}";
+            } else {
+                presenceDot.classList.remove("online");
+                presenceLabel.textContent = "{% trans 'Hors ligne' %}";
+            }
+        }
+        function showTyping() {
+            if (typingBubble) return;
+            typingBubble = document.createElement("div");
+            typingBubble.className = "bubble-admin typing-dots";
+            typingBubble.innerHTML = "<span></span><span></span><span></span>";
+            thread.appendChild(typingBubble);
+            scrollToBottom();
+        }
+        function hideTyping() {
+            if (typingBubble) {
+                typingBubble.remove();
+                typingBubble = null;
+            }
+        }
+        function connectSocket() {
+            const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+            socket = new WebSocket(`${protocol}://${window.location.host}/ws/chat/`);
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === "presence") {
+                    if (data.user_id !== CURRENT_USER_ID) setPresence(data.is_online);
+                    return;
+                }
+                if (data.type === "read_receipt") {
+                    updateTicks(data.message_ids, "read");
+                    return;
+                }
+                if (data.type === "typing") {
+                    if (data.user_id === CURRENT_USER_ID) return;
+                    if (data.is_typing) showTyping();
+                    else hideTyping();
+                    return;
+                }
+                if (data.type === "reaction") {
+                    const bubble = thread.querySelector(`[data-message-id="${data.message_id}"]`);
+                    const row = bubble && bubble.querySelector(".reactions-row");
+                    if (row) renderReactionBadges(row, data.emojis);
+                    return;
+                }
+                hideTyping();
+                if (!thread.querySelector(`[data-message-id="${data.id}"]`)) {
+                    renderMessage(data);
+                    scrollToBottom();
+                }
+            };
+            socket.onclose = () => {
+                setTimeout(connectSocket, 2000);
+            };
+        }
+        function loadHistory() {
+            Promise.all([
+                fetch("{% url 'chat:api_my_conversation' %}").then((res) => res.json()),
+                window.__companyConfigPromise || Promise.resolve(),
+            ])
+                .then(([data]) => {
+                    conversationId = data.conversation_id;
+                    renderWelcomeBubble();
+                    data.messages.forEach(renderMessage);
+                    scrollToBottom();
+                    connectSocket();
+                })
+                .catch((err) => console.error("Erreur chargement conversation :", err));
+        }
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const text = input.value.trim();
+            if (!text || !socket || socket.readyState !== WebSocket.OPEN) return;
+            sendTextMessage(text);
+            input.value = "";
+            input.style.height = "auto";
+            sendTyping(false);
+        });
+        input.addEventListener("input", () => {
+            input.style.height = "auto";
+            input.style.height = Math.min(input.scrollHeight, 128) + "px";
+            sendTyping(true);
+        });
+        function sendTyping(isTyping) {
+            if (!socket || socket.readyState !== WebSocket.OPEN) return;
+            socket.send(JSON.stringify({ type: "typing", is_typing: isTyping }));
+            if (isTyping) {
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => sendTyping(false), 2500);
+            } else {
+                clearTimeout(typingTimeout);
+            }
+        }
+
+        const emojiBtn = document.getElementById("emoji-btn");
+        if (emojiBtn) {
+            attachComposerEmojiButton(emojiBtn, input);
+        }
+
+        const ATTACHMENT_URL_TEMPLATE = "{% url 'chat:api_attachment_upload' conversation_id=999999 %}";
+        attachBtn.addEventListener("click", () => {
+            if (!conversationId) {
+                alert("{% trans 'Un instant, la conversation se charge encore…' %}");
+                return;
+            }
+            attachmentInput.click();
+        });
+        attachmentInput.addEventListener("change", () => {
+            const file = attachmentInput.files[0];
+            attachmentInput.value = "";
+            if (!file) return;
+            if (!conversationId) {
+                alert("{% trans 'Un instant, la conversation se charge encore…' %}");
+                return;
+            }
+            const formData = new FormData();
+            formData.append("file", file);
+            const uploadUrl = ATTACHMENT_URL_TEMPLATE.replace("999999", conversationId);
+            fetch(uploadUrl, {
+                method: "POST",
+                headers: { "X-CSRFToken": getCsrfToken() },
+                body: formData,
+            })
+                .then(async (res) => {
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        alert(data.detail || "{% trans "Échec de l'envoi du fichier." %}");
+                        return;
+                    }
+                    if (!thread.querySelector(`[data-message-id="${data.id}"]`)) {
+                        hideTyping();
+                        renderMessage(data);
+                        scrollToBottom();
+                    }
+                })
+                .catch((err) => {
+                    console.error("Erreur envoi piece jointe :", err);
+                    alert("{% trans "Échec de l'envoi du fichier, vérifiez votre connexion." %}");
+                });
+        });
+
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        const micBtn = document.getElementById("mic-btn");
+        function uploadVoiceMessage(blob) {
+            if (!conversationId) return;
+            const formData = new FormData();
+            formData.append("file", blob, "voice-message.webm");
+            const uploadUrl = ATTACHMENT_URL_TEMPLATE.replace("999999", conversationId);
+            fetch(uploadUrl, {
+                method: "POST",
+                headers: { "X-CSRFToken": getCsrfToken() },
+                body: formData,
+            })
+                .then(async (res) => {
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        console.error("Erreur serveur upload vocal:", data);
+                        alert(data.detail || "Echec de l'envoi du vocal.");
+                        return;
+                    }
+                    if (!thread.querySelector(`[data-message-id="${data.id}"]`)) {
+                        hideTyping();
+                        renderMessage(data);
+                        scrollToBottom();
+                    }
+                })
+                .catch((err) => {
+                    console.error("Erreur reseau upload vocal:", err);
+                    alert("Echec de l'envoi du vocal, verifiez votre connexion.");
+                });
+        }
+        if (micBtn) {
+            micBtn.addEventListener("click", async () => {
+                if (mediaRecorder && mediaRecorder.state === "recording") {
+                    mediaRecorder.stop();
+                    return;
+                }
+                if (!conversationId) {
+                    alert("Un instant, la conversation se charge encore...");
+                    return;
+                }
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert("Le microphone necessite une connexion securisee (HTTPS) ou localhost. Verifiez l'URL utilisee.");
+                    console.error("navigator.mediaDevices indisponible -- contexte non securise (ni https, ni localhost) ?");
+                    return;
+                }
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    recordedChunks = [];
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+                    mediaRecorder.onstop = () => {
+                        stream.getTracks().forEach((t) => t.stop());
+                        micBtn.style.backgroundColor = "";
+                        micBtn.style.color = "";
+                        const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+                        uploadVoiceMessage(blob);
+                    };
+                    mediaRecorder.start();
+                    micBtn.style.backgroundColor = "#ef4444";
+                    micBtn.style.color = "#ffffff";
+                } catch (err) {
+                    console.error("Erreur microphone :", err);
+                    alert("Microphone inaccessible : " + err.name + ". Verifiez les autorisations du navigateur.");
+                }
+            });
+        }
+        loadHistory();
+    })();
+    {% endif %}
+    {% if user.is_authenticated %}
+    const VAPID_PUBLIC_KEY = "BADV9JSLdUH2Le2D-bXyMeZbedSC8cfyiXc7aH4ieUmJne8aMU1xptDYjgmFqJ4Tb9ZY7rCzUAv1aUKvYCUcICo";
+    function urlBase64ToUint8Array(base64String) {
+        const padding = "=".repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+        const rawData = window.atob(base64);
+        return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+    }
+    navigator.serviceWorker.ready.then(async (registration) => {
+        if (Notification.permission === "denied") return;
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") return;
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        });
+        await fetch("{% url 'accounts:push_subscribe' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCsrfToken(),
+            },
+            body: JSON.stringify(subscription),
+        });
+    });
+    {% endif %}
+</script>
+{% endblock %}

@@ -64,6 +64,7 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
+                "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
@@ -107,6 +108,15 @@ LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_LOGIN_METHODS = {"email"}
+# Le nom (username) reste obligatoire et unique a l'inscription, meme si
+# la connexion se fait ensuite par e-mail : c'est le nom affiche dans le
+# chat et le dashboard admin.
+ACCOUNT_SIGNUP_FIELDS = ["username*", "email*", "password1*", "password2*"]
+ACCOUNT_FORMS = {
+    "signup": "apps.accounts.forms.SportiSignupForm",
+    "login": "apps.accounts.forms.SportiLoginForm",
+}
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -124,7 +134,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {"min_length": 10},
+        "OPTIONS": {"min_length": 8},
     },
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -164,6 +174,8 @@ ALLOWED_UPLOAD_EXTENSIONS = [
     ".ogg",
     ".mp3",
     ".m4a",
+    ".mp4",
+    ".mov",
 ]
 
 # --- Celery (taches en arriere-plan, ex: compression d'images) ---

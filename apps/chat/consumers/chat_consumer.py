@@ -22,7 +22,7 @@ from django.utils import timezone
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-from apps.chat.models import Conversation, Message
+from apps.chat.models import Conversation, Message, MessageReaction
 
 _active_connections = {}
 
@@ -30,13 +30,11 @@ _active_connections = {}
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         user = self.scope["user"]
-
         if not user.is_authenticated:
             await self.close(code=4001)
             return
 
         conversation_id = self.scope["url_route"]["kwargs"].get("conversation_id")
-
         if conversation_id is None:
             if user.is_staff:
                 await self.close(code=4003)
@@ -55,9 +53,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 
+        others_already_here = self._is_other_party_connected(user)
         _active_connections.setdefault(self.group_name, set()).add(user.id)
-
         await self._set_online_status(user, True)
+
+        if others_already_here:
+            await self.send_json({"type": "presence", "user_id": None, "is_online": True})
+
         await self._mark_as_delivered(self.conversation, user)
         updated_ids = await self._mark_as_read(self.conversation, user)
 
@@ -83,12 +85,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def disconnect(self, close_code):
         if hasattr(self, "group_name"):
             user = self.scope["user"]
-
             connections = _active_connections.get(self.group_name, set())
             connections.discard(user.id)
-
             await self._set_online_status(user, False)
-
             await self.channel_layer.group_send(
                 self.group_name,
                 {
@@ -101,9 +100,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def receive_json(self, content, **kwargs):
         message_type = content.get("type", "message")
-
         if message_type == "typing":
             await self._handle_typing(content)
+            return
+        if message_type == "reaction":
+            await self._handle_reaction(content)
             return
 
         text = (content.get("message") or "").strip()
@@ -113,7 +114,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         user = self.scope["user"]
         recipient_connected = self._is_other_party_connected(user)
         initial_status = Message.Status.DELIVERED if recipient_connected else Message.Status.SENT
-
         message = await self._save_message(self.conversation, user, text, initial_status)
         await self._invalidate_dashboard_cache()
 
@@ -139,7 +139,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def _handle_typing(self, content):
         user = self.scope["user"]
         is_typing = bool(content.get("is_typing", False))
-
         await self.channel_layer.group_send(
             self.group_name,
             {
@@ -150,6 +149,28 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     "is_typing": is_typing,
                 },
                 "origin_channel": self.channel_name,
+            },
+        )
+
+    async def _handle_reaction(self, content):
+        """Ajoute ou retire (toggle) une reaction emoji sur un message.
+        Diffusee aux deux parties, y compris l'auteur (comme le message
+        lui-meme) pour que la reaction s'affiche immediatement partout."""
+        user = self.scope["user"]
+        message_id = content.get("message_id")
+        emoji = (content.get("emoji") or "").strip()
+        if not message_id or not emoji:
+            return
+
+        emojis = await self._toggle_reaction(self.conversation, message_id, user, emoji)
+        if emojis is None:
+            return
+
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                "type": "reaction.update",
+                "payload": {"message_id": message_id, "emojis": emojis},
             },
         )
 
@@ -170,6 +191,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         if event.get("origin_channel") == self.channel_name:
             return
         await self.send_json({"type": "typing", **event["payload"]})
+
+    async def reaction_update(self, event):
+        await self.send_json({"type": "reaction", **event["payload"]})
 
     def _is_other_party_connected(self, sender):
         connections = _active_connections.get(self.group_name, set())
@@ -192,12 +216,17 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         from apps.accounts.push import send_push_notification
 
-        send_push_notification(
-            recipient,
-            title=f"Nouveau message de {sender}",
-            body=text[:100],
-            url="/gestion/" if sender.is_staff is False and recipient.is_staff else "/",
-        )
+        try:
+            send_push_notification(
+                recipient,
+                title=f"Nouveau message de {sender}",
+                body=text[:100],
+                url="/gestion/" if sender.is_staff is False and recipient.is_staff else "/",
+            )
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception("Echec envoi notification push")
 
     @sync_to_async
     def _invalidate_dashboard_cache(self):
@@ -215,10 +244,36 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         return Conversation.objects.filter(id=conversation_id).first()
 
     @sync_to_async
+    def _toggle_reaction(self, conversation, message_id, user, emoji):
+        message = conversation.messages.filter(id=message_id).first()
+        if message is None:
+            return None
+        # Une seule reaction par personne et par message -- comme WhatsApp/
+        # Telegram. On cherche la reaction EXISTANTE de cet utilisateur sur
+        # ce message, quel que soit son emoji (pas seulement le meme).
+        existing = MessageReaction.objects.filter(message=message, user=user).first()
+        if existing and existing.emoji == emoji:
+            # Meme emoji clique deux fois -> on retire (toggle off).
+            existing.delete()
+        elif existing:
+            # Emoji different -> on remplace, jamais on n'accumule.
+            existing.emoji = emoji
+            existing.save(update_fields=["emoji"])
+        else:
+            MessageReaction.objects.create(message=message, user=user, emoji=emoji)
+        return list(message.reactions.values_list("emoji", flat=True))
+
+    @sync_to_async
     def _save_message(self, conversation, sender, text, initial_status):
-        return Message.objects.create(
+        message = Message.objects.create(
             conversation=conversation, sender=sender, content=text, status=initial_status
         )
+        # Touche la conversation pour que son updated_at avance -> c'est ce
+        # qui la fait remonter en haut de la liste cote dashboard (tri par
+        # -updated_at). Sans ca, envoyer un message ne bougeait jamais la
+        # conversation dans la liste.
+        conversation.save(update_fields=["updated_at"])
+        return message
 
     @sync_to_async
     def _set_online_status(self, user, is_online):

@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 
 def home(request):
-    """Page d'accueil : presentation entreprise + acces au chat prive."""
+    """Page d'accueil publique pour un visiteur/client, ou chat prive une
+    fois connecte. Un membre du staff qui atterrit ici est renvoye vers
+    son espace de gestion plutot que vers l'ecran client."""
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect("/gestion/")
     return render(request, "chat/home.html")
 
 

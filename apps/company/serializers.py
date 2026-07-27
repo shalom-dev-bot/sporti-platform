@@ -57,7 +57,17 @@ class ExternalLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ExternalLink
-        fields = ["id", "platform", "platform_label", "label", "url", "is_active", "order"]
+        fields = [
+            "id",
+            "category",
+            "platform",
+            "platform_label",
+            "label",
+            "url",
+            "promo_code",
+            "is_active",
+            "order",
+        ]
 
 
 class CompanyConfigSerializer(serializers.Serializer):

@@ -1,93 +1,321 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>SPORTI -- Conversation avec {{ conversation.client }}</title>
-</head>
-<body>
-    <header>
-        <h1>Conversation avec {{ conversation.client }}</h1>
-        <nav>
-            <a href="{% url 'dashboard:conversations_list' %}">&laquo; Retour aux conversations</a>
-        </nav>
-    </header>
-
-    <div id="messages">
-        {% for message in messages %}
-        <div class="message {% if message.sender.is_staff %}from-staff{% else %}from-client{% endif %}"
-             data-message-id="{{ message.id }}">
-            <strong>{{ message.sender }}</strong>
-            <p>{{ message.content }}</p>
-            <span class="status">{{ message.status }}</span>
-            <span class="time">{{ message.created_at|date:"H:i" }}</span>
+{% extends "dashboard/_base.html" %}
+{% load i18n %}
+{% load static %}
+{% block title %}{{ conversation.client }} — SPORTI{% endblock %}
+{% block dashboard_content %}
+<div class="mobile-chat-shell" style="height:75vh; border-radius: 1rem; overflow: hidden; border: 1px solid rgba(13,19,33,0.08);">
+    <div class="mobile-chat-header">
+        <a href="{% url 'dashboard:conversations_list' %}" class="chat-round-icon-btn" aria-label="{% trans 'Retour' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6"/>
+            </svg>
+        </a>
+        <div class="flex items-center gap-3 flex-1 min-w-0 px-3">
+            <span class="chat-list-avatar" style="width:2.75rem;height:2.75rem;font-size:0.95rem;">{{ conversation.client|stringformat:"s"|first|upper }}</span>
+            <div class="min-w-0">
+                <p class="font-semibold text-sm truncate">{{ conversation.client }}</p>
+                <p class="flex items-center gap-1.5 text-xs text-navy-900/45 dark:text-white/40">
+                    <span id="client-presence-dot" class="presence-dot"></span>
+                    <span id="client-presence-label">{% trans "Hors ligne" %}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="chat-thread" class="mobile-chat-thread">
+        {% for message in chat_messages %}
+        <div class="{% if message.sender.is_staff %}mobile-bubble mobile-bubble-client{% else %}mobile-bubble mobile-bubble-admin{% endif %} group relative" data-message-id="{{ message.id }}">
+            <span>{{ message.content }}</span>
+            {% if message.sender.is_staff %}<span class="status-tick text-white/70">{% if message.status == 'read' %}✓✓{% elif message.status == 'delivered' %}✓✓{% else %}✓{% endif %}</span>{% endif %}
+            <div class="reactions-row" data-initial-emojis="{% for r in message.reactions.all %}{{ r.emoji }}{% if not forloop.last %},{% endif %}{% endfor %}"></div>
         </div>
         {% empty %}
-        <p>Aucun message pour le moment.</p>
+        <p class="text-center text-sm text-navy-900/40 dark:text-white/35 mt-10">{% trans "Aucun message pour le moment." %}</p>
         {% endfor %}
     </div>
-
-    <div id="typing-indicator" style="display:none;"></div>
-
-    <form id="message-form">
-        <input type="text" id="message-input" placeholder="Ecrire une reponse..." autocomplete="off">
-        <button type="submit">Envoyer</button>
+    <div class="mobile-chat-composer-wrap" style="position: relative;">
+    <form id="message-form" class="mobile-chat-composer">
+        <button type="button" id="emoji-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Emoji' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
+            </svg>
+        </button>
+        <textarea id="message-input" rows="1" placeholder="{% trans 'Écrire une réponse…' %}" autocomplete="off"></textarea>
+        <button type="button" id="mic-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Message vocal' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/>
+            </svg>
+        </button>
+        <button type="submit" class="mobile-send-btn" aria-label="{% trans 'Envoyer' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+            </svg>
+        </button>
     </form>
-
-    <script>
-        const conversationId = {{ conversation.id }};
-        const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-        const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/${conversationId}/`);
-
-        const messagesContainer = document.getElementById("messages");
-        const form = document.getElementById("message-form");
-        const input = document.getElementById("message-input");
-        const typingIndicator = document.getElementById("typing-indicator");
-
-        let typingTimeout = null;
-
-        socket.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-
-            if (data.type === "typing") {
-                if (data.is_typing) {
-                    typingIndicator.textContent = `${data.sender_name} est en train d'ecrire...`;
-                    typingIndicator.style.display = "block";
-                } else {
-                    typingIndicator.style.display = "none";
+    </div>
+    <div id="links-section" class="hidden px-3 sm:px-6 py-3 border-t border-navy-900/10 dark:border-white/10">
+        <div id="platforms-links" class="hidden mb-3">
+            <p class="text-xs text-navy-900/45 dark:text-white/40 mb-2">Plateformes recommandées</p>
+            <div id="platforms-list" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div id="social-links" class="hidden">
+            <p class="text-xs text-navy-900/45 dark:text-white/40 mb-2">Retrouvez-moi sur</p>
+            <div id="social-list" class="flex gap-2"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{% static 'js/voice-player.js' %}"></script>
+<script src="{% static 'js/reactions.js' %}"></script>
+<script>
+    const PLATFORM_COLORS = {whatsapp:"#25D366", telegram:"#229ED9", facebook:"#1877F2", instagram:"#E1306C", other:"#6B7280"};
+    const PLATFORM_ICON_SVGS = {
+        whatsapp: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+        telegram: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>',
+        facebook: '<span style="font-family: Georgia, serif; font-weight:700; font-size:15px; color:white; display:inline-block; line-height:1;">f</span>',
+        instagram: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg>',
+        other: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+    };
+    function renderLinks(links) {
+        if (!links || !links.length) return;
+        const platforms = links.filter((l) => l.category === "platform" && l.is_active);
+        const socials = links.filter((l) => l.category !== "platform" && l.is_active);
+        const section = document.getElementById("links-section");
+        const platformsWrap = document.getElementById("platforms-links");
+        const platformsList = document.getElementById("platforms-list");
+        const socialWrap = document.getElementById("social-links");
+        const socialList = document.getElementById("social-list");
+        if (!section) return;
+        let hasAny = false;
+        if (platforms.length && platformsList) {
+            platformsList.innerHTML = "";
+            platforms.forEach((link) => {
+                const a = document.createElement("a");
+                a.href = link.url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.className = "inline-flex items-center gap-2 border border-navy-900/15 dark:border-white/15 px-3 py-1.5 text-xs hover:border-accent-500 transition-colors";
+                a.innerHTML = "<span class=\"inline-flex items-center justify-center w-5 h-5 rounded-full\" style=\"background-color:" + (PLATFORM_COLORS[link.platform] || PLATFORM_COLORS.other) + "\">" + (PLATFORM_ICON_SVGS[link.platform] || PLATFORM_ICON_SVGS.other) + "</span><span class=\"text-accent-600 font-medium\">" + (link.label || link.platform_label) + "</span>";
+                if (link.promo_code) {
+                    const code = document.createElement("span");
+                    code.className = "text-navy-900/50 dark:text-white/45";
+                    code.textContent = link.promo_code;
+                    a.appendChild(code);
                 }
-                return;
+                platformsList.appendChild(a);
+            });
+            platformsWrap.classList.remove("hidden");
+            hasAny = true;
+        }
+        if (socials.length && socialList) {
+            socialList.innerHTML = "";
+            socials.forEach((link) => {
+                const a = document.createElement("a");
+                a.href = link.url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.className = "btn-icon";
+                a.style.backgroundColor = PLATFORM_COLORS[link.platform] || PLATFORM_COLORS.other;
+                a.style.color = "#ffffff";
+                a.style.borderColor = "transparent";
+                a.title = link.label || link.platform_label;
+                a.innerHTML = PLATFORM_ICON_SVGS[link.platform] || PLATFORM_ICON_SVGS.other;
+                socialList.appendChild(a);
+            });
+            socialWrap.classList.remove("hidden");
+            hasAny = true;
+        }
+        if (hasAny) section.classList.remove("hidden");
+    }
+    fetch("{% url 'company:api_config' %}").then((res) => res.json()).then((data) => renderLinks(data.external_links || [])).catch(() => {});
+
+    const conversationId = {{ conversation.id }};
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/${conversationId}/`);
+    const thread = document.getElementById("chat-thread");
+    const form = document.getElementById("message-form");
+    const input = document.getElementById("message-input");
+    const presenceDot = document.getElementById("client-presence-dot");
+    const presenceLabel = document.getElementById("client-presence-label");
+    let typingTimeout = null;
+    let typingBubble = null;
+
+    function sendReaction(messageId, emoji) {
+        socket.send(JSON.stringify({ type: "reaction", message_id: messageId, emoji }));
+    }
+    function sendTextMessage(text) {
+        socket.send(JSON.stringify({ message: text }));
+    }
+
+    // Les bulles rendues cote serveur ont deja leur emplacement de reactions
+    // (data-initial-emojis) -- on y branche le picker et les badges au chargement.
+    thread.querySelectorAll("[data-message-id]").forEach((bubble) => {
+        const messageId = bubble.dataset.messageId;
+        const row = bubble.querySelector(".reactions-row");
+        if (row) {
+            const initial = (row.dataset.initialEmojis || "").split(",").filter(Boolean);
+            renderReactionBadges(row, initial);
+        }
+        attachReactionUI(bubble, messageId, sendReaction);
+    });
+
+    function scrollToBottom() {
+        thread.scrollTop = thread.scrollHeight;
+    }
+    scrollToBottom();
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "presence") {
+            presenceDot.classList.toggle("online", data.is_online);
+            presenceLabel.textContent = data.is_online ? "{% trans 'En ligne' %}" : "{% trans 'Hors ligne' %}";
+            return;
+        }
+        if (data.type === "read_receipt") {
+            data.message_ids.forEach((id) => {
+                const bubble = thread.querySelector(`[data-message-id="${id}"]`);
+                const tick = bubble && bubble.querySelector(".status-tick");
+                if (tick) tick.textContent = "✓✓";
+            });
+            return;
+        }
+        if (data.type === "typing") {
+            if (data.is_typing) {
+                if (!typingBubble) {
+                    typingBubble = document.createElement("div");
+                    typingBubble.className = "mobile-bubble mobile-bubble-admin typing-dots";
+                    typingBubble.innerHTML = "<span></span><span></span><span></span>";
+                    thread.appendChild(typingBubble);
+                    scrollToBottom();
+                }
+            } else if (typingBubble) {
+                typingBubble.remove();
+                typingBubble = null;
             }
-
-            if (data.type === "presence" || data.type === "read_receipt") {
-                return;
+            return;
+        }
+        if (data.type === "reaction") {
+            const bubble = thread.querySelector(`[data-message-id="${data.message_id}"]`);
+            const row = bubble && bubble.querySelector(".reactions-row");
+            if (row) renderReactionBadges(row, data.emojis);
+            return;
+        }
+        if (typingBubble) { typingBubble.remove(); typingBubble = null; }
+        if (thread.querySelector(`[data-message-id="${data.id}"]`)) { return; }
+        const div = document.createElement("div");
+        div.className = data.is_staff ? "mobile-bubble mobile-bubble-client" : "mobile-bubble mobile-bubble-admin";
+        div.dataset.messageId = data.id;
+        let inner = "";
+        let audioAttachment = null;
+        if (data.content) inner += `<span>${data.content}</span>`;
+        if (data.attachment) {
+            const att = data.attachment;
+            if (att.file_type && att.file_type.startsWith("image/")) {
+                inner += `<img src="${att.file_url}" class="mt-2 max-h-56 rounded-sm" alt="${att.file_name}">`;
+            } else if (att.file_type && att.file_type.startsWith("audio/")) {
+                audioAttachment = att.file_url;
+            } else {
+                inner += `<a href="${att.file_url}" target="_blank" class="underline text-xs">${att.file_name}</a>`;
             }
+        }
+        if (data.is_staff) inner += `<span class="status-tick text-white/70">✓</span>`;
+        div.innerHTML = inner;
+        if (audioAttachment) {
+            div.appendChild(createVoicePlayer(audioAttachment));
+        }
 
-            // Nouveau message de chat.
-            const div = document.createElement("div");
-            div.className = "message " + (data.is_staff ? "from-staff" : "from-client");
-            div.dataset.messageId = data.id;
-            div.innerHTML = `<strong>${data.sender_name}</strong><p>${data.content}</p>
-                              <span class="status">${data.status}</span>`;
-            messagesContainer.appendChild(div);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        };
+        const reactionsRow = document.createElement("div");
+        reactionsRow.className = "reactions-row";
+        div.appendChild(reactionsRow);
+        attachReactionUI(div, data.id, sendReaction);
 
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            const text = input.value.trim();
-            if (!text) return;
-            socket.send(JSON.stringify({ message: text }));
-            input.value = "";
+        thread.appendChild(div);
+        scrollToBottom();
+    };
+
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+        sendTextMessage(text);
+        input.value = "";
+        input.style.height = "auto";
+        socket.send(JSON.stringify({ type: "typing", is_typing: false }));
+    });
+    input.addEventListener("input", () => {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 128) + "px";
+        socket.send(JSON.stringify({ type: "typing", is_typing: true }));
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
             socket.send(JSON.stringify({ type: "typing", is_typing: false }));
-        });
+        }, 2000);
+    });
 
-        input.addEventListener("input", function () {
-            socket.send(JSON.stringify({ type: "typing", is_typing: true }));
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                socket.send(JSON.stringify({ type: "typing", is_typing: false }));
-            }, 2000);
+    const emojiBtn = document.getElementById("emoji-btn");
+    if (emojiBtn) {
+        attachComposerEmojiButton(emojiBtn, input);
+    }
+
+    function getCsrfToken() {
+        return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "";
+    }
+
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    const micBtn = document.getElementById("mic-btn");
+    function uploadVoiceMessage(blob) {
+        const formData = new FormData();
+        formData.append("file", blob, "voice-message.webm");
+        fetch("{% url 'chat:api_attachment_upload' conversation_id=conversation.id %}", {
+            method: "POST",
+            headers: { "X-CSRFToken": getCsrfToken() },
+            body: formData,
+        })
+            .then(async (res) => {
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    console.error("Erreur serveur upload vocal:", data);
+                    alert(data.detail || "Echec de l'envoi du vocal.");
+                }
+            })
+            .catch((err) => {
+                console.error("Erreur reseau upload vocal:", err);
+                alert("Echec de l'envoi du vocal, verifiez votre connexion.");
+            });
+    }
+    if (micBtn) {
+        micBtn.addEventListener("click", async () => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                return;
+            }
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Le microphone necessite une connexion securisee (HTTPS) ou localhost. Verifiez l'URL utilisee.");
+                console.error("navigator.mediaDevices indisponible -- contexte non securise ?");
+                return;
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                recordedChunks = [];
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+                mediaRecorder.onstop = () => {
+                    stream.getTracks().forEach((t) => t.stop());
+                    micBtn.style.backgroundColor = "";
+                    micBtn.style.color = "";
+                    const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+                    uploadVoiceMessage(blob);
+                };
+                mediaRecorder.start();
+                micBtn.style.backgroundColor = "#ef4444";
+                micBtn.style.color = "#ffffff";
+            } catch (err) {
+                console.error("Erreur microphone :", err);
+                alert("Microphone inaccessible : " + err.name + ". Verifiez les autorisations du navigateur.");
+            }
         });
-    </script>
-</body>
-</html>
+    }
+</script>
+{% endblock %}

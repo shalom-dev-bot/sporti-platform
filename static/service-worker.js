@@ -6,11 +6,14 @@
  *   plutot qu'une erreur brute du navigateur.
  * - Gere la reception et l'affichage des notifications push.
  */
-const CACHE_NAME = "sporti-cache-v2";
+const CACHE_NAME = "sporti-cache-v3";
 const OFFLINE_URL = "/offline/";
 const PRECACHE_URLS = [
     "/",
     "/static/manifest.json",
+    "/static/css/dist/sporti.css",
+    "/static/icons/icon-192.png",
+    "/static/icons/icon-512.png",
     OFFLINE_URL,
 ];
 

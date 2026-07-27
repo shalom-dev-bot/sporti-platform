@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 21:08+0100\n"
+"POT-Creation-Date: 2026-07-24 08:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +16,261 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: templates/chat/home.html:26
-msgid "Connecte en tant que"
-msgstr "Logged in as"
 
-#: templates/chat/home.html:27
-msgid "Se deconnecter"
+msgid "Nom"
+msgstr "Name"
+
+msgid "Votre nom ou pseudo"
+msgstr "Your name or username"
+
+msgid "Ce nom existe deja, choisissez-en un autre."
+msgstr "This name is already taken, please choose another."
+
+msgid "Connexion"
+msgstr "Log in"
+
+msgid "Content de vous revoir"
+msgstr "Welcome back"
+
+msgid "Connectez-vous pour retrouver votre conversation."
+msgstr "Log in to get back to your conversation."
+
+msgid "Continuer avec Google"
+msgstr "Continue with Google"
+
+msgid "ou par e-mail"
+msgstr "or by email"
+
+msgid "Se souvenir de moi"
+msgstr "Remember me"
+
+msgid "Mot de passe oublié ?"
+msgstr "Forgot your password?"
+
+msgid "Se connecter"
+msgstr "Log in"
+
+msgid "Pas encore de compte ?"
+msgstr "Don't have an account yet?"
+
+msgid "Inscrivez-vous"
+msgstr "Sign up"
+
+msgid "Créer un compte"
+msgstr "Create an account"
+
+msgid "Créer votre compte"
+msgstr "Create your account"
+
+msgid "Rejoignez SPORTI pour discuter directement avec nous."
+msgstr "Join SPORTI to chat directly with us."
+
+msgid "Nom et photo récupérés automatiquement, sans mot de passe."
+msgstr "Name and photo retrieved automatically, no password needed."
+
+msgid "ou avec un e-mail"
+msgstr "or with an email"
+
+msgid "Créer mon compte"
+msgstr "Create my account"
+
+msgid "Déjà un compte ?"
+msgstr "Already have an account?"
+
+msgid "Connectez-vous"
+msgstr "Log in"
+
+msgid "Changer de theme"
+msgstr "Switch theme"
+
+msgid "Hors ligne"
+msgstr "Offline"
+
+msgid "Déconnexion"
 msgstr "Log out"
 
-#: templates/chat/home.html:29
-msgid "Page d'accueil en construction -- design a venir."
-msgstr "Homepage under construction -- design coming soon."
+msgid "Joindre un fichier"
+msgstr "Attach a file"
 
-#: templates/chat/home.html:30
-msgid "Se connecter avec Google"
-msgstr "Sign in with Google"
+msgid "Écrivez votre message…"
+msgstr "Write your message…"
+
+msgid "Envoyer"
+msgstr "Send"
+
+msgid "En ligne"
+msgstr "Online"
+
+msgid "Vue d'ensemble"
+msgstr "Overview"
+
+msgid "Conversations"
+msgstr "Conversations"
+
+msgid "Accueil & Profil"
+msgstr "Home & Profile"
+
+msgid "Liens externes"
+msgstr "External links"
+
+msgid "Mot de passe"
+msgstr "Password"
+
+msgid "Vue"
+msgstr "Overview"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Accueil"
+msgstr "Home"
+
+msgid "Liens"
+msgstr "Links"
+
+msgid "Changer le mot de passe"
+msgstr "Change password"
+
+msgid "Protégez l'accès à l'ensemble des conversations clients."
+msgstr "Protect access to all client conversations."
+
+msgid "Modifier le mot de passe"
+msgstr "Update password"
+
+msgid ""
+"Ce que voit un visiteur en arrivant sur la plateforme, avant de se connecter."
+msgstr "What a visitor sees when arriving on the platform, before logging in."
+
+msgid "Profil de l'entreprise"
+msgstr "Company profile"
+
+msgid "Logo, nom et description affichés en haut de la page d'accueil."
+msgstr "Logo, name and description shown at the top of the homepage."
+
+msgid "Enregistrer le profil"
+msgstr "Save profile"
+
+msgid "Message d'accueil"
+msgstr "Welcome message"
+
+msgid ""
+"Texte, audio et vidéo affichés dès l'arrivée du visiteur, chacun activable "
+"indépendamment."
+msgstr "Text, audio and video shown as soon as a visitor arrives, each toggled independently."
+
+msgid "Enregistrer le message d'accueil"
+msgstr "Save welcome message"
+
+msgid "Retour aux conversations"
+msgstr "Back to conversations"
+
+msgid "Aucun message pour le moment."
+msgstr "No messages yet."
+
+msgid "Écrire une réponse…"
+msgstr "Write a reply…"
+
+msgid ""
+"Tous vos clients, triés par activité récente. Cette liste ne disparaît "
+"jamais."
+msgstr "All your clients, sorted by recent activity. This list never disappears."
+
+msgid "Client"
+msgstr "Client"
+
+msgid "Dernier message"
+msgstr "Last message"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Non lus"
+msgstr "Unread"
+
+msgid "Aucun message"
+msgstr "No messages"
+
+msgid "Aucune conversation pour le moment."
+msgstr "No conversations yet."
+
+msgid "L'activité de votre plateforme, en un coup d'œil."
+msgstr "Your platform's activity, at a glance."
+
+msgid "Total clients"
+msgstr "Total clients"
+
+msgid "Messages aujourd'hui"
+msgstr "Messages today"
+
+msgid "Non lues"
+msgstr "Unread"
+
+msgid "Évolution du nombre de clients"
+msgstr "Client growth over time"
+
+msgid "Nouveaux clients"
+msgstr "New clients"
+
+msgid "Modifier le lien"
+msgstr "Edit link"
+
+msgid "Nouveau lien"
+msgstr "New link"
+
+msgid "Retour aux liens"
+msgstr "Back to links"
+
+msgid "Enregistrer"
+msgstr "Save"
+
+msgid "Ajouter le lien"
+msgstr "Add link"
+
+msgid "+ Ajouter un lien"
+msgstr "+ Add a link"
+
+msgid ""
+"WhatsApp, Telegram, réseaux sociaux… affichés sur la page d'accueil publique."
+msgstr "WhatsApp, Telegram, social media… shown on the public homepage."
+
+msgid "Plateforme"
+msgstr "Platform"
+
+msgid "Lien"
+msgstr "Link"
+
+msgid "Visible"
+msgstr "Visible"
+
+msgid "Ordre"
+msgstr "Order"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Actif"
+msgstr "Active"
+
+msgid "Masqué"
+msgstr "Hidden"
+
+msgid "Modifier"
+msgstr "Edit"
+
+msgid "Supprimer ce lien ?"
+msgstr "Delete this link?"
+
+msgid "Supprimer"
+msgstr "Delete"
+
+msgid "Aucun lien pour le moment."
+msgstr "No links yet."
+
+msgid "Espace de gestion"
+msgstr "Management area"
+
+msgid "Identifiants incorrects. Réessayez."
+msgstr "Incorrect credentials. Please try again."
+
+msgid "Nom d'utilisateur"
+msgstr "Username"

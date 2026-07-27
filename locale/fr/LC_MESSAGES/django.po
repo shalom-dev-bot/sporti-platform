@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 21:08+0100\n"
+"POT-Creation-Date: 2026-07-24 08:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,261 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-#: templates/chat/home.html:26
-msgid "Connecte en tant que"
+
+msgid "Nom"
 msgstr ""
 
-#: templates/chat/home.html:27
-msgid "Se deconnecter"
+msgid "Votre nom ou pseudo"
 msgstr ""
 
-#: templates/chat/home.html:29
-msgid "Page d'accueil en construction -- design a venir."
+msgid "Ce nom existe deja, choisissez-en un autre."
 msgstr ""
 
-#: templates/chat/home.html:30
-msgid "Se connecter avec Google"
+msgid "Connexion"
+msgstr ""
+
+msgid "Content de vous revoir"
+msgstr ""
+
+msgid "Connectez-vous pour retrouver votre conversation."
+msgstr ""
+
+msgid "Continuer avec Google"
+msgstr ""
+
+msgid "ou par e-mail"
+msgstr ""
+
+msgid "Se souvenir de moi"
+msgstr ""
+
+msgid "Mot de passe oublié ?"
+msgstr ""
+
+msgid "Se connecter"
+msgstr ""
+
+msgid "Pas encore de compte ?"
+msgstr ""
+
+msgid "Inscrivez-vous"
+msgstr ""
+
+msgid "Créer un compte"
+msgstr ""
+
+msgid "Créer votre compte"
+msgstr ""
+
+msgid "Rejoignez SPORTI pour discuter directement avec nous."
+msgstr ""
+
+msgid "Nom et photo récupérés automatiquement, sans mot de passe."
+msgstr ""
+
+msgid "ou avec un e-mail"
+msgstr ""
+
+msgid "Créer mon compte"
+msgstr ""
+
+msgid "Déjà un compte ?"
+msgstr ""
+
+msgid "Connectez-vous"
+msgstr ""
+
+msgid "Changer de theme"
+msgstr ""
+
+msgid "Hors ligne"
+msgstr ""
+
+msgid "Déconnexion"
+msgstr ""
+
+msgid "Joindre un fichier"
+msgstr ""
+
+msgid "Écrivez votre message…"
+msgstr ""
+
+msgid "Envoyer"
+msgstr ""
+
+msgid "En ligne"
+msgstr ""
+
+msgid "Vue d'ensemble"
+msgstr ""
+
+msgid "Conversations"
+msgstr ""
+
+msgid "Accueil & Profil"
+msgstr ""
+
+msgid "Liens externes"
+msgstr ""
+
+msgid "Mot de passe"
+msgstr ""
+
+msgid "Vue"
+msgstr ""
+
+msgid "Chat"
+msgstr ""
+
+msgid "Accueil"
+msgstr ""
+
+msgid "Liens"
+msgstr ""
+
+msgid "Changer le mot de passe"
+msgstr ""
+
+msgid "Protégez l'accès à l'ensemble des conversations clients."
+msgstr ""
+
+msgid "Modifier le mot de passe"
+msgstr ""
+
+msgid ""
+"Ce que voit un visiteur en arrivant sur la plateforme, avant de se connecter."
+msgstr ""
+
+msgid "Profil de l'entreprise"
+msgstr ""
+
+msgid "Logo, nom et description affichés en haut de la page d'accueil."
+msgstr ""
+
+msgid "Enregistrer le profil"
+msgstr ""
+
+msgid "Message d'accueil"
+msgstr ""
+
+msgid ""
+"Texte, audio et vidéo affichés dès l'arrivée du visiteur, chacun activable "
+"indépendamment."
+msgstr ""
+
+msgid "Enregistrer le message d'accueil"
+msgstr ""
+
+msgid "Retour aux conversations"
+msgstr ""
+
+msgid "Aucun message pour le moment."
+msgstr ""
+
+msgid "Écrire une réponse…"
+msgstr ""
+
+msgid ""
+"Tous vos clients, triés par activité récente. Cette liste ne disparaît "
+"jamais."
+msgstr ""
+
+msgid "Client"
+msgstr ""
+
+msgid "Dernier message"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Non lus"
+msgstr ""
+
+msgid "Aucun message"
+msgstr ""
+
+msgid "Aucune conversation pour le moment."
+msgstr ""
+
+msgid "L'activité de votre plateforme, en un coup d'œil."
+msgstr ""
+
+msgid "Total clients"
+msgstr ""
+
+msgid "Messages aujourd'hui"
+msgstr ""
+
+msgid "Non lues"
+msgstr ""
+
+msgid "Évolution du nombre de clients"
+msgstr ""
+
+msgid "Nouveaux clients"
+msgstr ""
+
+msgid "Modifier le lien"
+msgstr ""
+
+msgid "Nouveau lien"
+msgstr ""
+
+msgid "Retour aux liens"
+msgstr ""
+
+msgid "Enregistrer"
+msgstr ""
+
+msgid "Ajouter le lien"
+msgstr ""
+
+msgid "+ Ajouter un lien"
+msgstr ""
+
+msgid ""
+"WhatsApp, Telegram, réseaux sociaux… affichés sur la page d'accueil publique."
+msgstr ""
+
+msgid "Plateforme"
+msgstr ""
+
+msgid "Lien"
+msgstr ""
+
+msgid "Visible"
+msgstr ""
+
+msgid "Ordre"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Actif"
+msgstr ""
+
+msgid "Masqué"
+msgstr ""
+
+msgid "Modifier"
+msgstr ""
+
+msgid "Supprimer ce lien ?"
+msgstr ""
+
+msgid "Supprimer"
+msgstr ""
+
+msgid "Aucun lien pour le moment."
+msgstr ""
+
+msgid "Espace de gestion"
+msgstr ""
+
+msgid "Identifiants incorrects. Réessayez."
+msgstr ""
+
+msgid "Nom d'utilisateur"
 msgstr ""

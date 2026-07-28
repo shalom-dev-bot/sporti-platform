@@ -4,10 +4,14 @@
  * - Met en cache les ressources essentielles, dont la page hors-ligne.
  * - En cas de coupure reseau sur une navigation, affiche la page offline
  *   plutot qu'une erreur brute du navigateur.
+ * - Laisse un delai de tolerance (20s) avant de conclure a une coupure --
+ *   sur Render gratuit, le serveur peut mettre du temps a se reveiller
+ *   apres une periode d'inactivite ; ce n'est pas une vraie coupure reseau.
  * - Gere la reception et l'affichage des notifications push.
  */
-const CACHE_NAME = "sporti-cache-v3";
+const CACHE_NAME = "sporti-cache-v4";
 const OFFLINE_URL = "/offline/";
+const OFFLINE_TIMEOUT_MS = 40000;
 const PRECACHE_URLS = [
     "/",
     "/static/manifest.json",
@@ -53,16 +57,34 @@ self.addEventListener("notificationclick", (event) => {
     event.waitUntil(clients.openWindow(event.notification.data.url || "/"));
 });
 
+function fetchWithTimeout(request, timeoutMs) {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error("timeout")), timeoutMs);
+        fetch(request).then(
+            (response) => {
+                clearTimeout(timer);
+                resolve(response);
+            },
+            (err) => {
+                clearTimeout(timer);
+                reject(err);
+            }
+        );
+    });
+}
+
 self.addEventListener("fetch", (event) => {
     // Pour les navigations de page (pas les appels API/WebSocket), on
-    // bascule sur la page offline si le reseau echoue completement.
+    // attend jusqu'a OFFLINE_TIMEOUT_MS (le temps que Render se reveille
+    // s'il dormait) avant de basculer sur la page hors-ligne.
     if (event.request.mode === "navigate") {
         event.respondWith(
-            fetch(event.request).catch(() => caches.match(OFFLINE_URL))
+            fetchWithTimeout(event.request, OFFLINE_TIMEOUT_MS).catch(() =>
+                caches.match(OFFLINE_URL)
+            )
         );
         return;
     }
-
     // Pour le reste (styles, scripts, images), strategie network-first
     // avec repli sur le cache si disponible.
     event.respondWith(

@@ -40,6 +40,12 @@
             </svg>
         </button>
         <textarea id="message-input" rows="1" placeholder="{% trans 'Écrire une réponse…' %}" autocomplete="off"></textarea>
+        <input type="file" id="attachment-input" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx">
+        <button type="button" id="attach-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Joindre un fichier' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.58a4 4 0 0 1 5.66 5.66l-8.59 8.58a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+            </svg>
+        </button>
         <button type="button" id="mic-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Message vocal' %}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
@@ -213,6 +219,8 @@
             const att = data.attachment;
             if (att.file_type && att.file_type.startsWith("image/")) {
                 inner += `<img src="${att.file_url}" class="mt-2 max-h-56 rounded-sm" alt="${att.file_name}">`;
+            } else if (att.file_type && att.file_type.startsWith("video/")) {
+                inner += `<video controls class="mt-2 max-h-72 rounded-sm" src="${att.file_url}"></video>`;
             } else if (att.file_type && att.file_type.startsWith("audio/")) {
                 audioAttachment = att.file_url;
             } else {
@@ -260,6 +268,32 @@
 
     function getCsrfToken() {
         return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "";
+    }
+    const attachBtn = document.getElementById("attach-btn");
+    const attachmentInput = document.getElementById("attachment-input");
+    if (attachBtn && attachmentInput) {
+        attachBtn.addEventListener("click", () => {
+            attachmentInput.click();
+        });
+        attachmentInput.addEventListener("change", () => {
+            const file = attachmentInput.files[0];
+            attachmentInput.value = "";
+            if (!file) return;
+            const formData = new FormData();
+            formData.append("file", file);
+            fetch("{% url 'chat:api_attachment_upload' conversation_id=conversation.id %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": getCsrfToken() },
+                body: formData,
+            })
+                .then(async (res) => {
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        alert(data.detail || "Echec de l'envoi du fichier.");
+                    }
+                })
+                .catch(() => alert("Echec de l'envoi, verifiez votre connexion."));
+        });
     }
 
     let mediaRecorder = null;

@@ -256,9 +256,9 @@
             if (msg.attachment) {
                 const att = msg.attachment;
                 if (att.file_type && att.file_type.startsWith("image/")) {
-                    inner += `<img src="${att.file_url}" class="mt-2 max-h-56 rounded-sm" alt="${att.file_name}">`;
+                    inner += `<img src="${att.file_url}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="${att.file_name}">`;
                 } else if (att.file_type && att.file_type.startsWith("video/")) {
-                    inner += `<video controls class="mt-2 max-h-72 rounded-sm" src="${att.file_url}"></video>`;
+                    inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="${att.file_url}"></video>`;
                 } else if (att.file_type && att.file_type.startsWith("audio/")) {
                     audioAttachment = att.file_url;
                 } else {
@@ -267,9 +267,9 @@
             } else if (msg.attachments && msg.attachments.length) {
                 msg.attachments.forEach((att) => {
                     if (att.file_type && att.file_type.startsWith("image/")) {
-                        inner += `<img src="${att.file}" class="mt-2 max-h-56 rounded-sm" alt="${att.file_name}">`;
+                        inner += `<img src="${att.file}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="${att.file_name}">`;
                     } else if (att.file_type && att.file_type.startsWith("video/")) {
-                        inner += `<video controls class="mt-2 max-h-72 rounded-sm" src="${att.file}"></video>`;
+                        inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="${att.file}"></video>`;
                     } else if (att.file_type && att.file_type.startsWith("audio/")) {
                         audioAttachment = att.file;
                     } else {

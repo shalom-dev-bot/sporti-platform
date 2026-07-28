@@ -3,6 +3,7 @@
 {% load static %}
 {% block title %}{{ conversation.client }} — SPORTI{% endblock %}
 {% block dashboard_content %}
+{% csrf_token %}
 <div class="mobile-chat-shell" style="height:75vh; border-radius: 1rem; overflow: hidden; border: 1px solid rgba(13,19,33,0.08);">
     <div class="mobile-chat-header">
         <a href="{% url 'dashboard:conversations_list' %}" class="chat-round-icon-btn" aria-label="{% trans 'Retour' %}">
@@ -24,7 +25,18 @@
     <div id="chat-thread" class="mobile-chat-thread">
         {% for message in chat_messages %}
         <div class="{% if message.sender.is_staff %}mobile-bubble mobile-bubble-client{% else %}mobile-bubble mobile-bubble-admin{% endif %} group relative" data-message-id="{{ message.id }}">
-            <span>{{ message.content }}</span>
+            {% if message.content %}<span>{{ message.content }}</span>{% endif %}
+            {% for att in message.attachments.all %}
+                {% if att.file_type and "image/" in att.file_type %}
+                    <img src="{{ att.file.url }}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="{{ att.file_name }}">
+                {% elif att.file_type and "video/" in att.file_type %}
+                    <video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="{{ att.file.url }}"></video>
+                {% elif att.file_type and "audio/" in att.file_type %}
+                    <div class="attachment-voice-placeholder" data-audio-url="{{ att.file.url }}"></div>
+                {% else %}
+                    <a href="{{ att.file.url }}" target="_blank" class="underline text-xs">{{ att.file_name }}</a>
+                {% endif %}
+            {% endfor %}
             {% if message.sender.is_staff %}<span class="status-tick text-white/70">{% if message.status == 'read' %}✓✓{% elif message.status == 'delivered' %}✓✓{% else %}✓{% endif %}</span>{% endif %}
             <div class="reactions-row" data-initial-emojis="{% for r in message.reactions.all %}{{ r.emoji }}{% if not forloop.last %},{% endif %}{% endfor %}"></div>
         </div>
@@ -218,9 +230,9 @@
         if (data.attachment) {
             const att = data.attachment;
             if (att.file_type && att.file_type.startsWith("image/")) {
-                inner += `<img src="${att.file_url}" class="mt-2 max-h-56 rounded-sm" alt="${att.file_name}">`;
+                inner += `<img src="${att.file_url}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="${att.file_name}">`;
             } else if (att.file_type && att.file_type.startsWith("video/")) {
-                inner += `<video controls class="mt-2 max-h-72 rounded-sm" src="${att.file_url}"></video>`;
+                inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="${att.file_url}"></video>`;
             } else if (att.file_type && att.file_type.startsWith("audio/")) {
                 audioAttachment = att.file_url;
             } else {
@@ -267,7 +279,7 @@
     }
 
     function getCsrfToken() {
-        return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "";
+        return "{{ csrf_token }}";
     }
     const attachBtn = document.getElementById("attach-btn");
     const attachmentInput = document.getElementById("attachment-input");

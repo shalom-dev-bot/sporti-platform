@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "apps.company",
     "apps.chat",
     "apps.dashboard",
+    "apps.predictions",
     "rest_framework",
 ]
 

@@ -8,6 +8,9 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 
+from apps.company.models import ExternalLink
+from apps.predictions.models import Event, Prediction, Team
+
 User = get_user_model()
 
 
@@ -35,3 +38,76 @@ class AdminUsernameForm(forms.ModelForm):
         model = User
         fields = ["username"]
         labels = {"username": "Nom d'utilisateur"}
+
+
+class _StyledPredictionFormMixin:
+    def _apply_styles(self):
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({"class": "accent-accent-600 w-4 h-4"})
+            elif isinstance(field.widget, (forms.ClearableFileInput, forms.FileInput)):
+                field.widget.attrs.update(
+                    {
+                        "class": "field-input file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-accent-600 file:text-white file:text-xs file:uppercase file:tracking-wide"
+                    }
+                )
+            elif isinstance(field.widget, forms.Textarea):
+                field.widget.attrs.update(
+                    {"class": "field-input", "rows": field.widget.attrs.get("rows", 3)}
+                )
+            else:
+                field.widget.attrs.update({"class": "field-input"})
+
+
+class TeamForm(_StyledPredictionFormMixin, forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ["name", "logo"]
+        labels = {"name": "Nom de l'equipe", "logo": "Logo (optionnel)"}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._apply_styles()
+
+
+class EventForm(_StyledPredictionFormMixin, forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ["home_team", "away_team", "competition", "sport", "kickoff_at"]
+        labels = {
+            "home_team": "Equipe a domicile",
+            "away_team": "Equipe a l'exterieur",
+            "competition": "Competition",
+            "sport": "Sport",
+            "kickoff_at": "Date et heure du match",
+        }
+        widgets = {
+            "kickoff_at": forms.DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._apply_styles()
+        self.fields["kickoff_at"].input_formats = ["%Y-%m-%dT%H:%M"]
+
+
+class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
+    class Meta:
+        model = Prediction
+        fields = ["event", "pick", "analysis", "odds", "external_link", "result", "is_published"]
+        labels = {
+            "event": "Evenement",
+            "pick": "Pronostic",
+            "analysis": "Analyse detaillee (optionnel)",
+            "odds": "Cote (optionnel)",
+            "external_link": "Plateforme de paris recommandee (optionnel)",
+            "result": "Resultat",
+            "is_published": "Visible par les clients",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["external_link"].queryset = ExternalLink.objects.filter(category="platform")
+        self._apply_styles()

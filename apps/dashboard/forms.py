@@ -48,7 +48,11 @@ class _StyledPredictionFormMixin:
             elif isinstance(field.widget, (forms.ClearableFileInput, forms.FileInput)):
                 field.widget.attrs.update(
                     {
-                        "class": "field-input file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-accent-600 file:text-white file:text-xs file:uppercase file:tracking-wide"
+                        "class": (
+                            "field-input file:mr-3 file:py-1.5 file:px-3 "
+                            "file:border-0 file:bg-accent-600 file:text-white "
+                            "file:text-xs file:uppercase file:tracking-wide"
+                        )
                     }
                 )
             elif isinstance(field.widget, forms.Textarea):
@@ -96,12 +100,24 @@ class EventForm(_StyledPredictionFormMixin, forms.ModelForm):
 class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
     class Meta:
         model = Prediction
-        fields = ["event", "pick", "analysis", "odds", "external_link", "result", "is_published"]
+        fields = [
+            "event",
+            "pick",
+            "analysis",
+            "odds",
+            "confidence",
+            "is_featured",
+            "external_link",
+            "result",
+            "is_published",
+        ]
         labels = {
             "event": "Evenement",
             "pick": "Pronostic",
             "analysis": "Analyse detaillee (optionnel)",
             "odds": "Cote (optionnel)",
+            "confidence": "Confiance % (optionnel)",
+            "is_featured": "Match phare (Top matchs)",
             "external_link": "Plateforme de paris recommandee (optionnel)",
             "result": "Resultat",
             "is_published": "Visible par les clients",

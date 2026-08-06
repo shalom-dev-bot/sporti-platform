@@ -20,6 +20,7 @@ urlpatterns = [
 ]
 
 urlpatterns += i18n_patterns(
+    path("pronostics/", include("apps.predictions.urls")),
     path("", include("apps.chat.urls")),
 )
 

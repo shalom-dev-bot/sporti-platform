@@ -45,4 +45,10 @@ urlpatterns = [
         views.prediction_delete,
         name="prediction_delete",
     ),
+    path("importer-matchs/", views.fixtures_search, name="fixtures_search"),
+    path(
+        "importer-matchs/<int:api_fixture_id>/importer/",
+        views.fixture_import,
+        name="fixture_import",
+    ),
 ]

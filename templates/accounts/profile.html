@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block title %}{% trans "Mon profil" %} — SPORTI{% endblock %}
+{% block content %}
+<div class="chats-shell">
+    {% include "chat/_top_navbar.html" %}
+    <div class="flex-1 min-h-0 overflow-y-auto max-w-lg mx-auto px-4 py-10 w-full">
+    <a href="{% url 'chat:home' %}" class="btn-ghost !px-0 mb-6 inline-flex lg:hidden">&laquo; {% trans "Retour" %}</a>
+
+    <div class="flex items-center gap-4 mb-8">
+        <div class="w-16 h-16 rounded-full hud-corners overflow-hidden bg-navy-900/10 dark:bg-white/10 flex items-center justify-center shrink-0">
+            {% if user.display_avatar_url %}
+                <img src="{{ user.display_avatar_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+            {% else %}
+                <span class="font-display font-bold text-xl text-accent-600">{{ user.username|slice:":2"|upper }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <h1 class="font-display text-xl font-bold">{{ user.username }}</h1>
+            <p class="text-sm text-navy-900/50 dark:text-white/45">{{ user.email }}</p>
+        </div>
+    </div>
+
+    {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+                <div class="px-4 py-3 text-sm border border-accent-500/25 bg-accent-500/5 text-accent-700 dark:text-accent-300">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="panel">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="field-group">
+                <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-primary">{% trans "Enregistrer" %}</button>
+        </form>
+    </div>
+
+    <form method="post" action="{% url 'account_logout' %}" class="mt-6">
+        {% csrf_token %}
+        <button type="submit" class="btn-secondary w-full">{% trans "Déconnexion" %}</button>
+    </form>
+    </div>
+</div>
+{% endblock %}

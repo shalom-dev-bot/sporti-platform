@@ -1,0 +1,47 @@
+{% extends "dashboard/_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Événements" %} — SPORTI{% endblock %}
+{% block dashboard_content %}
+<div class="flex items-center justify-between mb-1">
+    <h1 class="dashboard-page-title mb-0">{% trans "Événements" %}</h1>
+    <a href="{% url 'dashboard:event_create' %}" class="btn-primary text-xs !px-4 !py-2.5">{% trans "+ Ajouter un événement" %}</a>
+</div>
+<p class="dashboard-page-subtitle">
+    {% trans "Matchs disponibles pour la création de pronostics." %}
+</p>
+<div class="panel !p-0 overflow-x-auto">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="px-6">{% trans "Match" %}</th>
+                <th>{% trans "Compétition" %}</th>
+                <th>{% trans "Sport" %}</th>
+                <th>{% trans "Date" %}</th>
+                <th class="pr-6 text-right">{% trans "Actions" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td class="px-6 font-medium">{{ event.home_team }} — {{ event.away_team }}</td>
+                <td class="text-navy-900/60 dark:text-white/50">{{ event.competition }}</td>
+                <td class="text-navy-900/60 dark:text-white/50">{{ event.sport }}</td>
+                <td class="text-navy-900/45 dark:text-white/40">{{ event.kickoff_at|date:"d/m/Y H:i" }}</td>
+                <td class="pr-6 text-right whitespace-nowrap">
+                    <a href="{% url 'dashboard:event_edit' event.id %}" class="btn-ghost !px-2 !py-1 !text-xs">{% trans "Modifier" %}</a>
+                    <form method="post" action="{% url 'dashboard:event_delete' event.id %}" class="inline"
+                          onsubmit="return confirm('{% trans "Supprimer cet événement ?" %}');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-ghost !px-2 !py-1 !text-xs !text-red-500 hover:!text-red-600">{% trans "Supprimer" %}</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="px-6 py-10 text-center text-navy-900/40 dark:text-white/35">
+                {% trans "Aucun événement pour le moment." %}
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

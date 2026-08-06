@@ -68,3 +68,37 @@ class SportiSignupForm(SignupForm):
         if username and User.objects.filter(username__iexact=username).exists():
             raise forms.ValidationError(_("Ce nom existe deja, choisissez-en un autre."))
         return username
+
+
+class ProfileForm(forms.ModelForm):
+    """Permet a un client de modifier ses propres informations -- jamais
+    celles d'un autre utilisateur."""
+
+    class Meta:
+        model = User
+        fields = ["avatar", "username", "first_name", "last_name", "phone_number"]
+        labels = {
+            "avatar": _("Photo de profil"),
+            "username": _("Nom"),
+            "first_name": _("Prenom"),
+            "last_name": _("Nom de famille"),
+            "phone_number": _("Telephone"),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        file_css = (
+            "field-input file:mr-3 file:py-1.5 file:px-3 file:border-0 "
+            "file:bg-accent-600 file:text-white file:text-xs file:uppercase file:tracking-wide"
+        )
+        for name, field in self.fields.items():
+            field.widget.attrs.update({"class": file_css if name == "avatar" else "field-input"})
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username", "").strip()
+        if (
+            username
+            and User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists()
+        ):
+            raise forms.ValidationError(_("Ce nom existe deja, choisissez-en un autre."))
+        return username

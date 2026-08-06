@@ -19,8 +19,10 @@ from apps.accounts.models import User
 from apps.chat.models import Conversation, Message
 from apps.company.forms import CompanyProfileForm, ExternalLinkForm, WelcomeMessageForm
 from apps.company.models import CompanyProfile, ExternalLink, WelcomeMessage
+from apps.predictions import api_football
+from apps.predictions.models import Event, Prediction, Team
 
-from .forms import AdminPasswordChangeForm, AdminUsernameForm
+from .forms import AdminPasswordChangeForm, AdminUsernameForm, EventForm, PredictionForm, TeamForm
 
 CACHE_KEY_DASHBOARD_STATS = "dashboard:stats"
 CACHE_TTL_DASHBOARD_STATS = 60  # secondes : assez court pour rester a jour,
@@ -266,3 +268,255 @@ def link_delete(request, link_id):
         link.delete()
         messages.success(request, "Lien supprime.")
     return redirect("dashboard:links_list")
+
+
+# --- Equipes ---------------------------------------------------------------
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def teams_list(request):
+    """CRUD des equipes reutilisables entre plusieurs evenements."""
+    teams = Team.objects.all()
+    return render(request, "dashboard/teams_list.html", {"teams": teams})
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def team_create(request):
+    if request.method == "POST":
+        form = TeamForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Equipe ajoutee.")
+            return redirect("dashboard:teams_list")
+    else:
+        form = TeamForm()
+    return render(request, "dashboard/team_form.html", {"form": form, "is_edit": False})
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def team_edit(request, team_id):
+    team = get_object_or_404(Team, id=team_id)
+    if request.method == "POST":
+        form = TeamForm(request.POST, request.FILES, instance=team)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Equipe mise a jour.")
+            return redirect("dashboard:teams_list")
+    else:
+        form = TeamForm(instance=team)
+    return render(
+        request, "dashboard/team_form.html", {"form": form, "is_edit": True, "team": team}
+    )
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def team_delete(request, team_id):
+    team = get_object_or_404(Team, id=team_id)
+    if request.method == "POST":
+        team.delete()
+        messages.success(request, "Equipe supprimee.")
+    return redirect("dashboard:teams_list")
+
+
+# --- Evenements --------------------------------------------------------------
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def events_list(request):
+    """Liste des evenements sportifs, les plus recents en premier."""
+    events = Event.objects.select_related("home_team", "away_team").all()
+    return render(request, "dashboard/events_list.html", {"events": events})
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def event_create(request):
+    if request.method == "POST":
+        form = EventForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Evenement ajoute.")
+            return redirect("dashboard:events_list")
+    else:
+        form = EventForm()
+    return render(request, "dashboard/event_form.html", {"form": form, "is_edit": False})
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def event_edit(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    if request.method == "POST":
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Evenement mis a jour.")
+            return redirect("dashboard:events_list")
+    else:
+        form = EventForm(instance=event)
+    return render(
+        request, "dashboard/event_form.html", {"form": form, "is_edit": True, "event": event}
+    )
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def event_delete(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    if request.method == "POST":
+        event.delete()
+        messages.success(request, "Evenement supprime.")
+    return redirect("dashboard:events_list")
+
+
+# --- Pronostics --------------------------------------------------------------
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def predictions_list(request):
+    """Liste des pronostics, les plus recents en premier."""
+    predictions = Prediction.objects.select_related(
+        "event", "event__home_team", "event__away_team", "external_link"
+    ).all()
+    return render(request, "dashboard/predictions_list.html", {"predictions": predictions})
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def prediction_create(request):
+    if request.method == "POST":
+        form = PredictionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pronostic ajoute.")
+            return redirect("dashboard:predictions_list")
+    else:
+        form = PredictionForm()
+    return render(request, "dashboard/prediction_form.html", {"form": form, "is_edit": False})
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def prediction_edit(request, prediction_id):
+    prediction = get_object_or_404(Prediction, id=prediction_id)
+    if request.method == "POST":
+        form = PredictionForm(request.POST, instance=prediction)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pronostic mis a jour.")
+            return redirect("dashboard:predictions_list")
+    else:
+        form = PredictionForm(instance=prediction)
+    return render(
+        request,
+        "dashboard/prediction_form.html",
+        {"form": form, "is_edit": True, "prediction": prediction},
+    )
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def prediction_delete(request, prediction_id):
+    prediction = get_object_or_404(Prediction, id=prediction_id)
+    if request.method == "POST":
+        prediction.delete()
+        messages.success(request, "Pronostic supprime.")
+    return redirect("dashboard:predictions_list")
+
+
+# --- Import API-Football ------------------------------------------------
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def fixtures_search(request):
+    """Recherche des matchs via l'API-Football pour une date/competition
+    donnee, afin de les importer en un clic plutot que de les saisir
+    a la main."""
+    today = timezone.localdate().isoformat()
+    date_str = request.GET.get("date", today)
+    league_id = request.GET.get("league") or None
+
+    fixtures = []
+    error = None
+    already_imported_ids = set()
+
+    if request.GET:
+        try:
+            fixtures = api_football.search_fixtures(date_str, league_id=league_id)
+            already_imported_ids = set(
+                Event.objects.filter(
+                    api_football_id__in=[f["api_id"] for f in fixtures]
+                ).values_list("api_football_id", flat=True)
+            )
+        except api_football.ApiFootballError as exc:
+            error = str(exc)
+
+    return render(
+        request,
+        "dashboard/fixtures_search.html",
+        {
+            "fixtures": fixtures,
+            "error": error,
+            "date_str": date_str,
+            "league_id": str(league_id) if league_id else "",
+            "already_imported_ids": already_imported_ids,
+            "popular_leagues": api_football.POPULAR_LEAGUES,
+            "searched": bool(request.GET),
+        },
+    )
+
+
+@login_required(login_url="/gestion/connexion/")
+@user_passes_test(_is_staff, login_url="/gestion/connexion/")
+def fixture_import(request, api_fixture_id):
+    """Importe un match choisi dans les resultats de recherche : cree
+    (ou reutilise) les deux equipes puis l'evenement, sans jamais
+    dupliquer si l'admin importe deux fois le meme match."""
+    if request.method != "POST":
+        return redirect("dashboard:fixtures_search")
+
+    existing_event = Event.objects.filter(api_football_id=api_fixture_id).first()
+    if existing_event:
+        messages.info(request, "Ce match a deja ete importe.")
+        return redirect("dashboard:event_edit", event_id=existing_event.id)
+
+    date_str = request.POST.get("date_str", timezone.localdate().isoformat())
+    league_id = request.POST.get("league_id") or None
+
+    try:
+        fixtures = api_football.search_fixtures(date_str, league_id=league_id)
+    except api_football.ApiFootballError as exc:
+        messages.error(request, f"Import impossible : {exc}")
+        return redirect("dashboard:fixtures_search")
+
+    fixture = next((f for f in fixtures if str(f["api_id"]) == str(api_fixture_id)), None)
+    if not fixture:
+        messages.error(request, "Ce match n'est plus disponible dans les resultats.")
+        return redirect("dashboard:fixtures_search")
+
+    home_team, _ = Team.objects.get_or_create(
+        api_football_id=fixture["home_id"],
+        defaults={"name": fixture["home_name"], "logo_url": fixture["home_logo"]},
+    )
+    away_team, _ = Team.objects.get_or_create(
+        api_football_id=fixture["away_id"],
+        defaults={"name": fixture["away_name"], "logo_url": fixture["away_logo"]},
+    )
+
+    Event.objects.create(
+        home_team=home_team,
+        away_team=away_team,
+        competition=fixture["competition"],
+        sport="Football",
+        kickoff_at=fixture["kickoff_at"],
+        api_football_id=fixture["api_id"],
+    )
+    messages.success(request, "Match importe. Ajoute maintenant ton pronostic.")
+    return redirect("dashboard:prediction_create")

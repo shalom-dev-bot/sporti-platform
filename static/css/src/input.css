@@ -156,7 +156,7 @@
   }
 
   .chat-thread {
-    @apply flex-1 overflow-y-auto px-3 sm:px-6 py-6 space-y-4;
+    @apply flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-6 space-y-4;
   }
 
   .bubble {
@@ -239,6 +239,16 @@
   }
 
   .dashboard-nav-link.active {
+    @apply bg-accent-600/10 text-accent-600 dark:text-accent-400 font-semibold;
+  }
+
+  .desktop-nav-link {
+    @apply px-4 py-2 text-sm font-medium rounded-sm
+           text-navy-900/60 dark:text-white/55 transition-colors duration-150
+           hover:bg-navy-900/[0.04] dark:hover:bg-white/5 hover:text-navy-900 dark:hover:text-white;
+  }
+
+  .desktop-nav-link.active {
     @apply bg-accent-600/10 text-accent-600 dark:text-accent-400 font-semibold;
   }
 

@@ -1,0 +1,68 @@
+{% extends "dashboard/_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Pronostics" %} — SPORTI{% endblock %}
+{% block dashboard_content %}
+<div class="flex items-center justify-between mb-1">
+    <h1 class="dashboard-page-title mb-0">{% trans "Pronostics" %}</h1>
+    <a href="{% url 'dashboard:prediction_create' %}" class="btn-primary text-xs !px-4 !py-2.5">{% trans "+ Ajouter un pronostic" %}</a>
+</div>
+<p class="dashboard-page-subtitle">
+    {% trans "Pronostics visibles par les clients dans le hub." %}
+</p>
+<div class="panel !p-0 overflow-x-auto">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="px-6">{% trans "Match" %}</th>
+                <th>{% trans "Pronostic" %}</th>
+                <th>{% trans "Confiance" %}</th>
+                <th>{% trans "Cote" %}</th>
+                <th>{% trans "Résultat" %}</th>
+                <th>{% trans "Visible" %}</th>
+                <th class="pr-6 text-right">{% trans "Actions" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prediction in predictions %}
+            <tr>
+                <td class="px-6 font-medium">
+                    {{ prediction.event }}
+                    {% if prediction.is_featured %}<span class="badge ml-1">★</span>{% endif %}
+                </td>
+                <td class="text-navy-900/60 dark:text-white/50">{{ prediction.pick }}</td>
+                <td class="text-navy-900/60 dark:text-white/50">{{ prediction.confidence|default:"—" }}{% if prediction.confidence %}%{% endif %}</td>
+                <td class="text-navy-900/60 dark:text-white/50">{{ prediction.odds|default:"—" }}</td>
+                <td>
+                    {% if prediction.result == "won" %}
+                        <span class="text-emerald-500 text-xs font-semibold">{% trans "Gagné" %}</span>
+                    {% elif prediction.result == "lost" %}
+                        <span class="text-red-500 text-xs font-semibold">{% trans "Perdu" %}</span>
+                    {% else %}
+                        <span class="text-navy-900/45 dark:text-white/40 text-xs">{% trans "En attente" %}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if prediction.is_published %}
+                        <span class="text-emerald-500 text-xs font-semibold">{% trans "Actif" %}</span>
+                    {% else %}
+                        <span class="text-navy-900/35 dark:text-white/30 text-xs">{% trans "Masqué" %}</span>
+                    {% endif %}
+                </td>
+                <td class="pr-6 text-right whitespace-nowrap">
+                    <a href="{% url 'dashboard:prediction_edit' prediction.id %}" class="btn-ghost !px-2 !py-1 !text-xs">{% trans "Modifier" %}</a>
+                    <form method="post" action="{% url 'dashboard:prediction_delete' prediction.id %}" class="inline"
+                          onsubmit="return confirm('{% trans "Supprimer ce pronostic ?" %}');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-ghost !px-2 !py-1 !text-xs !text-red-500 hover:!text-red-600">{% trans "Supprimer" %}</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="px-6 py-10 text-center text-navy-900/40 dark:text-white/35">
+                {% trans "Aucun pronostic pour le moment." %}
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

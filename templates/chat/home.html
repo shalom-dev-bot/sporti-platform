@@ -1,551 +1,85 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load static %}
+{% load i18n static %}
 {% block title %}SPORTI{% endblock %}
 {% block content %}
-{% if user.is_authenticated %}
-<div class="chat-shell">
-    <header class="chat-header">
-        <div id="company-logo-wrap" class="w-10 h-10 shrink-0 hud-corners bg-navy-950 flex items-center justify-center overflow-hidden">
-            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
-        </div>
-        <div class="min-w-0 flex-1">
-            <p id="company-name" class="font-display font-semibold text-sm truncate">SPORTI</p>
-            <p class="flex items-center gap-1.5 text-xs text-navy-900/45 dark:text-white/40">
-                <span id="admin-presence-dot" class="presence-dot"></span>
-                <span id="admin-presence-label">{% trans "Hors ligne" %}</span>
+<div class="min-h-screen w-full relative overflow-hidden bg-[#04060a] text-white">
+    <div class="absolute inset-0 lg:hidden">
+        <img src="{% static 'images/design/splash-background.jpg' %}" alt=""
+             class="w-full h-full object-cover scale-110">
+    </div>
+    <div class="absolute inset-0 hidden lg:block">
+        <img src="{% static 'images/design/splash-background-desktop.jpg' %}" alt=""
+             class="w-full h-full object-cover scale-110">
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/90"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.13),transparent_55%)]"></div>
+    <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent"></div>
+
+    <div class="relative z-10 h-screen overflow-y-auto flex flex-col justify-between px-6 py-6">
+        <div></div>
+
+        <div class="flex-1 flex flex-col items-center justify-center text-center animate-fade-in-up min-h-0">
+            <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
+                <div class="absolute w-24 h-24 rounded-full bg-cyan-400/25 blur-2xl animate-pulse-slow"></div>
+                <img src="{% static 'images/design/sporti-logo-real.png' %}" alt="SPORTI"
+                     class="relative w-20 h-20 object-contain">
+            </div>
+            <h1 id="company-name" class="mt-3 text-xl font-extrabold tracking-wide">SPORTI</h1>
+            <p class="mt-3 text-sm font-semibold tracking-wide">
+                {% trans "PRÉDISEZ." %} <span class="text-cyan-400">{% trans "GAGNEZ." %}</span> {% trans "DOMINEZ." %}
+            </p>
+            <p id="company-description" class="mt-1.5 text-xs text-white/65 max-w-xs">
+                {% trans "Rejoins la communauté des vrais parieurs intelligents" %}
             </p>
         </div>
-        <form method="post" action="{% url 'account_logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn-ghost">{% trans "Déconnexion" %}</button>
-        </form>
-    </header>
-    <div id="chat-thread" class="chat-thread flex flex-col"></div>
-    <div class="mobile-chat-composer-wrap" style="position: relative;">
-    <form id="composer-form" class="mobile-chat-composer">
-        <input type="file" id="attachment-input" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx">
-        <button type="button" id="attach-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Joindre un fichier' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.58a4 4 0 0 1 5.66 5.66l-8.59 8.58a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-            </svg>
-        </button>
-        <button type="button" id="emoji-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Emoji' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
-            </svg>
-        </button>
-        <textarea id="message-input" rows="1"
-                  placeholder="{% trans 'Écrivez votre message…' %}"></textarea>
-        <button type="button" id="mic-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Message vocal' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                <path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/>
-            </svg>
-        </button>
-        <button type="submit" class="mobile-send-btn" aria-label="{% trans 'Envoyer' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
-            </svg>
-        </button>
-    </form>
-    </div>
-    <div id="links-section" class="hidden px-3 sm:px-6 py-3 border-t border-navy-900/10 dark:border-white/10">
-        <div id="platforms-links" class="hidden mb-3">
-            <p class="text-xs text-navy-900/45 dark:text-white/40 mb-2">Plateformes recommandées</p>
-            <div id="platforms-list" class="flex flex-wrap gap-2"></div>
-        </div>
-        <div id="social-links" class="hidden">
-            <div id="social-list" class="flex gap-2"></div>
+
+        <div class="w-full max-w-sm mx-auto shrink-0">
+            <div class="space-y-2.5">
+                <a href="{% url 'account_signup' %}"
+                   class="w-full h-11 rounded-xl bg-[#1f4fff] hover:bg-[#285dff] transition text-white font-semibold flex items-center justify-between px-5 shadow-[0_10px_30px_rgba(31,79,255,0.35)]">
+                    <span class="flex items-center gap-2">{% trans "S'INSCRIRE" %}</span>
+                    <span>&rsaquo;</span>
+                </a>
+                <a href="{% url 'account_login' %}"
+                   class="w-full h-11 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition text-white font-semibold flex items-center justify-between px-5">
+                    <span class="flex items-center gap-2">{% trans "SE CONNECTER" %}</span>
+                    <span>&rsaquo;</span>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 mt-6 text-center text-white/85">
+                <div class="rounded-xl bg-white/5 backdrop-blur-md border border-white/10 py-3">
+                    <div class="text-sm font-semibold">{{ active_members_count }}+</div>
+                    <div class="text-[10px] text-white/55">{% trans "Membres actifs" %}</div>
+                </div>
+                <div class="rounded-xl bg-white/5 backdrop-blur-md border border-white/10 py-3">
+                    <div class="text-sm font-semibold">{{ success_rate }}%</div>
+                    <div class="text-[10px] text-white/55">{% trans "Taux de réussite" %}</div>
+                </div>
+                <div class="rounded-xl bg-white/5 backdrop-blur-md border border-white/10 py-3">
+                    <div class="text-sm font-semibold">{% trans "Quotidien" %}</div>
+                    <div class="text-[10px] text-white/55">{% trans "Pronostics" %}</div>
+                </div>
+            </div>
+
+            <div class="pt-4 pb-1 text-center text-[10px] text-white/45">
+                {% trans "Sécurisé. Fiable. 100% Sport." %}
+            </div>
         </div>
     </div>
 </div>
-{% else %}
-<div class="max-w-2xl mx-auto px-4 py-14 animate-fade-in-up">
-    <div id="company-config" class="text-center">
-        <div id="company-logo-wrap" class="inline-flex items-center justify-center w-20 h-20 hud-corners mb-5 bg-navy-950 overflow-hidden">
-            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
-        </div>
-        <h1 id="company-name" class="font-display text-3xl font-bold"></h1>
-        <p id="company-description" class="mt-3 text-navy-900/60 dark:text-white/60 max-w-lg mx-auto"></p>
-    </div>
-    <div class="mt-10 flex justify-center">
-        <div class="flex flex-col sm:flex-row gap-3">
-            <a href="{% url 'account_login' %}" class="btn-primary">{% trans "Se connecter" %}</a>
-            <a href="{% url 'account_signup' %}" class="btn-secondary">{% trans "Créer un compte" %}</a>
-        </div>
-    </div>
-</div>
-{% endif %}
 {% endblock %}
 {% block extra_scripts %}
-<script src="{% static 'js/voice-player.js' %}"></script>
-<script src="{% static 'js/reactions.js' %}"></script>
 <script>
-    const CURRENT_USER_ID = {{ user.id|default:"null" }};
-    const IS_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
-    function getCsrfToken() {
-        return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "";
-    }
-    function faviconUrl(pageUrl) {
-        try {
-            const domain = new URL(pageUrl).hostname;
-            return "https://www.google.com/s2/favicons?sz=64&domain=" + domain;
-        } catch (e) {
-            return "";
-        }
-    }
-    function renderLinks(links) {
-        if (!links || !links.length) return;
-        const platforms = links.filter((l) => l.category === "platform" && l.is_active);
-        const socials = links.filter((l) => l.category !== "platform" && l.is_active);
-        const section = document.getElementById("links-section");
-        const platformsWrap = document.getElementById("platforms-links");
-        const platformsList = document.getElementById("platforms-list");
-        const socialWrap = document.getElementById("social-links");
-        const socialList = document.getElementById("social-list");
-        if (!section) return;
-        let hasAny = false;
-        if (platforms.length && platformsList) {
-            platformsList.innerHTML = "";
-            platforms.forEach((link) => {
-                const a = document.createElement("a");
-                a.href = link.url;
-                a.target = "_blank";
-                a.rel = "noopener noreferrer";
-                a.className = "inline-flex items-center gap-2 border border-navy-900/15 dark:border-white/15 px-3 py-1.5 text-xs hover:border-accent-500 transition-colors";
-                a.innerHTML = "<img src=\"" + faviconUrl(link.url) + "\" class=\"w-5 h-5 rounded-full\" alt=\"\" onerror=\"this.style.visibility='hidden'\">" + "<span class=\"text-accent-600 font-medium\">" + (link.label || link.platform_label) + "</span>";
-                if (link.promo_code) {
-                    const code = document.createElement("span");
-                    code.className = "text-navy-900/50 dark:text-white/45";
-                    code.textContent = link.promo_code;
-                    a.appendChild(code);
-                    const copyBtn = document.createElement("button");
-                    copyBtn.type = "button";
-                    copyBtn.className = "text-navy-900/40 dark:text-white/35 hover:text-accent-600";
-                    copyBtn.textContent = "\ud83d\udccb";
-                    copyBtn.addEventListener("click", (event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        navigator.clipboard.writeText(link.promo_code).catch(() => {});
-                        copyBtn.textContent = "\u2705";
-                        setTimeout(() => { copyBtn.textContent = "\ud83d\udccb"; }, 1200);
-                    });
-                    a.appendChild(copyBtn);
-                }
-                platformsList.appendChild(a);
-            });
-            platformsWrap.classList.remove("hidden");
-            hasAny = true;
-        }
-        if (socials.length && socialList) {
-            socialList.innerHTML = "";
-            socials.forEach((link) => {
-                const a = document.createElement("a");
-                a.href = link.url;
-                a.target = "_blank";
-                a.rel = "noopener noreferrer";
-                a.className = "btn-icon";
-                a.title = link.label || link.platform_label;
-                a.innerHTML = "<img src=\"" + faviconUrl(link.url) + "\" class=\"w-5 h-5 rounded-full\" alt=\"\">";
-                socialList.appendChild(a);
-            });
-            socialWrap.classList.remove("hidden");
-            hasAny = true;
-        }
-        if (hasAny) section.classList.remove("hidden");
-    }
-    window.__companyConfigPromise = fetch("{% url 'company:api_config' %}")
+    fetch("{% url 'company:api_config' %}")
         .then((res) => res.json())
         .then((data) => {
             const profile = data.profile;
-            const welcome = data.welcome_message;
-            const links = data.external_links || [];
             const nameEl = document.getElementById("company-name");
-            if (nameEl) nameEl.textContent = profile.name;
+            if (nameEl && profile.name) nameEl.textContent = profile.name;
             const descEl = document.getElementById("company-description");
-            if (descEl) descEl.textContent = profile.description || "";
-            const logoWrap = document.getElementById("company-logo-wrap");
-            if (profile.logo && logoWrap) {
-                logoWrap.innerHTML = "";
-                const img = document.createElement("img");
-                img.src = profile.logo;
-                img.alt = profile.name;
-                img.className = "w-full h-full object-cover";
-                logoWrap.appendChild(img);
-            }
-                window.__sportiWelcome = welcome;
-                renderLinks(links);
+            if (descEl && profile.description) descEl.textContent = profile.description;
         })
         .catch((err) => console.error("Erreur chargement config entreprise :", err));
-    {% if user.is_authenticated %}
-    // --- Chat en temps reel ---
-    (function () {
-        const thread = document.getElementById("chat-thread");
-        const form = document.getElementById("composer-form");
-        const input = document.getElementById("message-input");
-        const attachBtn = document.getElementById("attach-btn");
-        const attachmentInput = document.getElementById("attachment-input");
-        const presenceDot = document.getElementById("admin-presence-dot");
-        const presenceLabel = document.getElementById("admin-presence-label");
-        let conversationId = null;
-        let typingTimeout = null;
-        let typingBubble = null;
-        let socket = null;
-        function ticksFor(status) {
-            if (status === "read") {
-                return '<span class="status-tick text-white/90">✓✓</span>';
-            }
-            if (status === "delivered") {
-                return '<span class="status-tick text-white/60">✓✓</span>';
-            }
-            return '<span class="status-tick text-white/60">✓</span>';
-        }
-
-        function sendReaction(messageId, emoji) {
-            if (!socket || socket.readyState !== WebSocket.OPEN) return;
-            socket.send(JSON.stringify({ type: "reaction", message_id: messageId, emoji }));
-        }
-
-        function sendTextMessage(text) {
-            if (!socket || socket.readyState !== WebSocket.OPEN) return;
-            socket.send(JSON.stringify({ message: text }));
-        }
-
-        function renderWelcomeBubble() {
-            const welcome = window.__sportiWelcome;
-            if (!welcome) return;
-            const div = document.createElement("div");
-            div.className = "bubble-admin";
-            let hasContent = false;
-            if (welcome.is_text_enabled && welcome.text) {
-                const p = document.createElement("p");
-                p.textContent = welcome.text;
-                div.appendChild(p);
-                hasContent = true;
-            }
-            if (welcome.is_audio_enabled && welcome.audio_file) {
-                div.appendChild(createVoicePlayer(welcome.audio_file));
-                hasContent = true;
-            }
-            if (welcome.is_video_enabled && welcome.video_file) {
-                const video = document.createElement("video");
-                video.controls = true;
-                video.className = "mt-3 w-full";
-                video.src = welcome.video_file;
-                div.appendChild(video);
-                hasContent = true;
-            }
-            if (!hasContent) return;
-            thread.appendChild(div);
-        }
-        function renderMessage(msg) {
-            const isMine = msg.sender_id === CURRENT_USER_ID || (msg.sender && msg.sender === CURRENT_USER_ID);
-            const div = document.createElement("div");
-            div.className = isMine ? "bubble-client" : "bubble-admin";
-            div.dataset.messageId = msg.id;
-            let inner = "";
-            if (msg.content) {
-                inner += `<span>${escapeHtml(msg.content)}</span>`;
-            }
-            let audioAttachment = null;
-            if (msg.attachment) {
-                const att = msg.attachment;
-                if (att.file_type && att.file_type.startsWith("image/")) {
-                    inner += `<img src="${att.file_url}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="${att.file_name}">`;
-                } else if (att.file_type && att.file_type.startsWith("video/")) {
-                    inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="${att.file_url}"></video>`;
-                } else if (att.file_type && att.file_type.startsWith("audio/")) {
-                    audioAttachment = att.file_url;
-                } else {
-                    inner += `<a href="${att.file_url}" target="_blank" class="underline text-xs">${att.file_name}</a>`;
-                }
-            } else if (msg.attachments && msg.attachments.length) {
-                msg.attachments.forEach((att) => {
-                    if (att.file_type && att.file_type.startsWith("image/")) {
-                        inner += `<img src="${att.file}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="${att.file_name}">`;
-                    } else if (att.file_type && att.file_type.startsWith("video/")) {
-                        inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="${att.file}"></video>`;
-                    } else if (att.file_type && att.file_type.startsWith("audio/")) {
-                        audioAttachment = att.file;
-                    } else {
-                        inner += `<a href="${att.file}" target="_blank" class="underline text-xs">${att.file_name}</a>`;
-                    }
-                });
-            }
-            if (isMine) {
-                inner += ticksFor(msg.status);
-            }
-            div.innerHTML = inner;
-            if (audioAttachment) {
-                div.appendChild(createVoicePlayer(audioAttachment));
-            }
-
-            const reactionsRow = document.createElement("div");
-            reactionsRow.className = "reactions-row";
-            const initialEmojis = (msg.reactions || []).map((r) => r.emoji);
-            renderReactionBadges(reactionsRow, initialEmojis);
-            div.appendChild(reactionsRow);
-            attachReactionUI(div, msg.id, sendReaction);
-
-            thread.appendChild(div);
-        }
-        function escapeHtml(str) {
-            const div = document.createElement("div");
-            div.textContent = str;
-            return div.innerHTML;
-        }
-        function scrollToBottom() {
-            thread.scrollTop = thread.scrollHeight;
-        }
-        function updateTicks(messageIds, status) {
-            messageIds.forEach((id) => {
-                const bubble = thread.querySelector(`[data-message-id="${id}"]`);
-                if (bubble && bubble.classList.contains("bubble-client")) {
-                    const tick = bubble.querySelector(".status-tick");
-                    if (tick) tick.outerHTML = ticksFor(status);
-                }
-            });
-        }
-        function setPresence(isOnline) {
-            if (isOnline) {
-                presenceDot.classList.add("online");
-                presenceLabel.textContent = "{% trans 'En ligne' %}";
-            } else {
-                presenceDot.classList.remove("online");
-                presenceLabel.textContent = "{% trans 'Hors ligne' %}";
-            }
-        }
-        function showTyping() {
-            if (typingBubble) return;
-            typingBubble = document.createElement("div");
-            typingBubble.className = "bubble-admin typing-dots";
-            typingBubble.innerHTML = "<span></span><span></span><span></span>";
-            thread.appendChild(typingBubble);
-            scrollToBottom();
-        }
-        function hideTyping() {
-            if (typingBubble) {
-                typingBubble.remove();
-                typingBubble = null;
-            }
-        }
-        function connectSocket() {
-            const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-            socket = new WebSocket(`${protocol}://${window.location.host}/ws/chat/`);
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === "presence") {
-                    if (data.user_id !== CURRENT_USER_ID) setPresence(data.is_online);
-                    return;
-                }
-                if (data.type === "read_receipt") {
-                    updateTicks(data.message_ids, "read");
-                    return;
-                }
-                if (data.type === "typing") {
-                    if (data.user_id === CURRENT_USER_ID) return;
-                    if (data.is_typing) showTyping();
-                    else hideTyping();
-                    return;
-                }
-                if (data.type === "reaction") {
-                    const bubble = thread.querySelector(`[data-message-id="${data.message_id}"]`);
-                    const row = bubble && bubble.querySelector(".reactions-row");
-                    if (row) renderReactionBadges(row, data.emojis);
-                    return;
-                }
-                hideTyping();
-                if (!thread.querySelector(`[data-message-id="${data.id}"]`)) {
-                    renderMessage(data);
-                    scrollToBottom();
-                }
-            };
-            socket.onclose = () => {
-                setTimeout(connectSocket, 2000);
-            };
-        }
-        function loadHistory() {
-            Promise.all([
-                fetch("{% url 'chat:api_my_conversation' %}").then((res) => res.json()),
-                window.__companyConfigPromise || Promise.resolve(),
-            ])
-                .then(([data]) => {
-                    conversationId = data.conversation_id;
-                    renderWelcomeBubble();
-                    data.messages.forEach(renderMessage);
-                    scrollToBottom();
-                    connectSocket();
-                })
-                .catch((err) => console.error("Erreur chargement conversation :", err));
-        }
-        form.addEventListener("submit", (event) => {
-            event.preventDefault();
-            const text = input.value.trim();
-            if (!text || !socket || socket.readyState !== WebSocket.OPEN) return;
-            sendTextMessage(text);
-            input.value = "";
-            input.style.height = "auto";
-            sendTyping(false);
-        });
-        input.addEventListener("input", () => {
-            input.style.height = "auto";
-            input.style.height = Math.min(input.scrollHeight, 128) + "px";
-            sendTyping(true);
-        });
-        function sendTyping(isTyping) {
-            if (!socket || socket.readyState !== WebSocket.OPEN) return;
-            socket.send(JSON.stringify({ type: "typing", is_typing: isTyping }));
-            if (isTyping) {
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => sendTyping(false), 2500);
-            } else {
-                clearTimeout(typingTimeout);
-            }
-        }
-
-        const emojiBtn = document.getElementById("emoji-btn");
-        if (emojiBtn) {
-            attachComposerEmojiButton(emojiBtn, input);
-        }
-
-        const ATTACHMENT_URL_TEMPLATE = "{% url 'chat:api_attachment_upload' conversation_id=999999 %}";
-        attachBtn.addEventListener("click", () => {
-            if (!conversationId) {
-                alert("{% trans 'Un instant, la conversation se charge encore…' %}");
-                return;
-            }
-            attachmentInput.click();
-        });
-        attachmentInput.addEventListener("change", () => {
-            const file = attachmentInput.files[0];
-            attachmentInput.value = "";
-            if (!file) return;
-            if (!conversationId) {
-                alert("{% trans 'Un instant, la conversation se charge encore…' %}");
-                return;
-            }
-            const formData = new FormData();
-            formData.append("file", file);
-            const uploadUrl = ATTACHMENT_URL_TEMPLATE.replace("999999", conversationId);
-            fetch(uploadUrl, {
-                method: "POST",
-                headers: { "X-CSRFToken": getCsrfToken() },
-                body: formData,
-            })
-                .then(async (res) => {
-                    const data = await res.json().catch(() => ({}));
-                    if (!res.ok) {
-                        alert(data.detail || "{% trans "Échec de l'envoi du fichier." %}");
-                        return;
-                    }
-                    if (!thread.querySelector(`[data-message-id="${data.id}"]`)) {
-                        hideTyping();
-                        renderMessage(data);
-                        scrollToBottom();
-                    }
-                })
-                .catch((err) => {
-                    console.error("Erreur envoi piece jointe :", err);
-                    alert("{% trans "Échec de l'envoi du fichier, vérifiez votre connexion." %}");
-                });
-        });
-
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        const micBtn = document.getElementById("mic-btn");
-        function uploadVoiceMessage(blob) {
-            if (!conversationId) return;
-            const formData = new FormData();
-            formData.append("file", blob, "voice-message.webm");
-            const uploadUrl = ATTACHMENT_URL_TEMPLATE.replace("999999", conversationId);
-            fetch(uploadUrl, {
-                method: "POST",
-                headers: { "X-CSRFToken": getCsrfToken() },
-                body: formData,
-            })
-                .then(async (res) => {
-                    const data = await res.json().catch(() => ({}));
-                    if (!res.ok) {
-                        console.error("Erreur serveur upload vocal:", data);
-                        alert(data.detail || "Echec de l'envoi du vocal.");
-                        return;
-                    }
-                    if (!thread.querySelector(`[data-message-id="${data.id}"]`)) {
-                        hideTyping();
-                        renderMessage(data);
-                        scrollToBottom();
-                    }
-                })
-                .catch((err) => {
-                    console.error("Erreur reseau upload vocal:", err);
-                    alert("Echec de l'envoi du vocal, verifiez votre connexion.");
-                });
-        }
-        if (micBtn) {
-            micBtn.addEventListener("click", async () => {
-                if (mediaRecorder && mediaRecorder.state === "recording") {
-                    mediaRecorder.stop();
-                    return;
-                }
-                if (!conversationId) {
-                    alert("Un instant, la conversation se charge encore...");
-                    return;
-                }
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    alert("Le microphone necessite une connexion securisee (HTTPS) ou localhost. Verifiez l'URL utilisee.");
-                    console.error("navigator.mediaDevices indisponible -- contexte non securise (ni https, ni localhost) ?");
-                    return;
-                }
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    recordedChunks = [];
-                    mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
-                    mediaRecorder.onstop = () => {
-                        stream.getTracks().forEach((t) => t.stop());
-                        micBtn.style.backgroundColor = "";
-                        micBtn.style.color = "";
-                        const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || "audio/webm" });
-                        uploadVoiceMessage(blob);
-                    };
-                    mediaRecorder.start();
-                    micBtn.style.backgroundColor = "#ef4444";
-                    micBtn.style.color = "#ffffff";
-                } catch (err) {
-                    console.error("Erreur microphone :", err);
-                    alert("Microphone inaccessible : " + err.name + ". Verifiez les autorisations du navigateur.");
-                }
-            });
-        }
-        loadHistory();
-    })();
-    {% endif %}
-    {% if user.is_authenticated %}
-    const VAPID_PUBLIC_KEY = "BADV9JSLdUH2Le2D-bXyMeZbedSC8cfyiXc7aH4ieUmJne8aMU1xptDYjgmFqJ4Tb9ZY7rCzUAv1aUKvYCUcICo";
-    function urlBase64ToUint8Array(base64String) {
-        const padding = "=".repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-        const rawData = window.atob(base64);
-        return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
-    }
-    navigator.serviceWorker.ready.then(async (registration) => {
-        if (Notification.permission === "denied") return;
-        const permission = await Notification.requestPermission();
-        if (permission !== "granted") return;
-        const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-        });
-        await fetch("{% url 'accounts:push_subscribe' %}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCsrfToken(),
-            },
-            body: JSON.stringify(subscription),
-        });
-    });
-    {% endif %}
 </script>
 {% endblock %}

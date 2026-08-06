@@ -17,6 +17,12 @@ class User(AbstractUser):
         blank=True,
         help_text="Photo de profil recuperee automatiquement depuis Google.",
     )
+    avatar = models.ImageField(
+        upload_to="avatars/",
+        blank=True,
+        null=True,
+        help_text="Photo de profil personnalisee, choisie par l'utilisateur.",
+    )
     phone_number = models.CharField(max_length=30, blank=True)
     is_online = models.BooleanField(default=False)
     last_seen_at = models.DateTimeField(null=True, blank=True)
@@ -27,6 +33,16 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.get_full_name() or self.email or self.username
+
+    @property
+    def display_avatar_url(self):
+        """Priorite : photo perso uploadee, puis avatar Google, sinon rien
+        (le template affiche alors les initiales)."""
+        if self.avatar:
+            return self.avatar.url
+        if self.avatar_url:
+            return self.avatar_url
+        return ""
 
 
 class PushSubscription(models.Model):

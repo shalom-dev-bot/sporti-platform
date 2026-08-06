@@ -1,0 +1,79 @@
+{% extends "dashboard/_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Importer des matchs" %} — SPORTI{% endblock %}
+{% block dashboard_content %}
+<h1 class="dashboard-page-title">{% trans "Importer des matchs (API-Football)" %}</h1>
+<p class="dashboard-page-subtitle">
+    {% trans "Recherche des matchs reels et importe-les en un clic plutot que de les saisir a la main." %}
+</p>
+
+<form method="get" class="panel !p-5 flex flex-wrap items-end gap-4 mb-6">
+    <div class="field-group !mb-0">
+        <label for="id_date" class="field-label">{% trans "Date" %}</label>
+        <input type="date" id="id_date" name="date" value="{{ date_str }}" class="field-input">
+    </div>
+    <div class="field-group !mb-0">
+        <label for="id_league" class="field-label">{% trans "Competition (optionnel)" %}</label>
+        <select id="id_league" name="league" class="field-input">
+            <option value="">{% trans "Toutes competitions" %}</option>
+            {% for league_value, league_label in popular_leagues %}
+            <option value="{{ league_value }}" {% if league_id == league_value|stringformat:"s" %}selected{% endif %}>
+                {{ league_label }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn-primary !px-6">{% trans "Rechercher" %}</button>
+</form>
+
+{% if error %}
+<div class="panel !p-5 mb-6 !border-red-500/30">
+    <p class="text-sm text-red-500 font-medium">{{ error }}</p>
+    {% if "API_FOOTBALL_KEY" in error or "cle" in error %}
+    <p class="text-xs text-navy-900/50 dark:text-white/45 mt-2">
+        {% trans "Ajoute ta cle dans le fichier .env : API_FOOTBALL_KEY=ta-cle-ici, puis relance le serveur." %}
+    </p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if fixtures %}
+<div class="panel !p-0 overflow-x-auto">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="px-6">{% trans "Match" %}</th>
+                <th>{% trans "Competition" %}</th>
+                <th>{% trans "Date" %}</th>
+                <th class="pr-6 text-right">{% trans "Action" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fixture in fixtures %}
+            <tr>
+                <td class="px-6 font-medium">{{ fixture.home_name }} — {{ fixture.away_name }}</td>
+                <td class="text-navy-900/60 dark:text-white/50">{{ fixture.competition }}</td>
+                <td class="text-navy-900/45 dark:text-white/40">{{ fixture.kickoff_at }}</td>
+                <td class="pr-6 text-right">
+                    {% if fixture.api_id in already_imported_ids %}
+                        <span class="badge">{% trans "Deja importe" %}</span>
+                    {% else %}
+                        <form method="post" action="{% url 'dashboard:fixture_import' fixture.api_id %}" class="inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="date_str" value="{{ date_str }}">
+                            <input type="hidden" name="league_id" value="{{ league_id }}">
+                            <button type="submit" class="btn-ghost !px-3 !py-1.5 !text-xs">{% trans "Importer" %}</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% elif not error and searched %}
+<div class="panel text-center py-10 text-sm text-navy-900/40 dark:text-white/35">
+    {% trans "Aucun match trouve pour cette date/competition." %}
+</div>
+{% endif %}
+{% endblock %}

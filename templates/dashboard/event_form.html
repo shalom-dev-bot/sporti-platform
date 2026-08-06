@@ -1,0 +1,37 @@
+{% extends "dashboard/_base.html" %}
+{% load i18n %}
+
+{% block title %}{% if is_edit %}{% trans "Modifier l'événement" %}{% else %}{% trans "Nouvel événement" %}{% endif %} — SPORTI{% endblock %}
+
+{% block dashboard_content %}
+<a href="{% url 'dashboard:events_list' %}" class="btn-ghost !px-0 mb-4 inline-flex">&laquo; {% trans "Retour aux événements" %}</a>
+
+<h1 class="dashboard-page-title">
+    {% if is_edit %}{% trans "Modifier l'événement" %}{% else %}{% trans "Nouvel événement" %}{% endif %}
+</h1>
+
+{% if not form.fields.home_team.queryset.exists %}
+<div class="panel max-w-lg mt-6 !border-accent-500/25">
+    <p class="text-sm text-navy-900/60 dark:text-white/50">
+        {% trans "Aucune équipe n'a encore été créée." %}
+        <a href="{% url 'dashboard:team_create' %}" class="text-accent-600 dark:text-accent-400 underline">{% trans "Créer une équipe" %}</a>
+    </p>
+</div>
+{% endif %}
+
+<div class="panel max-w-lg mt-6">
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="field-group">
+            <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-primary">
+            {% if is_edit %}{% trans "Enregistrer" %}{% else %}{% trans "Ajouter l'événement" %}{% endif %}
+        </button>
+    </form>
+</div>
+{% endblock %}

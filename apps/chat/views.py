@@ -1,4 +1,9 @@
 from django.shortcuts import redirect, render
+from django.utils import timezone
+
+from apps.accounts.models import User
+from apps.company.models import CompanyProfile
+from apps.predictions.models import Event, Prediction
 
 
 def home(request):
@@ -8,8 +13,35 @@ def home(request):
     if request.user.is_authenticated and request.user.is_staff:
         return redirect("/gestion/")
     if request.user.is_authenticated:
-        return render(request, "chat/hub.html")
-    return render(request, "chat/home.html")
+        profile, _ = CompanyProfile.objects.get_or_create(pk=1)
+        today = timezone.localdate()
+        published = Prediction.objects.filter(is_published=True)
+        total_predictions = published.count()
+        won_predictions = published.filter(result=Prediction.Result.WON).count()
+        success_rate = (
+            round((won_predictions / total_predictions) * 100) if total_predictions else 0
+        )
+        context = {
+            "company": profile,
+            "new_today_count": published.filter(event__kickoff_at__date=today).count(),
+            "total_predictions": total_predictions,
+            "won_predictions": won_predictions,
+            "success_rate": success_rate,
+            "upcoming_events_count": Event.objects.filter(kickoff_at__gte=timezone.now()).count(),
+            "active_clients_count": User.objects.filter(is_staff=False, is_active=True).count(),
+        }
+        return render(request, "chat/hub.html", context)
+
+    published = Prediction.objects.filter(is_published=True)
+    total_predictions = published.count()
+    won_predictions = published.filter(result=Prediction.Result.WON).count()
+    public_context = {
+        "active_members_count": User.objects.filter(is_staff=False, is_active=True).count(),
+        "success_rate": (
+            round((won_predictions / total_predictions) * 100) if total_predictions else 0
+        ),
+    }
+    return render(request, "chat/home.html", public_context)
 
 
 def chat_room(request):

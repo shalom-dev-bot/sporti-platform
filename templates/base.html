@@ -24,7 +24,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-surface-light dark:bg-navy-950 text-navy-900 dark:text-white font-body transition-colors duration-300 min-h-screen">
-    <nav id="top-utility-bar" class="w-full flex items-center justify-end gap-2 px-4" style="height:3.5rem; background:transparent;">
+    <nav id="top-utility-bar" class="fixed top-0 right-0 z-50 flex items-center justify-end gap-2 px-4" style="height:3.5rem; background:transparent;">
         <form id="lang-form" action="{% url 'set_language' %}" method="post" class="m-0">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.path }}">

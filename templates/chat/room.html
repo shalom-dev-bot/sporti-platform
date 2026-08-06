@@ -5,7 +5,11 @@
 {% block content %}
 {% if user.is_authenticated %}
 <div class="chat-shell">
+    {% include "chat/_top_navbar.html" %}
     <header class="chat-header">
+        <a href="{% url 'chat:home' %}" class="btn-icon !w-9 !h-9 shrink-0 lg:hidden" aria-label="{% trans 'Retour' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </a>
         <div id="company-logo-wrap" class="w-10 h-10 shrink-0 hud-corners bg-navy-950 flex items-center justify-center overflow-hidden">
             <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
         </div>
@@ -16,12 +20,21 @@
                 <span id="admin-presence-label">{% trans "Hors ligne" %}</span>
             </p>
         </div>
-        <form method="post" action="{% url 'account_logout' %}">
+        <form method="post" action="{% url 'account_logout' %}" class="hidden lg:block">
             {% csrf_token %}
             <button type="submit" class="btn-ghost">{% trans "Déconnexion" %}</button>
         </form>
     </header>
     <div id="chat-thread" class="chat-thread flex flex-col"></div>
+    <div id="links-section" class="hidden px-3 sm:px-6 py-3 border-t border-navy-900/10 dark:border-white/10">
+        <div id="platforms-links" class="hidden mb-3">
+            <p class="text-xs text-navy-900/45 dark:text-white/40 mb-2">Plateformes recommandées</p>
+            <div id="platforms-list" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div id="social-links" class="hidden">
+            <div id="social-list" class="flex gap-2"></div>
+        </div>
+    </div>
     <div class="mobile-chat-composer-wrap" style="position: relative;">
     <form id="composer-form" class="mobile-chat-composer">
         <input type="file" id="attachment-input" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx">
@@ -50,15 +63,7 @@
         </button>
     </form>
     </div>
-    <div id="links-section" class="hidden px-3 sm:px-6 py-3 border-t border-navy-900/10 dark:border-white/10">
-        <div id="platforms-links" class="hidden mb-3">
-            <p class="text-xs text-navy-900/45 dark:text-white/40 mb-2">Plateformes recommandées</p>
-            <div id="platforms-list" class="flex flex-wrap gap-2"></div>
-        </div>
-        <div id="social-links" class="hidden">
-            <div id="social-list" class="flex gap-2"></div>
-        </div>
-    </div>
+    {% include "chat/_bottom_nav.html" %}
 </div>
 {% else %}
 <div class="max-w-2xl mx-auto px-4 py-14 animate-fade-in-up">

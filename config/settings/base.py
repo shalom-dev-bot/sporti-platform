@@ -82,6 +82,10 @@ DATABASES = {
 
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 
+# --- API-Football (donnees sportives : equipes, matchs, logos) ---
+API_FOOTBALL_KEY = env("API_FOOTBALL_KEY", default="")
+API_FOOTBALL_BASE_URL = "https://v3.football.api-sports.io"
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -212,3 +216,12 @@ else:
 VAPID_PRIVATE_KEY = env("VAPID_PRIVATE_KEY", default="").replace("\\n", "\n")
 VAPID_PUBLIC_KEY = env("VAPID_PUBLIC_KEY", default="")
 VAPID_CLAIMS_EMAIL = env("VAPID_CLAIMS_EMAIL", default="mailto:contact@sporti.app")
+
+# --- API-Football (v3.football.api-sports.io) ---
+# Cle recuperee sur https://dashboard.api-football.com (plan gratuit
+# disponible). Utilise le header "x-apisports-key" -- si le compte a ete
+# cree via RapidAPI plutot que directement sur api-football.com, il
+# faudra adapter apps/predictions/api_football.py pour les headers
+# x-rapidapi-key / x-rapidapi-host a la place.
+API_FOOTBALL_KEY = env("API_FOOTBALL_KEY", default="")
+API_FOOTBALL_BASE_URL = "https://v3.football.api-sports.io"

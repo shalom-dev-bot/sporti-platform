@@ -1,48 +1,115 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load static %}
+{% load i18n static %}
 {% block title %}SPORTI{% endblock %}
 {% block content %}
-<div class="auth-shell">
-    <div class="relative w-full max-w-md text-center mb-10">
-        <div class="inline-flex items-center justify-center w-16 h-16 hud-corners mb-4 overflow-hidden bg-navy-950">
-            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+<div class="chats-shell">
+    {% include "chat/_top_navbar.html" %}
+    <div class="flex-1 min-h-0 overflow-y-auto px-4 lg:px-8 py-5 lg:py-8 pb-8">
+        <div class="lg:max-w-4xl lg:mx-auto">
+        <!-- En-tete -->
+        <div class="flex items-center justify-between mb-6 pr-24 lg:pr-0">
+            <div>
+                <h1 class="font-display text-xl font-bold">{% trans "Bonjour" %}, {{ user.first_name|default:user.username }} &#128075;</h1>
+                <p class="text-sm text-navy-900/50 dark:text-white/45">{% trans "Prêt pour les pronostics d'aujourd'hui ?" %}</p>
+            </div>
+            <a href="{% url 'accounts:profile' %}" class="w-11 h-11 shrink-0 rounded-full hud-corners overflow-hidden bg-navy-900/10 dark:bg-white/10 flex items-center justify-center">
+                {% if user.display_avatar_url %}
+                    <img src="{{ user.display_avatar_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+                {% else %}
+                    <span class="font-display font-bold text-accent-600">{{ user.username|slice:":2"|upper }}</span>
+                {% endif %}
+            </a>
         </div>
-        <h1 class="font-display text-2xl font-bold tracking-wide">SPORTI</h1>
-        <p class="text-[11px] uppercase tracking-[0.2em] text-navy-900/40 dark:text-white/35 mt-1">
-            Vision · Speed · Strength
-        </p>
-    </div>
-    <div class="w-full max-w-md space-y-4">
-        <a href="{% url 'chat:room' %}" class="panel block hover:!border-accent-500 transition-colors">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-accent-500/10 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+        <!-- Bandeau nouveautes -->
+        {% if new_today_count %}
+        <a href="{% url 'predictions:list' %}?filtre=aujourdhui" class="block panel !p-5 mb-4 relative overflow-hidden hover:!border-accent-500 transition-colors">
+            <span class="badge !bg-accent-600 mb-3 inline-flex !rounded-none px-2">{% trans "NOUVEAU" %}</span>
+            <p class="font-display text-lg font-bold leading-snug">
+                {{ new_today_count }} {% trans "nouveaux pronostics" %}<br>{% trans "sont disponibles aujourd'hui." %}
+            </p>
+            <span class="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-accent-600 dark:text-accent-400">
+                {% trans "Voir maintenant" %} &rarr;
+            </span>
+        </a>
+        {% endif %}
+
+        <!-- Deux cartes principales -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            <a href="{% url 'chat:room' %}" class="panel !p-5 hover:!border-accent-500 transition-colors">
+                <div class="w-11 h-11 rounded-full bg-accent-500/10 flex items-center justify-center mb-3">
+                    <svg class="w-5 h-5 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
                     </svg>
                 </div>
-                <div class="text-left flex-1 min-w-0">
-                    <h2 class="font-display font-semibold text-base">{% trans "Discuter avec l'entreprise" %}</h2>
-                    <p class="text-sm text-navy-900/50 dark:text-white/45">{% trans "Posez vos questions, échangez en direct." %}</p>
-                </div>
-                <svg class="w-5 h-5 text-navy-900/30 dark:text-white/25 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m9 18 6-6-6-6"/>
-                </svg>
-            </div>
-        </a>
-        <div class="panel block opacity-60 cursor-not-allowed">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-accent-500/10 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                <h2 class="font-display font-semibold text-sm mb-1">{% trans "Discuter" %}</h2>
+                <p class="text-xs text-navy-900/50 dark:text-white/45">{% trans "Posez vos questions, obtenez des conseils personnalisés." %}</p>
+                <span class="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-accent-600 dark:text-accent-400">
+                    {% trans "Commencer" %} &rarr;
+                </span>
+            </a>
+            <a href="{% url 'predictions:list' %}" class="panel !p-5 hover:!border-accent-500 transition-colors">
+                <div class="w-11 h-11 rounded-full bg-accent-500/10 flex items-center justify-center mb-3">
+                    <svg class="w-5 h-5 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/><path d="M4 22h16"/>
                     </svg>
                 </div>
-                <div class="text-left flex-1 min-w-0">
-                    <h2 class="font-display font-semibold text-base">{% trans "Suivre les pronostics" %}</h2>
-                    <p class="text-sm text-navy-900/50 dark:text-white/45">{% trans "Bientôt disponible." %}</p>
-                </div>
+                <h2 class="font-display font-semibold text-sm mb-1">{% trans "Pronostics" %}</h2>
+                <p class="text-xs text-navy-900/50 dark:text-white/45">{{ total_predictions }} {% trans "pronostics" %} &middot; {{ success_rate }}% {% trans "de réussite" %}</p>
+                <span class="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-accent-600 dark:text-accent-400">
+                    {% trans "Accéder" %} &rarr;
+                </span>
+            </a>
+        </div>
+
+        <!-- Statistiques -->
+        <p class="text-xs font-display font-semibold uppercase tracking-wider text-navy-900/40 dark:text-white/35 mb-3">
+            {% trans "Statistiques" %}
+        </p>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <div class="stat-card !py-4 !px-4">
+                <p class="stat-card-label !mb-1">{% trans "Pronostics aujourd'hui" %}</p>
+                <p class="stat-card-value !text-2xl">{{ new_today_count }}</p>
+            </div>
+            <div class="stat-card !py-4 !px-4">
+                <p class="stat-card-label !mb-1">{% trans "Membres actifs" %}</p>
+                <p class="stat-card-value !text-2xl">{{ active_clients_count }}</p>
+            </div>
+            <div class="stat-card !py-4 !px-4">
+                <p class="stat-card-label !mb-1">{% trans "Taux de réussite" %}</p>
+                <p class="stat-card-value !text-2xl text-emerald-500">{{ success_rate }}%</p>
+            </div>
+            <div class="stat-card !py-4 !px-4">
+                <p class="stat-card-label !mb-1">{% trans "Événements à venir" %}</p>
+                <p class="stat-card-value !text-2xl">{{ upcoming_events_count }}</p>
             </div>
         </div>
+
+        <!-- Pourquoi SPORTI -->
+        <p class="text-xs font-display font-semibold uppercase tracking-wider text-navy-900/40 dark:text-white/35 mb-3">
+            {% trans "Pourquoi" %} {{ company.name }} ?
+        </p>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="panel !p-4">
+                <svg class="w-5 h-5 text-accent-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+                <p class="text-xs font-semibold">{% trans "Analyses professionnelles" %}</p>
+            </div>
+            <div class="panel !p-4">
+                <svg class="w-5 h-5 text-accent-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <p class="text-xs font-semibold">{% trans "Mises à jour quotidiennes" %}</p>
+            </div>
+            <div class="panel !p-4">
+                <svg class="w-5 h-5 text-accent-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <p class="text-xs font-semibold">{% trans "Support rapide" %}</p>
+            </div>
+            <div class="panel !p-4">
+                <svg class="w-5 h-5 text-accent-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <p class="text-xs font-semibold">{% trans "Paiements sécurisés" %}</p>
+            </div>
+        </div>
+        </div>
     </div>
+
+    {% include "chat/_bottom_nav.html" %}
 </div>
 {% endblock %}

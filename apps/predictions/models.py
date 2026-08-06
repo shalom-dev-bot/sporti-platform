@@ -4,6 +4,7 @@ Modeles du module Pronostics : une Equipe (avec logo), un Evenement
 cet evenement, avec analyse et lien vers la plateforme de paris).
 """
 
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -14,6 +15,12 @@ class Team(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
     logo = models.ImageField(upload_to="teams/", blank=True, null=True)
+    logo_url = models.URLField(
+        blank=True,
+        verbose_name="Logo (URL externe)",
+        help_text="Rempli automatiquement lors d'un import API-Football.",
+    )
+    api_football_id = models.PositiveIntegerField(blank=True, null=True, unique=True, db_index=True)
 
     class Meta:
         verbose_name = "Equipe"
@@ -22,6 +29,17 @@ class Team(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def display_logo_url(self):
+        """Priorite : logo uploade a la main, puis logo recupere via
+        l'import API-Football, sinon rien (le template affiche alors
+        les initiales)."""
+        if self.logo:
+            return self.logo.url
+        if self.logo_url:
+            return self.logo_url
+        return ""
 
     @property
     def initials(self):
@@ -42,6 +60,7 @@ class Event(models.Model):
     competition = models.CharField(max_length=150)
     sport = models.CharField(max_length=50, default="Football")
     kickoff_at = models.DateTimeField(verbose_name="Date et heure du match")
+    api_football_id = models.PositiveIntegerField(blank=True, null=True, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -75,6 +94,18 @@ class Prediction(models.Model):
         verbose_name="Plateforme de paris recommandee",
     )
     result = models.CharField(max_length=10, choices=Result.choices, default=Result.PENDING)
+    confidence = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        verbose_name="Confiance (%)",
+        help_text="Niveau de confiance affiche aux clients (0 a 100, optionnel).",
+    )
+    is_featured = models.BooleanField(
+        default=False,
+        verbose_name="Match phare",
+        help_text="Mis en avant dans l'onglet 'Top matchs' cote client.",
+    )
     is_published = models.BooleanField(default=True, verbose_name="Visible par les clients")
     created_at = models.DateTimeField(auto_now_add=True)
 

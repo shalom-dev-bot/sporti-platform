@@ -3,4 +3,4 @@
 # l'installation des deux environnements avant que build.sh (qui utilise pip
 # ET npm) ne soit execute.
 [phases.setup]
-nixPkgs = ["python312", "nodejs_20"]
+nixPkgs = ["python312", "python312Packages.pip", "nodejs_20"]

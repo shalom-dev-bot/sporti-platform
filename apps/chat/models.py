@@ -47,6 +47,14 @@ class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_messages"
     )
+    reply_to = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="replies",
+        help_text="Message auquel celui-ci repond (reponse citee, comme WhatsApp).",
+    )
     content = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.SENT)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)

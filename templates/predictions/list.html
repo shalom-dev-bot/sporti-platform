@@ -4,109 +4,246 @@
 {% block content %}
 <div class="chats-shell">
     {% include "chat/_top_navbar.html" %}
-    <header class="mobile-chat-header lg:hidden !pr-24">
-        <div>
-            <h1 class="font-display text-lg font-bold">{% trans "Pronostics" %}</h1>
-            <p class="text-xs text-navy-900/45 dark:text-white/40">{% trans "Analyses professionnelles du jour" %}</p>
-        </div>
-        <div class="w-10 h-10 hud-corners bg-navy-950 flex items-center justify-center overflow-hidden shrink-0">
-            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+
+    <!-- Barre mobile : logo + notifications + avatar -->
+    <header class="flex lg:hidden items-center justify-between px-4 pt-3 pb-1 shrink-0">
+        <a href="{% url 'chat:home' %}" class="flex items-center gap-2 min-w-0">
+            <div class="w-8 h-8 rounded-full overflow-hidden bg-navy-900 border border-accent-400/30 flex items-center justify-center shrink-0">
+                <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+            </div>
+            <span class="font-display font-bold text-sm tracking-wide">SPORTI</span>
+        </a>
+        <div class="flex items-center gap-2 shrink-0">
+            <button type="button" class="relative w-9 h-9 rounded-full bg-navy-900/5 dark:bg-white/5 border border-navy-900/10 dark:border-white/10 flex items-center justify-center" aria-label="{% trans 'Notifications' %}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                </svg>
+                <span class="absolute top-1.5 right-2 w-1.5 h-1.5 rounded-full bg-accent-400"></span>
+            </button>
+            <a href="{% url 'accounts:profile' %}" class="w-9 h-9 shrink-0 rounded-full overflow-hidden border border-accent-400/40 shadow-glow-sm flex items-center justify-center bg-navy-900">
+                {% if user.display_avatar_url %}
+                    <img src="{{ user.display_avatar_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+                {% else %}
+                    <span class="font-display font-bold text-xs text-accent-400">{{ user.username|slice:":2"|upper }}</span>
+                {% endif %}
+            </a>
         </div>
     </header>
 
-    <div class="flex-1 min-h-0 overflow-y-auto px-4 lg:px-8 py-4 lg:py-8">
-        <div class="lg:max-w-3xl lg:mx-auto">
-        <h1 class="hidden lg:block font-display text-2xl font-bold mb-1">{% trans "Pronostics" %}</h1>
-        <p class="hidden lg:block text-sm text-navy-900/50 dark:text-white/45 mb-6">{% trans "Analyses professionnelles du jour" %}</p>
-        <!-- Onglets de filtre -->
-        <div class="flex gap-2 mb-5 overflow-x-auto pb-1">
-            <a href="?filtre=tous" class="shrink-0 px-4 py-2 text-xs font-display font-semibold uppercase tracking-wide transition-colors
-                       {% if active_filter == 'tous' %}bg-accent-600 text-white{% else %}bg-navy-900/[0.04] dark:bg-white/5 text-navy-900/60 dark:text-white/50{% endif %}">
-                {% trans "Tous" %}
-            </a>
-            <a href="?filtre=aujourdhui" class="shrink-0 px-4 py-2 text-xs font-display font-semibold uppercase tracking-wide transition-colors
-                       {% if active_filter == 'aujourdhui' %}bg-accent-600 text-white{% else %}bg-navy-900/[0.04] dark:bg-white/5 text-navy-900/60 dark:text-white/50{% endif %}">
-                {% trans "Aujourd'hui" %}
-            </a>
-            <a href="?filtre=top" class="shrink-0 px-4 py-2 text-xs font-display font-semibold uppercase tracking-wide transition-colors
-                       {% if active_filter == 'top' %}bg-accent-600 text-white{% else %}bg-navy-900/[0.04] dark:bg-white/5 text-navy-900/60 dark:text-white/50{% endif %}">
-                &#9733; {% trans "Top matchs" %}
-            </a>
+    <div class="thin-scroll flex-1 min-h-0 overflow-y-auto px-4 lg:px-8 xl:px-12 py-2 lg:py-6">
+        <div class="lg:max-w-[1600px] lg:mx-auto pb-4">
+
+        <!-- En-tete -->
+        <div class="flex items-start justify-between gap-3 mb-2 lg:mb-5">
+            <div>
+                <h1 class="font-display text-lg lg:text-2xl font-medium">{% trans "Bonjour" %}, {{ user.first_name|default:user.username }} &#128075;</h1>
+                <p class="text-xs lg:text-base text-navy-900/60 dark:text-white/60">{% trans "Prêt à gagner aujourd'hui ?" %}</p>
+            </div>
+            {% if new_today_count %}
+            <span class="shrink-0 text-right inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-2xl bg-navy-900/80 border border-accent-400/25 text-[10px] lg:text-xs font-semibold leading-tight text-white">
+                <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5 text-orange-400 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-3 2 1 3 3.5 3 6a8 8 0 0 1-16 0c0-4 3-6 4-8 1-1.5 1.5-3 1.5-4C10 1 11 1.5 12 2Z"/></svg>
+                <span>{{ new_today_count }} {% trans "pronostics" %}<br>{% trans "disponibles aujourd'hui" %}</span>
+            </span>
+            {% endif %}
         </div>
 
-        <!-- Bandeau statistiques -->
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="stat-card !py-3 !px-4">
-                <p class="stat-card-label !mb-1">{% trans "Pronostics publiés" %}</p>
-                <p class="stat-card-value !text-2xl">{{ total_count }}</p>
+        <!-- Bandeau Premium -->
+        <a href="{% url 'chat:room' %}" class="block relative h-28 lg:h-40 rounded-[20px] lg:rounded-[24px] overflow-hidden mb-3 border border-accent-500/15 shadow-[0_18px_38px_rgba(0,0,0,0.38)] hover:border-accent-500/30 transition-colors">
+            <img src="{% static 'images/design/promo-ball.jpg' %}" alt="" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_78%_50%,rgba(66,130,255,.35),transparent_20%),linear-gradient(90deg,rgba(7,10,19,.95)_0%,rgba(7,10,19,.8)_48%,rgba(7,10,19,.3)_100%)]"></div>
+            <div class="relative z-10 px-4 lg:px-6 h-full max-w-[80%] lg:max-w-[60%] flex flex-col justify-center">
+                <p class="text-xl lg:text-3xl font-display font-bold leading-tight text-white">
+                    {% trans "Pronostics" %} <span class="text-accent-400">{% trans "Premium" %}</span>
+                </p>
+                <p class="mt-1.5 text-[11px] lg:text-sm text-white/75 leading-snug">
+                    {% trans "Analyses professionnelles. Cotes optimisées et confiance élevée." %}
+                </p>
+                <span class="mt-3 lg:mt-4 inline-flex items-center gap-1.5 h-8 lg:h-9 px-3.5 lg:px-4 w-fit rounded-[10px] bg-gradient-to-r from-[#c8860a] to-[#e8ab2e] text-navy-950 text-[11px] lg:text-xs font-bold shadow-[0_0_18px_rgba(232,171,46,0.5)]">
+                    {% trans "Parler avec" %} {{ company.name }} &rarr;
+                </span>
             </div>
-            <div class="stat-card !py-3 !px-4">
-                <p class="stat-card-label !mb-1">{% trans "Gagnés" %}</p>
-                <p class="stat-card-value !text-2xl text-emerald-500">{{ won_count }}</p>
-            </div>
+        </a>
+
+        <!-- Onglets de filtre -->
+        <div class="relative mb-3">
+        <div class="thin-scroll flex gap-2 overflow-x-auto pb-1">
+            <a href="?filtre=tous" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] lg:text-xs font-semibold transition-colors
+                       {% if active_filter == 'tous' %}bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white{% else %}glass-panel text-navy-900/60 dark:text-white/60{% endif %}">
+                {% trans "Tous" %}
+            </a>
+            <a href="?filtre=aujourdhui" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] lg:text-xs font-semibold transition-colors
+                       {% if active_filter == 'aujourdhui' %}bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white{% else %}glass-panel text-navy-900/60 dark:text-white/60{% endif %}">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                {% trans "Aujourd'hui" %}
+            </a>
+            <a href="?filtre=live" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] lg:text-xs font-semibold transition-colors
+                       {% if active_filter == 'live' %}bg-gradient-to-r from-red-600 to-red-500 text-white{% else %}glass-panel text-navy-900/60 dark:text-white/60{% endif %}">
+                <span class="relative flex w-1.5 h-1.5">
+                    <span class="{% if active_filter == 'live' %}bg-white{% else %}bg-red-500{% endif %} absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping"></span>
+                    <span class="{% if active_filter == 'live' %}bg-white{% else %}bg-red-500{% endif %} relative inline-flex rounded-full h-1.5 w-1.5"></span>
+                </span>
+                {% trans "Live" %}
+            </a>
+            <a href="?filtre=top" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] lg:text-xs font-semibold transition-colors
+                       {% if active_filter == 'top' %}bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white{% else %}glass-panel text-navy-900/60 dark:text-white/60{% endif %}">
+                <span class="text-amber-400">&#9733;</span> {% trans "Top matchs" %}
+            </a>
+            <a href="?filtre=historique" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] lg:text-xs font-semibold transition-colors
+                       {% if active_filter == 'historique' %}bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white{% else %}glass-panel text-navy-900/60 dark:text-white/60{% endif %}">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+                {% trans "Historique" %}
+            </a>
+        </div>
+        <div class="pointer-events-none absolute top-0 right-0 bottom-1 w-8 bg-gradient-to-l from-[#f7f9fc] dark:from-[#04060a] to-transparent lg:hidden"></div>
         </div>
 
         <!-- Liste des pronostics -->
-        <div class="space-y-3">
+        <div class="space-y-3 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0 mb-5">
             {% for prediction in predictions %}
-            <div class="panel !p-4 {% if prediction.is_featured %}!border-accent-500/40{% endif %}">
-                <div class="flex items-center justify-between mb-3 text-xs text-navy-900/45 dark:text-white/40">
-                    <span>{{ prediction.event.kickoff_at|date:"d M Y • H:i" }} &middot; {{ prediction.event.competition }}</span>
-                    {% if prediction.is_featured %}<span class="text-accent-600 dark:text-accent-400 font-semibold">&#9733; {% trans "Top" %}</span>{% endif %}
+            <div id="pred-{{ prediction.id }}" class="relative glass-panel rounded-[18px] overflow-hidden {% if prediction.is_featured %}border-amber-400/30{% endif %} scroll-mt-24">
+                {% if prediction.is_featured %}
+                <div class="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center bg-gradient-to-b from-[#e8ab2e] to-[#c8860a]">
+                    <span class="text-[8px] font-bold text-navy-950 tracking-widest whitespace-nowrap" style="writing-mode: vertical-rl; transform: rotate(180deg);">
+                        {% trans "TOP MATCH" %}
+                    </span>
                 </div>
+                {% endif %}
 
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-2 flex-1 min-w-0">
-                        {% if prediction.event.home_team.display_logo_url %}
-                            <img src="{{ prediction.event.home_team.display_logo_url }}" alt="" class="w-8 h-8 object-cover rounded-full shrink-0">
-                        {% else %}
-                            <span class="avatar-circle shrink-0">{{ prediction.event.home_team.initials }}</span>
-                        {% endif %}
-                        <span class="text-sm font-medium truncate">{{ prediction.event.home_team.name }}</span>
+                <div class="{% if prediction.is_featured %}pl-9{% else %}pl-3.5{% endif %} pr-3.5 lg:pr-4 py-3">
+                    <div class="flex items-center justify-between gap-2 mb-2.5 text-[10px] lg:text-[11px] text-navy-900/45 dark:text-white/45">
+                        <span class="flex items-center gap-1.5 min-w-0">
+                            {% if prediction.is_live %}
+                                <span class="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-400 font-semibold">
+                                    <span class="relative flex w-1.5 h-1.5">
+                                        <span class="bg-red-500 absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping"></span>
+                                        <span class="bg-red-500 relative inline-flex rounded-full h-1.5 w-1.5"></span>
+                                    </span>
+                                    {% trans "LIVE" %}
+                                </span>
+                            {% endif %}
+                            <span class="truncate">{{ prediction.event.kickoff_at|date:"d M, H:i" }} &middot; {{ prediction.event.competition }}</span>
+                        </span>
+                        <span class="shrink-0 flex items-center gap-1.5">
+                            {% if prediction.result == 'won' %}
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-semibold">{% trans "Gagné" %}</span>
+                            {% elif prediction.result == 'lost' %}
+                                <span class="px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 font-semibold">{% trans "Perdu" %}</span>
+                            {% elif prediction.confidence %}
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold">{{ prediction.confidence }}% {% trans "confiance" %}</span>
+                            {% endif %}
+                        </span>
                     </div>
-                    <span class="px-3 text-xs font-display text-navy-900/35 dark:text-white/30">{% trans "VS" %}</span>
-                    <div class="flex items-center gap-2 flex-1 min-w-0 justify-end">
-                        <span class="text-sm font-medium truncate text-right">{{ prediction.event.away_team.name }}</span>
-                        {% if prediction.event.away_team.display_logo_url %}
-                            <img src="{{ prediction.event.away_team.display_logo_url }}" alt="" class="w-8 h-8 object-cover rounded-full shrink-0">
-                        {% else %}
-                            <span class="avatar-circle shrink-0">{{ prediction.event.away_team.initials }}</span>
-                        {% endif %}
-                    </div>
-                </div>
 
-                <div class="flex items-center justify-between gap-3 mb-1">
-                    <p class="text-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            {% if prediction.event.home_team.display_logo_url %}
+                                <img src="{{ prediction.event.home_team.display_logo_url }}" alt="" class="w-8 h-8 lg:w-9 lg:h-9 object-contain rounded-full bg-white p-1 shrink-0">
+                            {% else %}
+                                <span class="avatar-circle shrink-0">{{ prediction.event.home_team.initials }}</span>
+                            {% endif %}
+                            <span class="text-xs lg:text-sm font-medium truncate">{{ prediction.event.home_team.name }}</span>
+                        </div>
+                        <span class="px-2 text-[10px] font-display text-accent-400 font-bold">{% trans "VS" %}</span>
+                        <div class="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                            <span class="text-xs lg:text-sm font-medium truncate text-right">{{ prediction.event.away_team.name }}</span>
+                            {% if prediction.event.away_team.display_logo_url %}
+                                <img src="{{ prediction.event.away_team.display_logo_url }}" alt="" class="w-8 h-8 lg:w-9 lg:h-9 object-contain rounded-full bg-white p-1 shrink-0">
+                            {% else %}
+                                <span class="avatar-circle shrink-0">{{ prediction.event.away_team.initials }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <p class="text-xs lg:text-sm mb-2.5 truncate">
                         <span class="text-navy-900/45 dark:text-white/40">{% trans "Pronostic" %} :</span>
-                        <span class="font-semibold text-accent-600 dark:text-accent-400">{{ prediction.pick }}</span>
+                        <span class="font-semibold text-accent-400">{{ prediction.pick }}</span>
                     </p>
-                    {% if prediction.confidence %}
-                    <span class="text-xs font-semibold text-emerald-500 shrink-0">{% trans "Confiance" %} {{ prediction.confidence }}%</span>
+
+                    <div class="flex items-center justify-between gap-2">
+                        {% if prediction.odds %}
+                        <span class="shrink-0 flex flex-col items-center px-2.5 py-1 rounded-[8px] bg-navy-900/5 dark:bg-black/25 border border-navy-900/10 dark:border-white/10">
+                            <span class="text-[8px] text-navy-900/50 dark:text-white/45 leading-none">{% trans "Cote" %}</span>
+                            <span class="text-xs font-semibold leading-tight">{{ prediction.odds }}</span>
+                        </span>
+                        {% else %}
+                        <span></span>
+                        {% endif %}
+
+                        {% if prediction.external_link %}
+                        <a href="{{ prediction.external_link.url }}" target="_blank" rel="noopener noreferrer"
+                           class="shrink-0 inline-flex flex-col items-center justify-center px-3.5 py-1.5 rounded-[10px] bg-white leading-none">
+                            <span class="text-[7px] font-semibold tracking-wide text-navy-900/50">{% trans "PARIEZ AVEC" %}</span>
+                            <span class="mt-0.5 text-xs font-extrabold text-navy-950 flex items-center gap-1">
+                                {{ prediction.external_link.label|default:prediction.external_link.get_platform_display }} &rarr;
+                            </span>
+                        </a>
+                        {% elif prediction.custom_bet_url %}
+                        <a href="{{ prediction.custom_bet_url }}" target="_blank" rel="noopener noreferrer"
+                           class="shrink-0 inline-flex flex-col items-center justify-center px-3.5 py-1.5 rounded-[10px] bg-white leading-none">
+                            <span class="text-[7px] font-semibold tracking-wide text-navy-900/50">{% trans "PARIEZ" %}</span>
+                            <span class="mt-0.5 text-xs font-extrabold text-navy-950 flex items-center gap-1">
+                                {% trans "Voir l'offre" %} &rarr;
+                            </span>
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    {% if prediction.coupon_code %}
+                    <p class="mt-2 text-right text-[10px] text-amber-400/90">
+                        &#127873; {% trans "Code coupon" %} : <span class="font-semibold">{{ prediction.coupon_code }}</span>
+                    </p>
+                    {% elif prediction.external_link.promo_code %}
+                    <p class="mt-2 text-right text-[10px] text-amber-400/90">
+                        &#127873; {% trans "Offre exclusive" %} &middot; {% trans "Code" %} {{ prediction.external_link.promo_code }}
+                    </p>
                     {% endif %}
                 </div>
-
-                {% if prediction.analysis %}
-                <p class="text-xs text-navy-900/50 dark:text-white/45 mt-2">{{ prediction.analysis }}</p>
-                {% endif %}
-
-                {% if prediction.odds %}
-                <p class="text-xs text-navy-900/45 dark:text-white/40 mt-2">{% trans "Cote" %} : <span class="font-medium">{{ prediction.odds }}</span></p>
-                {% endif %}
-
-                {% if prediction.external_link %}
-                <a href="{{ prediction.external_link.url }}" target="_blank" rel="noopener noreferrer"
-                   class="btn-primary w-full mt-3 !text-xs">
-                    {% trans "Parier avec" %} {{ prediction.external_link.label|default:prediction.external_link.get_platform_display }}
-                    {% if prediction.external_link.promo_code %}<span class="opacity-80">&middot; {{ prediction.external_link.promo_code }}</span>{% endif %}
-                </a>
-                {% endif %}
             </div>
             {% empty %}
-            <div class="panel text-center py-12 text-sm text-navy-900/40 dark:text-white/35">
+            <div class="lg:col-span-2 glass-panel rounded-[18px] text-center py-12 text-sm text-navy-900/45 dark:text-white/40">
                 {% trans "Aucun pronostic pour le moment. Revenez bientôt !" %}
             </div>
             {% endfor %}
         </div>
+
+        <!-- Statistiques -->
+        <div class="grid grid-cols-4 gap-1.5 lg:gap-2.5 mb-4">
+            <div class="glass-panel rounded-xl lg:rounded-2xl py-2 lg:py-3 text-center">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 mx-auto text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                <div class="mt-1 lg:mt-1.5 text-sm lg:text-lg font-semibold">{{ success_rate }}%</div>
+                <div class="text-[7px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Taux de" %} <br class="hidden lg:block">{% trans "réussite" %}</div>
+            </div>
+            <div class="glass-panel rounded-xl lg:rounded-2xl py-2 lg:py-3 text-center">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                <div class="mt-1 lg:mt-1.5 text-sm lg:text-lg font-semibold">{{ new_today_count }}</div>
+                <div class="text-[7px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Pronostics" %} <br class="hidden lg:block">{% trans "aujourd'hui" %}</div>
+            </div>
+            <div class="glass-panel rounded-xl lg:rounded-2xl py-2 lg:py-3 text-center">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <div class="mt-1 lg:mt-1.5 text-sm lg:text-lg font-semibold">{{ active_clients_count }}+</div>
+                <div class="text-[7px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Membres" %} <br class="hidden lg:block">{% trans "actifs" %}</div>
+            </div>
+            <div class="glass-panel rounded-xl lg:rounded-2xl py-2 lg:py-3 text-center">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <div class="mt-1 lg:mt-1.5 text-sm lg:text-lg font-semibold">100%</div>
+                <div class="text-[7px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Paiements" %} <br class="hidden lg:block">{% trans "sécurisés" %}</div>
+            </div>
+        </div>
+
+        <!-- Bandeau contact -->
+        <a href="{% url 'chat:room' %}" class="flex items-center justify-between gap-3 glass-panel rounded-[16px] p-3.5 lg:p-4">
+            <span class="flex items-center gap-2.5 min-w-0">
+                <svg class="w-5 h-5 lg:w-6 lg:h-6 text-accent-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <span class="min-w-0">
+                    <span class="block text-[11px] lg:text-sm font-semibold leading-tight">{% trans "Une question sur un pronostic ?" %}</span>
+                    <span class="block text-[10px] lg:text-xs text-navy-900/50 dark:text-white/50 leading-tight truncate">{% trans "Discute directement avec l'équipe SPORTI." %}</span>
+                </span>
+            </span>
+            <span class="shrink-0 inline-flex items-center gap-1 h-8 lg:h-9 px-3 lg:px-4 rounded-[10px] bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-[10px] lg:text-xs font-bold shadow-[0_0_18px_rgba(55,92,255,0.35)]">
+                {% trans "Discuter" %} &rarr;
+            </span>
+        </a>
+
         </div>
     </div>
 

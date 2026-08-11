@@ -24,6 +24,7 @@ class MessageSerializer(serializers.ModelSerializer):
     is_staff = serializers.BooleanField(source="sender.is_staff", read_only=True)
     attachments = AttachmentSerializer(many=True, read_only=True)
     reactions = MessageReactionSerializer(many=True, read_only=True)
+    reply_to = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
@@ -37,7 +38,27 @@ class MessageSerializer(serializers.ModelSerializer):
             "created_at",
             "attachments",
             "reactions",
+            "reply_to",
         ]
+
+    def get_reply_to(self, obj):
+        return _reply_to_summary(obj.reply_to)
+
+
+def _reply_to_summary(message):
+    """Petit resume d'un message cite en reponse -- reutilise a la fois
+    par le serializer (historique) et par le consumer (temps reel), pour
+    que les deux canaux renvoient exactement la meme forme."""
+    if message is None:
+        return None
+    has_attachment = message.attachments.exists()
+    return {
+        "id": message.id,
+        "sender_name": str(message.sender),
+        "is_staff": message.sender.is_staff,
+        "content": message.content,
+        "has_attachment": has_attachment,
+    }
 
 
 class ConversationSerializer(serializers.ModelSerializer):

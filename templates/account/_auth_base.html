@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block content %}
+<div class="auth-shell">
+    <img src="{% static 'images/design/auth-stadium.jpg' %}" alt="" class="absolute inset-0 w-full h-full object-cover">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#04060a]/75 via-[#04060a]/55 to-[#04060a]/90"></div>
+
+    <div class="relative z-10 w-full max-w-md">
+        <div class="auth-card glass-panel auth-card-enter" id="auth-card">
+            <div class="text-center mb-3">
+                <div class="w-11 h-11 mx-auto mb-1.5 rounded-full overflow-hidden bg-navy-950 border border-accent-400/30 shadow-glow-sm">
+                    <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+                </div>
+                <h1 class="font-display text-base font-bold tracking-wide text-white">SPORTI</h1>
+                <p class="text-[9px] uppercase tracking-[0.2em] text-amber-400/80 mt-0.5">{% trans "Pronostics & Paris" %}</p>
+            </div>
+
+            {% block auth_content %}{% endblock %}
+        </div>
+        <p class="text-center text-[10px] text-white/35 mt-2.5">&copy; {% now "Y" %} SPORTI. {% trans "Tous droits réservés." %}</p>
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+    document.querySelectorAll(".auth-password-toggle").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const input = document.getElementById(btn.dataset.target);
+            if (!input) return;
+            const showing = input.type === "text";
+            input.type = showing ? "password" : "text";
+            btn.querySelector(".icon-eye").classList.toggle("hidden", !showing);
+            btn.querySelector(".icon-eye-off").classList.toggle("hidden", showing);
+        });
+    });
+    const switchLink = document.getElementById("switch-auth-link");
+    const authCard = document.getElementById("auth-card");
+    if (switchLink && authCard) {
+        switchLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            authCard.classList.remove("auth-card-enter");
+            authCard.classList.add("auth-card-exit");
+            setTimeout(() => { window.location.href = switchLink.href; }, 260);
+        });
+    }
+    {% block auth_extra_scripts %}{% endblock %}
+</script>
+{% endblock %}

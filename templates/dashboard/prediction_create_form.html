@@ -1,0 +1,232 @@
+{% extends "dashboard/_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Nouveau pronostic" %} — SPORTI{% endblock %}
+
+{% block dashboard_content %}
+{% url 'dashboard:predictions_list' as back_url %}
+{% trans "Retour aux pronostics" as back_label %}
+{% trans "Nouvel événement" as form_title %}
+{% trans "Ajouter un match pour pronostic." as form_subtitle %}
+{% include "dashboard/_form_header.html" with back_url=back_url back_label=back_label form_title=form_title form_subtitle=form_subtitle %}
+
+<form method="post" class="max-w-lg space-y-4">
+    {% csrf_token %}
+    {% if existing_event %}
+        <input type="hidden" name="event_id" value="{{ existing_event.id }}">
+        <div class="glass-panel rounded-2xl p-4">
+            <p class="sporti-section-label">{% trans "Match importé" %}</p>
+            <div class="flex items-center gap-2 mt-1">
+                {% if existing_event.home_team.display_logo_url %}
+                    <img src="{{ existing_event.home_team.display_logo_url }}" alt="" class="w-8 h-8 object-contain rounded-full bg-white p-1 shrink-0">
+                {% else %}
+                    <span class="avatar-circle !w-8 !h-8 !text-xs shrink-0">{{ existing_event.home_team.initials }}</span>
+                {% endif %}
+                <span class="text-sm font-semibold">{{ existing_event.home_team.name }} <span class="text-navy-900/35 dark:text-white/30 font-normal">vs</span> {{ existing_event.away_team.name }}</span>
+                {% if existing_event.away_team.display_logo_url %}
+                    <img src="{{ existing_event.away_team.display_logo_url }}" alt="" class="w-8 h-8 object-contain rounded-full bg-white p-1 shrink-0">
+                {% else %}
+                    <span class="avatar-circle !w-8 !h-8 !text-xs shrink-0">{{ existing_event.away_team.initials }}</span>
+                {% endif %}
+            </div>
+            <p class="text-[11px] text-navy-900/45 dark:text-white/40 mt-2">{{ existing_event.competition }} &middot; {{ existing_event.kickoff_at|date:"d M Y, H:i" }}</p>
+        </div>
+    {% else %}
+        <div class="glass-panel rounded-2xl p-4" id="event-search-card">
+            <p class="sporti-section-label mb-2">{% trans "Rechercher un match déjà joué (remplit le formulaire ci-dessous)" %}</p>
+            <div class="relative">
+                <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-navy-900/30 dark:text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="event-search-input" placeholder="{% trans 'Rechercher une équipe ou une compétition…' %}" class="chats-search-input" style="padding-left:2.5rem;">
+            </div>
+            <div id="event-search-results" class="mt-2 max-h-52 overflow-y-auto thin-scroll space-y-1"></div>
+            <p id="event-search-empty" class="hidden text-[11px] text-navy-900/40 dark:text-white/35 mt-2">{% trans "Aucun match trouvé, remplissez les champs ci-dessous." %}</p>
+        </div>
+
+        <div class="glass-panel rounded-2xl p-4" id="event-manual-card">
+            <p class="sporti-section-label mb-2">{% trans "Détails du match" %}</p>
+            <p id="event-prefilled-hint" class="hidden text-[11px] text-emerald-400 mb-2">{% trans "✓ Champs pré-remplis, modifiez-les si besoin avant d'enregistrer." %}</p>
+            <div class="field-group">
+                <label for="{{ event_form.competition.id_for_label }}" class="field-label">{{ event_form.competition.label }}</label>
+                {{ event_form.competition }}
+                {% for error in event_form.competition.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="field-group">
+                <label for="{{ event_form.kickoff_at.id_for_label }}" class="field-label">{{ event_form.kickoff_at.label }}</label>
+                {{ event_form.kickoff_at }}
+                {% for error in event_form.kickoff_at.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="field-group">
+                <label for="{{ event_form.home_team.id_for_label }}" class="field-label">{{ event_form.home_team.label }}</label>
+                {{ event_form.home_team }}
+                {% for error in event_form.home_team.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="field-group !mb-0">
+                <label for="{{ event_form.away_team.id_for_label }}" class="field-label">{{ event_form.away_team.label }}</label>
+                {{ event_form.away_team }}
+                {% for error in event_form.away_team.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </div>
+            {{ event_form.sport }}
+            <style>#{{ event_form.sport.id_for_label }} { display: none; }</style>
+        </div>
+        {% if not event_form.fields.home_team.queryset.exists %}
+        <div class="glass-panel rounded-2xl p-4 !border-accent-500/25">
+            <p class="text-sm text-navy-900/60 dark:text-white/60">
+                {% trans "Aucune équipe n'a encore été créée." %}
+                <a href="{% url 'dashboard:team_create' %}" class="text-accent-400 underline">{% trans "Créer une équipe" %}</a>
+            </p>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="glass-panel rounded-2xl p-4">
+        <p class="sporti-section-label mb-2">{% trans "Pronostic" %}</p>
+        <div class="grid grid-cols-4 gap-1.5 mb-3">
+            <button type="button" class="pick-quick-btn" data-pick="1">1<span class="block text-[9px] font-normal opacity-70">{% trans "Domicile" %}</span></button>
+            <button type="button" class="pick-quick-btn" data-pick="X">X<span class="block text-[9px] font-normal opacity-70">{% trans "Nul" %}</span></button>
+            <button type="button" class="pick-quick-btn" data-pick="2">2<span class="block text-[9px] font-normal opacity-70">{% trans "Extérieur" %}</span></button>
+            <button type="button" class="pick-quick-btn" data-pick="1X">1X<span class="block text-[9px] font-normal opacity-70">{% trans "Double chance" %}</span></button>
+        </div>
+        <div class="field-group">
+            <label for="{{ prediction_form.pick.id_for_label }}" class="field-label">{{ prediction_form.pick.label }}</label>
+            {{ prediction_form.pick }}
+            {% for error in prediction_form.pick.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="field-group !mb-0">
+            <label for="{{ prediction_form.odds.id_for_label }}" class="field-label">{{ prediction_form.odds.label }}</label>
+            {{ prediction_form.odds }}
+        </div>
+    </div>
+
+    <div class="glass-panel rounded-2xl p-4">
+        <p class="sporti-section-label mb-2">{% trans "Lien de pari" %}</p>
+        <div class="field-group">
+            <label for="{{ prediction_form.external_link.id_for_label }}" class="field-label">{{ prediction_form.external_link.label }}</label>
+            {{ prediction_form.external_link }}
+        </div>
+        <div class="field-group">
+            <label for="{{ prediction_form.custom_bet_url.id_for_label }}" class="field-label">{{ prediction_form.custom_bet_url.label }}</label>
+            {{ prediction_form.custom_bet_url }}
+            <p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ prediction_form.custom_bet_url.help_text }}</p>
+        </div>
+        <div class="field-group !mb-0">
+            <label for="{{ prediction_form.coupon_code.id_for_label }}" class="field-label">{{ prediction_form.coupon_code.label }}</label>
+            {{ prediction_form.coupon_code }}
+            <p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ prediction_form.coupon_code.help_text }}</p>
+        </div>
+    </div>
+
+    <div class="glass-panel rounded-2xl p-4">
+        <p class="sporti-section-label mb-2">{% trans "Options" %}</p>
+        <div class="field-group !mb-3">
+            <label for="{{ prediction_form.confidence.id_for_label }}" class="field-label">{{ prediction_form.confidence.label }}</label>
+            {{ prediction_form.confidence }}
+        </div>
+        <label class="toggle-row !border-0 !py-0 cursor-pointer">
+            <span class="text-sm text-navy-900/70 dark:text-white/70">{{ prediction_form.is_featured.label }}</span>
+            {{ prediction_form.is_featured }}
+        </label>
+    </div>
+
+    <div class="glass-panel rounded-2xl p-4">
+        <p class="sporti-section-label mb-2">{% trans "Statut" %}</p>
+        <div class="grid grid-cols-2 gap-2">
+            <button type="submit" class="status-toggle-btn" data-status="draft">{% trans "Brouillon" %}</button>
+            <button type="submit" class="status-toggle-btn status-toggle-btn-active" data-status="publish">{% trans "Publier maintenant" %}</button>
+        </div>
+        <div class="hidden">{{ prediction_form.is_published }}</div>
+    </div>
+
+    <button type="submit" class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-sm font-semibold shadow-[0_0_18px_rgba(55,92,255,0.35)]">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        {% trans "Enregistrer le pronostic" %}
+    </button>
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if not existing_event %}
+{{ all_events|json_script:"all-events-data" }}
+<script>
+    (function () {
+        const events = JSON.parse(document.getElementById("all-events-data").textContent);
+        const searchInput = document.getElementById("event-search-input");
+        const resultsWrap = document.getElementById("event-search-results");
+        const emptyMsg = document.getElementById("event-search-empty");
+        const manualCard = document.getElementById("event-manual-card");
+        const prefilledHint = document.getElementById("event-prefilled-hint");
+        const competitionInput = document.getElementById("{{ event_form.competition.id_for_label }}");
+        const kickoffInput = document.getElementById("{{ event_form.kickoff_at.id_for_label }}");
+        const homeSelect = document.getElementById("{{ event_form.home_team.id_for_label }}");
+        const awaySelect = document.getElementById("{{ event_form.away_team.id_for_label }}");
+
+        function renderResults(query) {
+            const q = query.trim().toLowerCase();
+            resultsWrap.innerHTML = "";
+            if (!q) { emptyMsg.classList.add("hidden"); return; }
+            const matches = events.filter((e) =>
+                e.home.toLowerCase().includes(q) || e.away.toLowerCase().includes(q) || e.competition.toLowerCase().includes(q)
+            ).slice(0, 30);
+            emptyMsg.classList.toggle("hidden", matches.length > 0);
+            matches.forEach((e) => {
+                const row = document.createElement("button");
+                row.type = "button";
+                row.className = "w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-navy-900/5 dark:bg-white/5 hover:bg-navy-900/10 dark:hover:bg-white/10 text-left transition-colors";
+                row.innerHTML = `<span class="min-w-0"><span class="block text-xs font-medium truncate">${e.home} <span class="text-navy-900/35 dark:text-white/30">vs</span> ${e.away}</span><span class="block text-[10px] text-navy-900/45 dark:text-white/40 truncate">${e.competition} · ${e.kickoff}</span></span>`;
+                row.addEventListener("click", () => selectEvent(e));
+                resultsWrap.appendChild(row);
+            });
+        }
+        function selectEvent(e) {
+            if (competitionInput) competitionInput.value = e.competition;
+            if (kickoffInput) kickoffInput.value = e.kickoff_input;
+            if (homeSelect) homeSelect.value = e.home_id;
+            if (awaySelect) awaySelect.value = e.away_id;
+            resultsWrap.innerHTML = "";
+            searchInput.value = "";
+            emptyMsg.classList.add("hidden");
+            prefilledHint.classList.remove("hidden");
+            manualCard.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        searchInput.addEventListener("input", () => renderResults(searchInput.value));
+    })();
+</script>
+{% endif %}
+<script>
+    (function () {
+        function currentTeamNames() {
+            {% if existing_event %}
+            return { home: "{{ existing_event.home_team.name|escapejs }}", away: "{{ existing_event.away_team.name|escapejs }}" };
+            {% else %}
+            const homeSel = document.getElementById("{{ event_form.home_team.id_for_label }}");
+            const awaySel = document.getElementById("{{ event_form.away_team.id_for_label }}");
+            const home = (homeSel && homeSel.selectedOptions[0] && homeSel.value) ? homeSel.selectedOptions[0].textContent.trim() : "{% trans 'l’équipe à domicile' %}";
+            const away = (awaySel && awaySel.selectedOptions[0] && awaySel.value) ? awaySel.selectedOptions[0].textContent.trim() : "{% trans 'l’équipe à l’extérieur' %}";
+            return { home, away };
+            {% endif %}
+        }
+        document.querySelectorAll(".pick-quick-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".pick-quick-btn").forEach((b) => b.classList.remove("pick-quick-btn-active"));
+                btn.classList.add("pick-quick-btn-active");
+                const { home, away } = currentTeamNames();
+                const type = btn.dataset.pick;
+                const pickInput = document.getElementById("{{ prediction_form.pick.id_for_label }}");
+                if (!pickInput) return;
+                if (type === "1") pickInput.value = `${home} {% trans "gagne" %}`;
+                else if (type === "X") pickInput.value = "{% trans 'Match nul' %}";
+                else if (type === "2") pickInput.value = `${away} {% trans "gagne" %}`;
+                else if (type === "1X") pickInput.value = `${home} {% trans "ou match nul (double chance)" %}`;
+            });
+        });
+
+        const publishedCheckbox = document.getElementById("{{ prediction_form.is_published.id_for_label }}");
+        document.querySelectorAll(".status-toggle-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".status-toggle-btn").forEach((b) => b.classList.remove("status-toggle-btn-active"));
+                btn.classList.add("status-toggle-btn-active");
+                if (publishedCheckbox) publishedCheckbox.checked = btn.dataset.status === "publish";
+            });
+        });
+    })();
+</script>
+{% endblock %}

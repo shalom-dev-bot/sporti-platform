@@ -4,32 +4,41 @@
 {% block title %}{% if is_edit %}{% trans "Modifier le pronostic" %}{% else %}{% trans "Nouveau pronostic" %}{% endif %} — SPORTI{% endblock %}
 
 {% block dashboard_content %}
-<a href="{% url 'dashboard:predictions_list' %}" class="btn-ghost !px-0 mb-4 inline-flex">&laquo; {% trans "Retour aux pronostics" %}</a>
-
-<h1 class="dashboard-page-title">
-    {% if is_edit %}{% trans "Modifier le pronostic" %}{% else %}{% trans "Nouveau pronostic" %}{% endif %}
-</h1>
+{% url 'dashboard:predictions_list' as back_url %}
+{% trans "Retour aux pronostics" as back_label %}
+{% if is_edit %}{% trans "Modifier le pronostic" as form_title %}{% else %}{% trans "Nouveau pronostic" as form_title %}{% endif %}
+{% trans "Ce pronostic sera visible par les clients dans le hub." as form_subtitle %}
+{% include "dashboard/_form_header.html" with back_url=back_url back_label=back_label form_title=form_title form_subtitle=form_subtitle %}
 
 {% if not form.fields.event.queryset.exists %}
-<div class="panel max-w-lg mt-6 !border-accent-500/25">
-    <p class="text-sm text-navy-900/60 dark:text-white/50">
+<div class="glass-panel rounded-2xl p-4 max-w-lg mb-5 !border-accent-500/25">
+    <p class="text-sm text-navy-900/60 dark:text-white/60">
         {% trans "Aucun événement n'a encore été créé." %}
-        <a href="{% url 'dashboard:event_create' %}" class="text-accent-600 dark:text-accent-400 underline">{% trans "Créer un événement" %}</a>
+        <a href="{% url 'dashboard:event_create' %}" class="text-accent-400 underline">{% trans "Créer un événement" %}</a>
+        {% trans "ou" %}
+        <a href="{% url 'dashboard:fixtures_search' %}" class="text-accent-400 underline">{% trans "importer un match réel" %}</a>.
     </p>
 </div>
 {% endif %}
 
-<div class="panel max-w-lg mt-6">
+<div class="glass-panel rounded-2xl p-4 lg:p-6 max-w-lg">
     <form method="post">
         {% csrf_token %}
         {% for field in form %}
         <div class="field-group">
-            <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
-            {{ field }}
+            {% if field.field.widget.input_type == "checkbox" %}
+                <label class="flex items-center gap-2.5 text-sm text-navy-900/70 dark:text-white/80">
+                    {{ field }} {{ field.label }}
+                </label>
+            {% else %}
+                <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+                {{ field }}
+            {% endif %}
+            {% if field.help_text %}<p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ field.help_text }}</p>{% endif %}
             {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         </div>
         {% endfor %}
-        <button type="submit" class="btn-primary">
+        <button type="submit" class="btn-primary w-full sm:w-auto">
             {% if is_edit %}{% trans "Enregistrer" %}{% else %}{% trans "Ajouter le pronostic" %}{% endif %}
         </button>
     </form>

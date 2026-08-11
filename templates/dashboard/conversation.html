@@ -2,33 +2,47 @@
 {% load i18n %}
 {% load static %}
 {% block title %}{{ conversation.client }} — SPORTI{% endblock %}
+
+{% block scroll_wrapper_class %}flex-1 min-h-0 flex{% endblock %}
+{% block dashboard_main_class %}w-full h-full flex flex-col lg:flex-row{% endblock %}
+
 {% block dashboard_content %}
 {% csrf_token %}
-<div class="mobile-chat-shell" style="height:75vh; border-radius: 1rem; overflow: hidden; border: 1px solid rgba(13,19,33,0.08);">
-    <div class="mobile-chat-header">
-        <a href="{% url 'dashboard:conversations_list' %}" class="chat-round-icon-btn" aria-label="{% trans 'Retour' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m15 18-6-6 6-6"/>
-            </svg>
+<div class="hidden lg:block lg:w-[380px] lg:shrink-0 h-full lg:border-r lg:border-white/10">
+    {% include "dashboard/_conversations_sidebar.html" %}
+</div>
+
+<div class="flex-1 h-full flex flex-col min-w-0">
+    <div class="flex items-center gap-3 px-3 lg:px-5 py-2.5 lg:py-3 border-b border-white/10 shrink-0">
+        <a href="{% url 'dashboard:conversations_list' %}" class="sporti-chat-icon-btn lg:hidden shrink-0" aria-label="{% trans 'Retour' %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </a>
-        <div class="flex items-center gap-3 flex-1 min-w-0 px-3">
-            <span class="chat-list-avatar" style="width:2.75rem;height:2.75rem;font-size:0.95rem;">{{ conversation.client|stringformat:"s"|first|upper }}</span>
-            <div class="min-w-0">
-                <p class="font-semibold text-sm truncate">{{ conversation.client }}</p>
-                <p class="flex items-center gap-1.5 text-xs text-navy-900/45 dark:text-white/40">
-                    <span id="client-presence-dot" class="presence-dot"></span>
-                    <span id="client-presence-label">{% trans "Hors ligne" %}</span>
-                </p>
-            </div>
+        <span class="chat-list-avatar shrink-0" style="width:2.5rem;height:2.5rem;font-size:0.85rem;">{{ conversation.client|stringformat:"s"|first|upper }}</span>
+        <div class="min-w-0 flex-1">
+            <p class="font-semibold text-sm truncate">{{ conversation.client }}</p>
+            <p class="flex items-center gap-1.5 text-xs text-white/40">
+                <span id="client-presence-dot" class="presence-dot"></span>
+                <span id="client-presence-label">{% trans "Hors ligne" %}</span>
+            </p>
         </div>
     </div>
-    <div id="chat-thread" class="mobile-chat-thread">
+
+    <div id="chat-thread" class="sporti-chat-thread">
         {% for message in chat_messages %}
-        <div class="{% if message.sender.is_staff %}mobile-bubble mobile-bubble-client{% else %}mobile-bubble mobile-bubble-admin{% endif %} group relative" data-message-id="{{ message.id }}">
+        <div class="{% if message.sender.is_staff %}sporti-bubble-client{% else %}sporti-bubble-admin{% endif %} group relative" data-message-id="{{ message.id }}">
+            {% if message.reply_to %}
+            <div class="sporti-quote-block" data-quote-target="{{ message.reply_to.id }}">
+                <span class="sporti-quote-bar"></span>
+                <span class="min-w-0">
+                    <span class="block sporti-quote-name">{{ message.reply_to.sender }}</span>
+                    <span class="block sporti-quote-text">{% if message.reply_to.content %}{{ message.reply_to.content }}{% elif message.reply_to.attachments.all %}{% trans "📎 Pièce jointe" %}{% endif %}</span>
+                </span>
+            </div>
+            {% endif %}
             {% if message.content %}<span>{{ message.content }}</span>{% endif %}
             {% for att in message.attachments.all %}
                 {% if att.file_type and "image/" in att.file_type %}
-                    <img src="{{ att.file.url }}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="{{ att.file_name }}">
+                    <img src="{{ att.file.url }}" class="sporti-msg-image mt-2 max-h-28 max-w-[170px] rounded-lg cursor-pointer" alt="{{ att.file_name }}">
                 {% elif att.file_type and "video/" in att.file_type %}
                     <video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="{{ att.file.url }}"></video>
                 {% elif att.file_type and "audio/" in att.file_type %}
@@ -41,43 +55,51 @@
             <div class="reactions-row" data-initial-emojis="{% for r in message.reactions.all %}{{ r.emoji }}{% if not forloop.last %},{% endif %}{% endfor %}"></div>
         </div>
         {% empty %}
-        <p class="text-center text-sm text-navy-900/40 dark:text-white/35 mt-10">{% trans "Aucun message pour le moment." %}</p>
+        <p class="text-center text-sm text-white/35 mt-10">{% trans "Aucun message pour le moment." %}</p>
         {% endfor %}
     </div>
-    <div class="mobile-chat-composer-wrap" style="position: relative;">
-    <form id="message-form" class="mobile-chat-composer">
-        <button type="button" id="emoji-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Emoji' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
-            </svg>
+
+    <div id="image-lightbox" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/90 p-4" style="display:none;">
+        <button type="button" id="image-lightbox-close" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white" aria-label="{% trans 'Fermer' %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
-        <textarea id="message-input" rows="1" placeholder="{% trans 'Écrire une réponse…' %}" autocomplete="off"></textarea>
+        <img id="image-lightbox-img" src="" alt="" class="max-w-full max-h-full rounded-lg object-contain">
+    </div>
+
+    <div class="sporti-composer-wrap" style="position: relative;">
         <input type="file" id="attachment-input" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx">
-        <button type="button" id="attach-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Joindre un fichier' %}">
+        <button type="button" id="attach-btn" class="sporti-composer-icon-btn" aria-label="{% trans 'Joindre un fichier' %}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.58a4 4 0 0 1 5.66 5.66l-8.59 8.58a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
             </svg>
         </button>
-        <button type="button" id="mic-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Message vocal' %}">
+        <button type="button" id="emoji-btn" class="sporti-composer-icon-btn" aria-label="{% trans 'Emoji' %}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
+            </svg>
+        </button>
+        <form id="message-form" class="flex-1 min-w-0">
+            <textarea id="message-input" rows="1" placeholder="{% trans 'Écrire une réponse…' %}" autocomplete="off" class="sporti-composer-input w-full resize-none"></textarea>
+        </form>
+        <button type="button" id="mic-btn" class="sporti-mic-btn" aria-label="{% trans 'Message vocal' %}">
+            <svg id="mic-btn-icon-mic" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
                 <path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/>
             </svg>
-        </button>
-        <button type="submit" class="mobile-send-btn" aria-label="{% trans 'Envoyer' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg id="mic-btn-icon-send" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
             </svg>
         </button>
-    </form>
     </div>
-    <div id="links-section" class="hidden px-3 sm:px-6 py-3 border-t border-navy-900/10 dark:border-white/10">
-        <div id="platforms-links" class="hidden mb-3">
-            <p class="text-xs text-navy-900/45 dark:text-white/40 mb-2">Plateformes recommandées</p>
-            <div id="platforms-list" class="flex flex-wrap gap-2"></div>
+
+    <div id="links-section" class="hidden px-4 pt-1 pb-1">
+        <div id="platforms-links" class="hidden mb-1">
+            <p class="sporti-section-label !mb-0.5">{% trans "Plateformes recommandées" %}</p>
+            <div id="platforms-list" class="flex flex-wrap gap-1"></div>
         </div>
         <div id="social-links" class="hidden">
-            <div id="social-list" class="flex gap-2"></div>
+            <p class="sporti-section-label !mb-0.5">{% trans "Retrouvez le client sur" %}</p>
+            <div id="social-list" class="flex gap-1.5"></div>
         </div>
     </div>
 </div>
@@ -112,11 +134,11 @@
                 a.href = link.url;
                 a.target = "_blank";
                 a.rel = "noopener noreferrer";
-                a.className = "inline-flex items-center gap-2 border border-navy-900/15 dark:border-white/15 px-3 py-1.5 text-xs hover:border-accent-500 transition-colors";
-                a.innerHTML = "<img src=\"" + faviconUrl(link.url) + "\" class=\"w-5 h-5 rounded-full\" alt=\"\" onerror=\"this.style.visibility='hidden'\">" + "<span class=\"text-accent-600 font-medium\">" + (link.label || link.platform_label) + "</span>";
+                a.className = "sporti-platform-badge";
+                a.innerHTML = "<img src=\"" + faviconUrl(link.url) + "\" class=\"w-4 h-4 rounded-full\" alt=\"\" onerror=\"this.style.visibility='hidden'\">" + "<span>" + (link.label || link.platform_label) + "</span>";
                 if (link.promo_code) {
                     const code = document.createElement("span");
-                    code.className = "text-navy-900/50 dark:text-white/45";
+                    code.className = "opacity-60";
                     code.textContent = link.promo_code;
                     a.appendChild(code);
                 }
@@ -132,9 +154,9 @@
                 a.href = link.url;
                 a.target = "_blank";
                 a.rel = "noopener noreferrer";
-                a.className = "btn-icon";
+                a.className = "sporti-social-btn";
                 a.title = link.label || link.platform_label;
-                a.innerHTML = "<img src=\"" + faviconUrl(link.url) + "\" class=\"w-5 h-5 rounded-full\" alt=\"\">";
+                a.innerHTML = "<img src=\"" + faviconUrl(link.url) + "\" class=\"w-4 h-4 rounded-full\" alt=\"\">";
                 socialList.appendChild(a);
             });
             socialWrap.classList.remove("hidden");
@@ -162,8 +184,18 @@
         socket.send(JSON.stringify({ message: text }));
     }
 
-    // Les bulles rendues cote serveur ont deja leur emplacement de reactions
-    // (data-initial-emojis) -- on y branche le picker et les badges au chargement.
+    function scrollToMessage(id) {
+        const bubble = thread.querySelector(`[data-message-id="${id}"]`);
+        if (!bubble) return;
+        bubble.scrollIntoView({ behavior: "smooth", block: "center" });
+        bubble.classList.add("sporti-bubble-flash");
+        setTimeout(() => bubble.classList.remove("sporti-bubble-flash"), 1000);
+    }
+    thread.addEventListener("click", (event) => {
+        const quote = event.target.closest(".sporti-quote-block");
+        if (quote) scrollToMessage(quote.dataset.quoteTarget);
+    });
+
     thread.querySelectorAll("[data-message-id]").forEach((bubble) => {
         const messageId = bubble.dataset.messageId;
         const row = bubble.querySelector(".reactions-row");
@@ -178,6 +210,27 @@
         thread.scrollTop = thread.scrollHeight;
     }
     scrollToBottom();
+
+    const lightbox = document.getElementById("image-lightbox");
+    const lightboxImg = document.getElementById("image-lightbox-img");
+    function openLightbox(src) {
+        lightboxImg.src = src;
+        lightbox.style.display = "flex";
+        lightbox.classList.remove("hidden");
+    }
+    function closeLightbox() {
+        lightbox.style.display = "none";
+        lightbox.classList.add("hidden");
+        lightboxImg.src = "";
+    }
+    thread.addEventListener("click", (event) => {
+        const img = event.target.closest(".sporti-msg-image");
+        if (img) openLightbox(img.src);
+    });
+    document.getElementById("image-lightbox-close").addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", (event) => {
+        if (event.target === lightbox) closeLightbox();
+    });
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -198,7 +251,7 @@
             if (data.is_typing) {
                 if (!typingBubble) {
                     typingBubble = document.createElement("div");
-                    typingBubble.className = "mobile-bubble mobile-bubble-admin typing-dots";
+                    typingBubble.className = "sporti-bubble-admin typing-dots";
                     typingBubble.innerHTML = "<span></span><span></span><span></span>";
                     thread.appendChild(typingBubble);
                     scrollToBottom();
@@ -218,15 +271,26 @@
         if (typingBubble) { typingBubble.remove(); typingBubble = null; }
         if (thread.querySelector(`[data-message-id="${data.id}"]`)) { return; }
         const div = document.createElement("div");
-        div.className = data.is_staff ? "mobile-bubble mobile-bubble-client" : "mobile-bubble mobile-bubble-admin";
+        div.className = data.is_staff ? "sporti-bubble-client" : "sporti-bubble-admin";
+        div.classList.add("group", "relative");
         div.dataset.messageId = data.id;
         let inner = "";
         let audioAttachment = null;
+        if (data.reply_to) {
+            const quoteText = data.reply_to.content || (data.reply_to.has_attachment ? "{% trans '📎 Pièce jointe' %}" : "");
+            inner += `<div class="sporti-quote-block" data-quote-target="${data.reply_to.id}">
+                <span class="sporti-quote-bar"></span>
+                <span class="min-w-0">
+                    <span class="block sporti-quote-name">${data.reply_to.sender_name}</span>
+                    <span class="block sporti-quote-text">${quoteText}</span>
+                </span>
+            </div>`;
+        }
         if (data.content) inner += `<span>${data.content}</span>`;
         if (data.attachment) {
             const att = data.attachment;
             if (att.file_type && att.file_type.startsWith("image/")) {
-                inner += `<img src="${att.file_url}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="${att.file_name}">`;
+                inner += `<img src="${att.file_url}" class="sporti-msg-image mt-2 max-h-28 max-w-[170px] rounded-lg cursor-pointer" alt="${att.file_name}">`;
             } else if (att.file_type && att.file_type.startsWith("video/")) {
                 inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="${att.file_url}"></video>`;
             } else if (att.file_type && att.file_type.startsWith("audio/")) {
@@ -250,15 +314,30 @@
         scrollToBottom();
     };
 
-    form.addEventListener("submit", (event) => {
-        event.preventDefault();
+    function submitCurrentText() {
         const text = input.value.trim();
         if (!text) return;
         sendTextMessage(text);
         input.value = "";
         input.style.height = "auto";
         socket.send(JSON.stringify({ type: "typing", is_typing: false }));
+        updateMicSendIcon();
+    }
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        submitCurrentText();
     });
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            submitCurrentText();
+        }
+    });
+    function updateMicSendIcon() {
+        const hasText = input.value.trim().length > 0;
+        document.getElementById("mic-btn-icon-mic").classList.toggle("hidden", hasText);
+        document.getElementById("mic-btn-icon-send").classList.toggle("hidden", !hasText);
+    }
     input.addEventListener("input", () => {
         input.style.height = "auto";
         input.style.height = Math.min(input.scrollHeight, 128) + "px";
@@ -267,6 +346,7 @@
         typingTimeout = setTimeout(() => {
             socket.send(JSON.stringify({ type: "typing", is_typing: false }));
         }, 2000);
+        updateMicSendIcon();
     });
 
     const emojiBtn = document.getElementById("emoji-btn");
@@ -297,19 +377,44 @@
                 .then(async (res) => {
                     const data = await res.json().catch(() => ({}));
                     if (!res.ok) {
-                        alert(data.detail || "Echec de l'envoi du fichier.");
+                        alert(data.detail || "{% trans "Échec de l'envoi du fichier." %}");
                     }
                 })
-                .catch(() => alert("Echec de l'envoi, verifiez votre connexion."));
+                .catch(() => alert("{% trans "Échec de l'envoi du fichier, vérifiez votre connexion." %}"));
         });
     }
 
     let mediaRecorder = null;
     let recordedChunks = [];
     const micBtn = document.getElementById("mic-btn");
+    // Certains systemes (surtout Linux) ont un peripherique "par defaut"
+    // mal configure (ex: le moniteur des haut-parleurs au lieu du vrai
+    // micro), ce qui fait echouer getUserMedia({audio:true}) avec
+    // NotFoundError meme quand un vrai micro est branche et autorise.
+    // Repli : si ca echoue ainsi, on cible explicitement le premier
+    // micro trouve par son deviceId plutot que de compter sur le defaut.
+    async function getMicStream() {
+        try {
+            return await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (err) {
+            if (err.name !== "NotFoundError" && err.name !== "OverconstrainedError") throw err;
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const mic = devices.find((d) => d.kind === "audioinput");
+            if (!mic) throw err;
+            return await navigator.mediaDevices.getUserMedia({
+                audio: { deviceId: { exact: mic.deviceId } },
+            });
+        }
+    }
+    function extensionForMimeType(mimeType) {
+        if (mimeType.includes("mp4") || mimeType.includes("m4a")) return "m4a";
+        if (mimeType.includes("ogg")) return "ogg";
+        if (mimeType.includes("wav")) return "wav";
+        return "webm";
+    }
     function uploadVoiceMessage(blob) {
         const formData = new FormData();
-        formData.append("file", blob, "voice-message.webm");
+        formData.append("file", blob, `voice-message.${extensionForMimeType(blob.type || "audio/webm")}`);
         fetch("{% url 'chat:api_attachment_upload' conversation_id=conversation.id %}", {
             method: "POST",
             headers: { "X-CSRFToken": getCsrfToken() },
@@ -319,27 +424,31 @@
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok) {
                     console.error("Erreur serveur upload vocal:", data);
-                    alert(data.detail || "Echec de l'envoi du vocal.");
+                    alert(data.detail || "{% trans "Échec de l'envoi du vocal." %}");
                 }
             })
             .catch((err) => {
                 console.error("Erreur reseau upload vocal:", err);
-                alert("Echec de l'envoi du vocal, verifiez votre connexion.");
+                alert("{% trans "Échec de l'envoi du vocal, vérifiez votre connexion." %}");
             });
     }
     if (micBtn) {
         micBtn.addEventListener("click", async () => {
+            if (input.value.trim().length > 0) {
+                submitCurrentText();
+                return;
+            }
             if (mediaRecorder && mediaRecorder.state === "recording") {
                 mediaRecorder.stop();
                 return;
             }
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert("Le microphone necessite une connexion securisee (HTTPS) ou localhost. Verifiez l'URL utilisee.");
+                alert(`{% trans "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous êtes actuellement sur" %} "${window.location.protocol}//${window.location.hostname}" -- {% trans "si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi que vous fassiez." %}`);
                 console.error("navigator.mediaDevices indisponible -- contexte non securise ?");
                 return;
             }
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const stream = await getMicStream();
                 recordedChunks = [];
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
@@ -355,7 +464,7 @@
                 micBtn.style.color = "#ffffff";
             } catch (err) {
                 console.error("Erreur microphone :", err);
-                alert("Microphone inaccessible : " + err.name + ". Verifiez les autorisations du navigateur.");
+                alert("{% trans "Microphone inaccessible :" %} " + err.name + ". {% trans "Vérifiez les autorisations du navigateur." %}");
             }
         });
     }

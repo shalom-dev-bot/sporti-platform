@@ -9,7 +9,7 @@
  *   apres une periode d'inactivite ; ce n'est pas une vraie coupure reseau.
  * - Gere la reception et l'affichage des notifications push.
  */
-const CACHE_NAME = "sporti-cache-v4";
+const CACHE_NAME = "sporti-cache-v5";
 const OFFLINE_URL = "/offline/";
 const OFFLINE_TIMEOUT_MS = 40000;
 const PRECACHE_URLS = [
@@ -47,6 +47,12 @@ self.addEventListener("push", (event) => {
         self.registration.showNotification(data.title || "SPORTI", {
             body: data.body || "",
             icon: "/static/icons/icon-192.png",
+            badge: "/static/icons/icon-192.png",
+            // Le son est gere par l'OS/le navigateur (pas controlable
+            // depuis l'API Notification) -- la vibration, elle, l'est :
+            // motif court-pause-court, ignore par les navigateurs qui ne
+            // le supportent pas (ex: iOS Safari) sans erreur.
+            vibrate: [200, 100, 200],
             data: { url: data.url || "/" },
         })
     );

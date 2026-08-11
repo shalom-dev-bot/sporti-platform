@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-24 08:31+0100\n"
+"POT-Creation-Date: 2026-08-11 02:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,260 +17,1678 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: apps/accounts/forms.py:48 apps/accounts/forms.py:105
+#: templates/dashboard/company_settings.html:41
 msgid "Nom"
 msgstr "Name"
 
+#: apps/accounts/forms.py:51
 msgid "Votre nom ou pseudo"
 msgstr "Your name or username"
 
+#: apps/accounts/forms.py:56 apps/accounts/forms.py:69
+#: apps/accounts/forms.py:126
 msgid "Ce nom existe deja, choisissez-en un autre."
 msgstr "This name is already taken, please choose another."
 
+#: apps/accounts/forms.py:104
+msgid "Photo de profil"
+msgstr "Profile picture"
+
+#: apps/accounts/forms.py:106
+msgid "Prenom"
+msgstr "First name"
+
+#: apps/accounts/forms.py:107
+msgid "Nom de famille"
+msgstr "Last name"
+
+#: apps/accounts/forms.py:108
+msgid "Telephone"
+msgstr "Phone"
+
+#: apps/accounts/views.py:25
+msgid "Profil mis a jour."
+msgstr "Profile updated."
+
+#: apps/dashboard/views.py:121
+msgid "Nouveau membre"
+msgstr "New member"
+
+#: apps/dashboard/views.py:122
+#, python-format
+msgid "%(user)s a rejoint SPORTI"
+msgstr "%(user)s joined SPORTI"
+
+#: apps/dashboard/views.py:128
+msgid "Pronostic publié"
+msgstr "Prediction published"
+
+#: apps/dashboard/views.py:135
+msgid "Nouveau message"
+msgstr "New message"
+
+#: apps/dashboard/views.py:136
+#, python-format
+msgid "De : %(sender)s"
+msgstr "From: %(sender)s"
+
+#: apps/dashboard/views.py:257
+msgid "Nom d'utilisateur modifie avec succes."
+msgstr "Username successfully changed."
+
+#: apps/dashboard/views.py:265
+msgid "Mot de passe modifie avec succes."
+msgstr "Password successfully changed."
+
+#: apps/dashboard/views.py:335
+msgid "Profil administrateur mis a jour."
+msgstr "Administrator profile updated."
+
+#: apps/dashboard/views.py:339
+msgid "Profil de l'entreprise mis a jour."
+msgstr "Company profile updated."
+
+#: apps/dashboard/views.py:348
+msgid "Message d'accueil mis a jour."
+msgstr "Welcome message updated."
+
+#: apps/dashboard/views.py:379
+msgid "Lien ajoute."
+msgstr "Link added."
+
+#: apps/dashboard/views.py:394
+msgid "Lien mis a jour."
+msgstr "Link updated."
+
+#: apps/dashboard/views.py:409
+msgid "Lien supprime."
+msgstr "Link deleted."
+
+#: apps/dashboard/views.py:431
+msgid "Equipe ajoutee."
+msgstr "Team added."
+
+#: apps/dashboard/views.py:446
+msgid "Equipe mise a jour."
+msgstr "Team updated."
+
+#: apps/dashboard/views.py:461
+msgid "Equipe supprimee."
+msgstr "Team deleted."
+
+#: apps/dashboard/views.py:483
+msgid "Evenement ajoute."
+msgstr "Event added."
+
+#: apps/dashboard/views.py:498
+msgid "Evenement mis a jour."
+msgstr "Event updated."
+
+#: apps/dashboard/views.py:513
+msgid "Evenement supprime."
+msgstr "Event deleted."
+
+#: apps/dashboard/views.py:602
+msgid "Pronostic ajoute."
+msgstr "Prediction added."
+
+#: apps/dashboard/views.py:646
+msgid "Pronostic mis a jour."
+msgstr "Prediction updated."
+
+#: apps/dashboard/views.py:663
+msgid "Pronostic supprime."
+msgstr "Prediction deleted."
+
+#: apps/dashboard/views.py:761
+msgid "Ce match a deja ete importe."
+msgstr "This match has already been imported."
+
+#: apps/dashboard/views.py:770
+#, python-format
+msgid "Import impossible : %(error)s"
+msgstr "Import failed: %(error)s"
+
+#: apps/dashboard/views.py:775
+msgid "Ce match n'est plus disponible dans les resultats."
+msgstr "This match is no longer available in the results."
+
+#: apps/dashboard/views.py:795
+msgid "Match importe. Ajoute maintenant ton pronostic."
+msgstr "Match imported. Now add your prediction."
+
+#: templates/account/_auth_base.html:15
+msgid "Pronostics & Paris"
+msgstr "Predictions & Betting"
+
+#: templates/account/_auth_base.html:20
+msgid "Tous droits réservés."
+msgstr "All rights reserved."
+
+#: templates/account/login.html:3
 msgid "Connexion"
 msgstr "Log in"
 
-msgid "Content de vous revoir"
-msgstr "Welcome back"
+#: templates/account/login.html:6
+msgid "Bienvenue !"
+msgstr "Welcome!"
 
-msgid "Connectez-vous pour retrouver votre conversation."
-msgstr "Log in to get back to your conversation."
+#: templates/account/login.html:8
+msgid "Connectez-vous à votre compte pour accéder à vos pronostics."
+msgstr "Log in to your account to access your predictions."
 
+#: templates/account/login.html:24 templates/account/signup.html:24
 msgid "Continuer avec Google"
 msgstr "Continue with Google"
 
+#: templates/account/login.html:27
 msgid "ou par e-mail"
 msgstr "or by email"
 
-msgid "Se souvenir de moi"
-msgstr "Remember me"
+#: templates/account/login.html:32 templates/dashboard/company_settings.html:45
+msgid "E-mail"
+msgstr "Email"
 
-msgid "Mot de passe oublié ?"
-msgstr "Forgot your password?"
-
-msgid "Se connecter"
-msgstr "Log in"
-
-msgid "Pas encore de compte ?"
-msgstr "Don't have an account yet?"
-
-msgid "Inscrivez-vous"
-msgstr "Sign up"
-
-msgid "Créer un compte"
-msgstr "Create an account"
-
-msgid "Créer votre compte"
-msgstr "Create your account"
-
-msgid "Rejoignez SPORTI pour discuter directement avec nous."
-msgstr "Join SPORTI to chat directly with us."
-
-msgid "Nom et photo récupérés automatiquement, sans mot de passe."
-msgstr "Name and photo retrieved automatically, no password needed."
-
-msgid "ou avec un e-mail"
-msgstr "or with an email"
-
-msgid "Créer mon compte"
-msgstr "Create my account"
-
-msgid "Déjà un compte ?"
-msgstr "Already have an account?"
-
-msgid "Connectez-vous"
-msgstr "Log in"
-
-msgid "Changer de theme"
-msgstr "Switch theme"
-
-msgid "Hors ligne"
-msgstr "Offline"
-
-msgid "Déconnexion"
-msgstr "Log out"
-
-msgid "Joindre un fichier"
-msgstr "Attach a file"
-
-msgid "Écrivez votre message…"
-msgstr "Write your message…"
-
-msgid "Envoyer"
-msgstr "Send"
-
-msgid "En ligne"
-msgstr "Online"
-
-msgid "Vue d'ensemble"
-msgstr "Overview"
-
-msgid "Conversations"
-msgstr "Conversations"
-
-msgid "Accueil & Profil"
-msgstr "Home & Profile"
-
-msgid "Liens externes"
-msgstr "External links"
-
+#: templates/account/login.html:42 templates/dashboard/change_password.html:3
+#: templates/dashboard/change_password.html:29
+#: templates/dashboard/company_settings.html:166
+#: templates/dashboard/login.html:27 templates/dashboard/settings_hub.html:66
 msgid "Mot de passe"
 msgstr "Password"
 
-msgid "Vue"
-msgstr "Overview"
+#: templates/account/login.html:48
+#: templates/account/password_reset_from_key.html:35
+#: templates/account/password_reset_from_key.html:49
+#: templates/account/signup.html:58 templates/account/signup.html:72
+#: templates/dashboard/login.html:33
+msgid "Afficher le mot de passe"
+msgstr "Show password"
 
-msgid "Chat"
-msgstr "Chat"
+#: templates/account/login.html:59
+msgid "Se souvenir de moi"
+msgstr "Remember me"
 
-msgid "Accueil"
-msgstr "Home"
+#: templates/account/login.html:63
+msgid "Mot de passe oublié ?"
+msgstr "Forgot your password?"
 
-msgid "Liens"
-msgstr "Links"
+#: templates/account/login.html:69
+#: templates/account/password_reset_from_key_done.html:15
+#: templates/chat/room.html:121 templates/dashboard/login.html:41
+msgid "Se connecter"
+msgstr "Log in"
 
+#: templates/account/login.html:73 templates/dashboard/prediction_form.html:18
+msgid "ou"
+msgstr "or"
+
+#: templates/account/login.html:77 templates/account/signup.html:3
+#: templates/chat/room.html:122
+msgid "Créer un compte"
+msgstr "Create an account"
+
+#: templates/account/login.html:81
+msgid "Espace entreprise (administration)"
+msgstr "Company area (admin)"
+
+#: templates/account/password_reset.html:3
+#: templates/account/password_reset.html:6
+msgid "Mot de passe oublié"
+msgstr "Forgot password"
+
+#: templates/account/password_reset.html:8
+msgid ""
+"Indiquez votre e-mail, nous vous envoyons un lien pour le réinitialiser."
+msgstr "Enter your email, we'll send you a link to reset it."
+
+#: templates/account/password_reset.html:28
+msgid "Envoyer le lien"
+msgstr "Send link"
+
+#: templates/account/password_reset.html:32
+#: templates/account/password_reset_done.html:15
+msgid "Retour à la connexion"
+msgstr "Back to login"
+
+#: templates/account/password_reset_done.html:3
+msgid "E-mail envoyé"
+msgstr "Email sent"
+
+#: templates/account/password_reset_done.html:10
+msgid "Vérifiez votre boîte mail"
+msgstr "Check your inbox"
+
+#: templates/account/password_reset_done.html:12
+msgid ""
+"Si un compte existe avec cette adresse, un e-mail contenant les instructions "
+"de réinitialisation vient de vous être envoyé."
+msgstr ""
+"If an account exists with this address, an email with reset instructions has "
+"just been sent to you."
+
+#: templates/account/password_reset_from_key.html:3
+#: templates/account/password_reset_from_key.html:17
+msgid "Nouveau mot de passe"
+msgstr "New password"
+
+#: templates/account/password_reset_from_key.html:8
+msgid "Lien invalide"
+msgstr "Invalid link"
+
+#: templates/account/password_reset_from_key.html:10
+msgid "Ce lien de réinitialisation est invalide ou a déjà été utilisé."
+msgstr "This reset link is invalid or has already been used."
+
+#: templates/account/password_reset_from_key.html:13
+msgid "Demander un nouveau lien"
+msgstr "Request a new link"
+
+#: templates/account/password_reset_from_key.html:19
+msgid "Choisissez un nouveau mot de passe pour votre compte."
+msgstr "Choose a new password for your account."
+
+#: templates/account/password_reset_from_key.html:57
 msgid "Changer le mot de passe"
 msgstr "Change password"
 
-msgid "Protégez l'accès à l'ensemble des conversations clients."
-msgstr "Protect access to all client conversations."
+#: templates/account/password_reset_from_key_done.html:3
+#: templates/account/password_reset_from_key_done.html:10
+msgid "Mot de passe modifié"
+msgstr "Password changed"
 
-msgid "Modifier le mot de passe"
-msgstr "Update password"
-
+#: templates/account/password_reset_from_key_done.html:12
 msgid ""
-"Ce que voit un visiteur en arrivant sur la plateforme, avant de se connecter."
-msgstr "What a visitor sees when arriving on the platform, before logging in."
+"Votre mot de passe a bien été mis à jour. Vous pouvez maintenant vous "
+"connecter."
+msgstr "Your password has been updated. You can now log in."
 
-msgid "Profil de l'entreprise"
-msgstr "Company profile"
+#: templates/account/signup.html:6
+msgid "Créer votre compte"
+msgstr "Create your account"
 
-msgid "Logo, nom et description affichés en haut de la page d'accueil."
-msgstr "Logo, name and description shown at the top of the homepage."
+#: templates/account/signup.html:8
+msgid "Rejoignez SPORTI pour accéder à vos pronostics."
+msgstr "Join SPORTI to access your predictions."
 
-msgid "Enregistrer le profil"
-msgstr "Save profile"
+#: templates/account/signup.html:27
+msgid "ou avec un e-mail"
+msgstr "or with an email"
 
-msgid "Message d'accueil"
-msgstr "Welcome message"
+#: templates/account/signup.html:82
+msgid "Créer mon compte"
+msgstr "Create my account"
 
-msgid ""
-"Texte, audio et vidéo affichés dès l'arrivée du visiteur, chacun activable "
-"indépendamment."
-msgstr "Text, audio and video shown as soon as a visitor arrives, each toggled independently."
+#: templates/account/signup.html:87
+msgid "Déjà un compte ?"
+msgstr "Already have an account?"
 
-msgid "Enregistrer le message d'accueil"
-msgstr "Save welcome message"
+#: templates/account/signup.html:88
+msgid "Connectez-vous"
+msgstr "Log in"
 
-msgid "Retour aux conversations"
-msgstr "Back to conversations"
+#: templates/accounts/profile.html:3 templates/chat/room.html:41
+msgid "Mon profil"
+msgstr "My profile"
 
-msgid "Aucun message pour le moment."
-msgstr "No messages yet."
+#: templates/accounts/profile.html:8 templates/chat/room.html:17
+#: templates/dashboard/conversation.html:17
+msgid "Retour"
+msgstr "Back"
 
-msgid "Écrire une réponse…"
-msgstr "Write a reply…"
-
-msgid ""
-"Tous vos clients, triés par activité récente. Cette liste ne disparaît "
-"jamais."
-msgstr "All your clients, sorted by recent activity. This list never disappears."
-
-msgid "Client"
-msgstr "Client"
-
-msgid "Dernier message"
-msgstr "Last message"
-
-msgid "Date"
-msgstr "Date"
-
-msgid "Non lus"
-msgstr "Unread"
-
-msgid "Aucun message"
-msgstr "No messages"
-
-msgid "Aucune conversation pour le moment."
-msgstr "No conversations yet."
-
-msgid "L'activité de votre plateforme, en un coup d'œil."
-msgstr "Your platform's activity, at a glance."
-
-msgid "Total clients"
-msgstr "Total clients"
-
-msgid "Messages aujourd'hui"
-msgstr "Messages today"
-
-msgid "Non lues"
-msgstr "Unread"
-
-msgid "Évolution du nombre de clients"
-msgstr "Client growth over time"
-
-msgid "Nouveaux clients"
-msgstr "New clients"
-
-msgid "Modifier le lien"
-msgstr "Edit link"
-
-msgid "Nouveau lien"
-msgstr "New link"
-
-msgid "Retour aux liens"
-msgstr "Back to links"
-
+#: templates/accounts/profile.html:44
+#: templates/dashboard/company_settings.html:48
+#: templates/dashboard/company_settings.html:84
+#: templates/dashboard/company_settings.html:108
+#: templates/dashboard/company_settings.html:154
+#: templates/dashboard/event_form.html:34 templates/dashboard/link_form.html:31
+#: templates/dashboard/prediction_form.html:42
+#: templates/dashboard/team_form.html:25
 msgid "Enregistrer"
 msgstr "Save"
 
-msgid "Ajouter le lien"
-msgstr "Add link"
+#: templates/accounts/profile.html:50 templates/chat/room.html:44
+#: templates/dashboard/_admin_top.html:32
+#: templates/dashboard/settings_hub.html:76
+msgid "Déconnexion"
+msgstr "Log out"
 
-msgid "+ Ajouter un lien"
-msgstr "+ Add a link"
+#: templates/base.html:32
+msgid "Changer de langue"
+msgstr "Change language"
 
+#: templates/base.html:42
+msgid "Changer de theme"
+msgstr "Switch theme"
+
+#: templates/chat/_bottom_nav.html:3 templates/chat/_top_navbar.html:12
+#: templates/dashboard/_admin_top.html:11
+#: templates/dashboard/_bottom_nav.html:3 templates/dashboard/home.html:108
+msgid "Accueil"
+msgstr "Home"
+
+#: templates/chat/_bottom_nav.html:8 templates/chat/_top_navbar.html:15
+#: templates/chat/home.html:61 templates/chat/hub.html:149
+#: templates/dashboard/_admin_top.html:13
+#: templates/dashboard/_bottom_nav.html:16 templates/dashboard/home.html:81
+#: templates/dashboard/predictions_list.html:3
+#: templates/dashboard/predictions_list.html:11
+#: templates/predictions/list.html:3 templates/predictions/list.html:56
+#: templates/predictions/list.html:219
+msgid "Pronostics"
+msgstr "Predictions"
+
+#: templates/chat/_bottom_nav.html:16 templates/chat/_top_navbar.html:18
+#: templates/predictions/list.html:94
+msgid "Historique"
+msgstr "History"
+
+#: templates/chat/_bottom_nav.html:21 templates/chat/_top_navbar.html:21
+msgid "Chat"
+msgstr "Chat"
+
+#: templates/chat/_bottom_nav.html:26
+msgid "Profil"
+msgstr "Profile"
+
+#: templates/chat/home.html:29
+msgid "PRÉDISEZ."
+msgstr "PREDICT."
+
+#: templates/chat/home.html:29
+msgid "GAGNEZ."
+msgstr "WIN."
+
+#: templates/chat/home.html:29
+msgid "DOMINEZ."
+msgstr "DOMINATE."
+
+#: templates/chat/home.html:32
+msgid "Rejoins la communauté des vrais parieurs intelligents"
+msgstr "Join the community of real smart bettors"
+
+#: templates/chat/home.html:40
+msgid "S'INSCRIRE"
+msgstr "SIGN UP"
+
+#: templates/chat/home.html:45
+msgid "SE CONNECTER"
+msgstr "LOG IN"
+
+#: templates/chat/home.html:53
+msgid "Membres actifs"
+msgstr "Active members"
+
+#: templates/chat/home.html:57
+msgid "Taux de réussite"
+msgstr "Success rate"
+
+#: templates/chat/home.html:60
+msgid "Quotidien"
+msgstr "Daily"
+
+#: templates/chat/home.html:66
+#, python-format
+msgid "Sécurisé. Fiable. 100%% Sport."
+msgstr "Secure. Reliable. 100%% Sports."
+
+#: templates/chat/hub.html:17 templates/chat/room.html:32
+#: templates/dashboard/_admin_top.html:51 templates/predictions/list.html:17
+msgid "Notifications"
+msgstr "Notifications"
+
+#: templates/chat/hub.html:38 templates/dashboard/home.html:16
+#: templates/predictions/list.html:39
+msgid "Bonjour"
+msgstr "Hello"
+
+#: templates/chat/hub.html:39
+msgid "Prêt pour les pronostics d'aujourd'hui ?"
+msgstr "Ready for today's predictions?"
+
+#: templates/chat/hub.html:51
+msgid "NOUVEAU"
+msgstr "NEW"
+
+#: templates/chat/hub.html:54
+msgid "nouveaux"
+msgstr "new"
+
+#: templates/chat/hub.html:55
+msgid "pronostics Premium"
+msgstr "Premium predictions"
+
+#: templates/chat/hub.html:57
+msgid "sont disponibles aujourd'hui."
+msgstr "are available today."
+
+#: templates/chat/hub.html:61
+msgid "PRONOSTICS"
+msgstr "PREDICTIONS"
+
+#: templates/chat/hub.html:64
+msgid "Pronostics Premium"
+msgstr "Premium predictions"
+
+#: templates/chat/hub.html:66
+msgid "Analyses professionnelles, chaque jour."
+msgstr "Professional analysis, every day."
+
+#: templates/chat/hub.html:69
+msgid "Voir maintenant"
+msgstr "View now"
+
+#: templates/chat/hub.html:94 templates/chat/room.html:27
+#: templates/chat/room.html:541 templates/dashboard/conversation.html:239
+#: templates/dashboard/home.html:21
+msgid "En ligne"
+msgstr "Online"
+
+#: templates/chat/hub.html:94 templates/chat/room.html:27
+#: templates/chat/room.html:544 templates/dashboard/conversation.html:25
+#: templates/dashboard/conversation.html:239 templates/offline/offline.html:4
+msgid "Hors ligne"
+msgstr "Offline"
+
+#: templates/chat/hub.html:97 templates/predictions/list.html:62
+msgid "Parler avec"
+msgstr "Talk to"
+
+#: templates/chat/hub.html:99
 msgid ""
-"WhatsApp, Telegram, réseaux sociaux… affichés sur la page d'accueil publique."
-msgstr "WhatsApp, Telegram, social media… shown on the public homepage."
+"Réponses en quelques minutes. Posez vos questions et obtenez des conseils "
+"personnalisés."
+msgstr ""
+"Replies within minutes. Ask your questions and get personalized advice."
 
-msgid "Plateforme"
-msgstr "Platform"
+#: templates/chat/hub.html:103
+msgid "Commencer la discussion"
+msgstr "Start the conversation"
 
-msgid "Lien"
-msgstr "Link"
+#: templates/chat/hub.html:116
+msgid "Voir les pronostics"
+msgstr "View predictions"
 
-msgid "Visible"
-msgstr "Visible"
+#: templates/chat/hub.html:119 templates/chat/hub.html:149
+#: templates/dashboard/home.html:33 templates/dashboard/home.html:41
+#: templates/dashboard/home.html:49 templates/predictions/list.html:219
+msgid "aujourd'hui"
+msgstr "today"
 
-msgid "Ordre"
-msgstr "Order"
+#: templates/chat/hub.html:124
+msgid "Réussite"
+msgstr "Success"
 
-msgid "Actions"
-msgstr "Actions"
+#: templates/chat/hub.html:128
+msgid "Gagnants"
+msgstr "Winners"
 
-msgid "Actif"
-msgstr "Active"
+#: templates/chat/hub.html:134
+msgid "Accéder aux pronostics"
+msgstr "Access predictions"
 
-msgid "Masqué"
-msgstr "Hidden"
+#: templates/chat/hub.html:143
+msgid "Statistiques"
+msgstr "Statistics"
 
+#: templates/chat/hub.html:154 templates/predictions/list.html:224
+msgid "Membres"
+msgstr "Members"
+
+#: templates/chat/hub.html:154 templates/predictions/list.html:224
+msgid "actifs"
+msgstr "active"
+
+#: templates/chat/hub.html:159 templates/predictions/list.html:214
+msgid "Taux de"
+msgstr "Success"
+
+#: templates/chat/hub.html:159 templates/predictions/list.html:214
+msgid "réussite"
+msgstr "rate"
+
+#: templates/chat/hub.html:163 templates/predictions/list.html:56
+msgid "Premium"
+msgstr "Premium"
+
+#: templates/chat/hub.html:164
+msgid "Abonnement"
+msgstr "Subscription"
+
+#: templates/chat/hub.html:164
+msgid "actif"
+msgstr "active"
+
+#: templates/chat/hub.html:172
+msgid "Pourquoi"
+msgstr "Why"
+
+#: templates/chat/hub.html:177
+msgid "Analyses professionnelles"
+msgstr "Professional analysis"
+
+#: templates/chat/hub.html:178
+msgid "Nos experts analysent chaque match en détail."
+msgstr "Our experts analyze every match in detail."
+
+#: templates/chat/hub.html:182
+msgid "Mises à jour quotidiennes"
+msgstr "Daily updates"
+
+#: templates/chat/hub.html:183
+msgid "Pronostics frais et analyses chaque jour."
+msgstr "Fresh predictions and analysis every day."
+
+#: templates/chat/hub.html:187
+msgid "Support rapide"
+msgstr "Fast support"
+
+#: templates/chat/hub.html:188
+msgid "Notre équipe est là pour vous aider 24/7."
+msgstr "Our team is here to help you 24/7."
+
+#: templates/chat/hub.html:192
+msgid "Paiements sécurisés"
+msgstr "Secure payments"
+
+#: templates/chat/hub.html:193
+#, python-format
+msgid "Transactions 100%% sécurisées."
+msgstr "100%% secure transactions."
+
+#: templates/chat/hub.html:204
+msgid "La discipline bat toujours la chance."
+msgstr "Discipline always beats luck."
+
+#: templates/chat/hub.html:205
+msgid "Restez concentré, restez gagnant."
+msgstr "Stay focused, stay winning."
+
+#: templates/chat/room.html:37 templates/dashboard/_admin_top.html:41
+msgid "Menu"
+msgstr "Menu"
+
+#: templates/chat/room.html:53 templates/dashboard/conversation.html:63
+msgid "Fermer"
+msgstr "Close"
+
+#: templates/chat/room.html:66
+msgid "Annuler la réponse"
+msgstr "Cancel reply"
+
+#: templates/chat/room.html:70 templates/dashboard/conversation.html:71
+msgid "Joindre un fichier"
+msgstr "Attach a file"
+
+#: templates/chat/room.html:75 templates/dashboard/conversation.html:76
+msgid "Emoji"
+msgstr "Emoji"
+
+#: templates/chat/room.html:83
+msgid "Écrivez votre message…"
+msgstr "Write your message…"
+
+#: templates/chat/room.html:85 templates/dashboard/conversation.html:84
+msgid "Message vocal"
+msgstr "Voice message"
+
+#: templates/chat/room.html:98 templates/dashboard/conversation.html:97
+msgid "Plateformes recommandées"
+msgstr "Recommended platforms"
+
+#: templates/chat/room.html:102
+msgid "Retrouvez-moi sur"
+msgstr "Find me on"
+
+#: templates/chat/room.html:292 templates/chat/room.html:425
+#: templates/dashboard/conversation.html:38
+#: templates/dashboard/conversation.html:280
+msgid "📎 Pièce jointe"
+msgstr "📎 Attachment"
+
+#: templates/chat/room.html:298
+msgid "Vous"
+msgstr "You"
+
+#: templates/chat/room.html:300
+msgid "Message"
+msgstr "Message"
+
+#: templates/chat/room.html:324
+msgid "Répondre"
+msgstr "Reply"
+
+#: templates/chat/room.html:380 templates/dashboard/fixtures_search.html:22
+#: templates/predictions/list.html:77
+msgid "Aujourd'hui"
+msgstr "Today"
+
+#: templates/chat/room.html:381
+msgid "Hier"
+msgstr "Yesterday"
+
+#: templates/chat/room.html:657 templates/chat/room.html:667
+#: templates/chat/room.html:767
+msgid "Un instant, la conversation se charge encore…"
+msgstr "One moment, the conversation is still loading…"
+
+#: templates/chat/room.html:682 templates/dashboard/conversation.html:380
+msgid "Échec de l'envoi du fichier."
+msgstr "Failed to send the file."
+
+#: templates/chat/room.html:694 templates/dashboard/conversation.html:383
+msgid "Échec de l'envoi du fichier, vérifiez votre connexion."
+msgstr "Failed to send the file, check your connection."
+
+#: templates/chat/room.html:741 templates/dashboard/conversation.html:427
+msgid "Échec de l'envoi du vocal."
+msgstr "Failed to send the voice message."
+
+#: templates/chat/room.html:753 templates/dashboard/conversation.html:432
+msgid "Échec de l'envoi du vocal, vérifiez votre connexion."
+msgstr "Failed to send the voice message, check your connection."
+
+#: templates/chat/room.html:771 templates/dashboard/conversation.html:446
+msgid ""
+"Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous "
+"êtes actuellement sur"
+msgstr ""
+"The microphone requires a secure connection (HTTPS) or localhost. You are "
+"currently on"
+
+#: templates/chat/room.html:771 templates/dashboard/conversation.html:446
+msgid ""
+"si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi "
+"que vous fassiez."
+msgstr ""
+"if this is not https:// or localhost, the browser blocks the microphone no "
+"matter what you do."
+
+#: templates/chat/room.html:792 templates/dashboard/company_settings.html:282
+#: templates/dashboard/conversation.html:467
+msgid "Microphone inaccessible :"
+msgstr "Microphone unavailable:"
+
+#: templates/chat/room.html:792 templates/dashboard/conversation.html:467
+msgid "Vérifiez les autorisations du navigateur."
+msgstr "Check your browser permissions."
+
+#: templates/dashboard/_admin_top.html:7
+msgid "Admin"
+msgstr "Admin"
+
+#: templates/dashboard/_admin_top.html:12
+#: templates/dashboard/_bottom_nav.html:8
+#: templates/dashboard/conversations_list.html:3
+#: templates/dashboard/home.html:40 templates/dashboard/home.html:72
+msgid "Conversations"
+msgstr "Conversations"
+
+#: templates/dashboard/_admin_top.html:14 templates/dashboard/home.html:32
+#: templates/dashboard/home.html:90 templates/dashboard/settings_hub.html:39
+#: templates/dashboard/users_list.html:3 templates/dashboard/users_list.html:7
+msgid "Utilisateurs"
+msgstr "Users"
+
+#: templates/dashboard/_admin_top.html:15 templates/dashboard/home.html:99
+msgid "Liens"
+msgstr "Links"
+
+#: templates/dashboard/_admin_top.html:16
+msgid "Accueil client"
+msgstr "Client home"
+
+#: templates/dashboard/_admin_top.html:17 templates/dashboard/home.html:117
+#: templates/dashboard/settings_hub.html:48
+#: templates/dashboard/teams_list.html:3 templates/dashboard/teams_list.html:7
+msgid "Équipes"
+msgstr "Teams"
+
+#: templates/dashboard/_admin_top.html:18
+#: templates/dashboard/_bottom_nav.html:21
+#: templates/dashboard/settings_hub.html:3
+#: templates/dashboard/settings_hub.html:11
+msgid "Paramètres"
+msgstr "Settings"
+
+#: templates/dashboard/_conversations_sidebar.html:4
+msgid "Chats"
+msgstr "Chats"
+
+#: templates/dashboard/_conversations_sidebar.html:9
+msgid "Rechercher"
+msgstr "Search"
+
+#: templates/dashboard/_conversations_sidebar.html:23
+msgid "[Pièce jointe]"
+msgstr "[Attachment]"
+
+#: templates/dashboard/_conversations_sidebar.html:25
+msgid "Aucun message"
+msgstr "No messages"
+
+#: templates/dashboard/_conversations_sidebar.html:33
+msgid "Aucune conversation pour le moment."
+msgstr "No conversations yet."
+
+#: templates/dashboard/change_password.html:6
+#: templates/dashboard/company_settings.html:8
+#: templates/dashboard/events_list.html:6 templates/dashboard/links_list.html:7
+#: templates/dashboard/teams_list.html:6 templates/dashboard/users_list.html:6
+msgid "Retour aux paramètres"
+msgstr "Back to settings"
+
+#: templates/dashboard/change_password.html:7
+msgid "Compte administrateur"
+msgstr "Administrator account"
+
+#: templates/dashboard/change_password.html:8
+msgid "Nom d'utilisateur et mot de passe pour l'accès à l'espace de gestion."
+msgstr "Username and password for access to the management area."
+
+#: templates/dashboard/change_password.html:13
+#: templates/dashboard/login.html:18
+msgid "Nom d'utilisateur"
+msgstr "Username"
+
+#: templates/dashboard/change_password.html:14
+msgid "Utilisé pour se connecter à l'espace de gestion."
+msgstr "Used to log in to the management area."
+
+#: templates/dashboard/change_password.html:25
+msgid "Modifier le nom d'utilisateur"
+msgstr "Change username"
+
+#: templates/dashboard/change_password.html:30
+msgid "6 caractères minimum."
+msgstr "6 characters minimum."
+
+#: templates/dashboard/change_password.html:40
+msgid "Modifier le mot de passe"
+msgstr "Update password"
+
+#: templates/dashboard/company_settings.html:4
+#: templates/dashboard/company_settings.html:9
+#: templates/dashboard/settings_hub.html:21
+msgid "Paramètres généraux"
+msgstr "General settings"
+
+#: templates/dashboard/company_settings.html:10
+msgid "Gérer votre compte et vos paramètres."
+msgstr "Manage your account and settings."
+
+#: templates/dashboard/company_settings.html:17
+msgid "Profil administrateur"
+msgstr "Administrator profile"
+
+#: templates/dashboard/company_settings.html:55
+msgid "Logo"
+msgstr "Logo"
+
+#: templates/dashboard/company_settings.html:68
+msgid "Changer le logo"
+msgstr "Change logo"
+
+#: templates/dashboard/company_settings.html:69
+msgid "Format JPG, PNG. Max 2 Mo."
+msgstr "JPG, PNG format. Max 2 MB."
+
+#: templates/dashboard/company_settings.html:91
+msgid "Message de bienvenue (texte)"
+msgstr "Welcome message (text)"
+
+#: templates/dashboard/company_settings.html:92
+msgid "Affiché par défaut dans le chat."
+msgstr "Displayed by default in the chat."
+
+#: templates/dashboard/company_settings.html:97
+msgid "Français"
+msgstr "French"
+
+#: templates/dashboard/company_settings.html:101
+msgid "Anglais"
+msgstr "English"
+
+#: templates/dashboard/company_settings.html:114
+msgid "Message de bienvenue (vocal)"
+msgstr "Welcome message (voice)"
+
+#: templates/dashboard/company_settings.html:115
+msgid "Message vocal lu par défaut dans le chat."
+msgstr "Voice message played by default in the chat."
+
+#: templates/dashboard/company_settings.html:121
+msgid "Vocal actuel -- en enregistrer ou en importer un nouveau le remplacera."
+msgstr ""
+"Current voice message -- recording or importing a new one will replace it."
+
+#: templates/dashboard/company_settings.html:125
+msgid "Enregistrer un vocal"
+msgstr "Record a voice message"
+
+#: templates/dashboard/company_settings.html:131
+#: templates/dashboard/company_settings.html:227
+msgid "Enregistrer directement un message vocal"
+msgstr "Record a voice message directly"
+
+#: templates/dashboard/company_settings.html:138
+msgid "Recommencer"
+msgstr "Start over"
+
+#: templates/dashboard/company_settings.html:140
+msgid "Pret a etre enregistre ci-dessous"
+msgstr "Ready to be recorded below"
+
+#: templates/dashboard/company_settings.html:143
+msgid "— ou —"
+msgstr "— or —"
+
+#: templates/dashboard/company_settings.html:146
+msgid "Importer un fichier audio"
+msgstr "Upload an audio file"
+
+#: templates/dashboard/company_settings.html:258
+msgid "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost."
+msgstr "The microphone requires a secure connection (HTTPS) or localhost."
+
+#: templates/dashboard/company_settings.html:274
+#: templates/dashboard/company_settings.html:278
+msgid "Enregistrement…"
+msgstr "Recording…"
+
+#: templates/dashboard/conversation.html:58
+msgid "Aucun message pour le moment."
+msgstr "No messages yet."
+
+#: templates/dashboard/conversation.html:82
+msgid "Écrire une réponse…"
+msgstr "Write a reply…"
+
+#: templates/dashboard/conversation.html:101
+msgid "Retrouvez le client sur"
+msgstr "Find the client on"
+
+#: templates/dashboard/conversations_list.html:22
+msgid "Sélectionnez une conversation"
+msgstr "Select a conversation"
+
+#: templates/dashboard/conversations_list.html:23
+msgid "Choisissez un client dans la liste pour ouvrir la discussion."
+msgstr "Choose a client from the list to open the conversation."
+
+#: templates/dashboard/event_form.html:4 templates/dashboard/event_form.html:9
+msgid "Modifier l'événement"
+msgstr "Edit event"
+
+#: templates/dashboard/event_form.html:4 templates/dashboard/event_form.html:9
+#: templates/dashboard/prediction_create_form.html:9
+msgid "Nouvel événement"
+msgstr "New event"
+
+#: templates/dashboard/event_form.html:8
+msgid "Retour aux événements"
+msgstr "Back to events"
+
+#: templates/dashboard/event_form.html:10
+msgid "Un événement regroupe deux équipes, une compétition et une date."
+msgstr "An event groups two teams, a competition, and a date."
+
+#: templates/dashboard/event_form.html:16
+#: templates/dashboard/prediction_create_form.html:74
+msgid "Aucune équipe n'a encore été créée."
+msgstr "No team has been created yet."
+
+#: templates/dashboard/event_form.html:17
+#: templates/dashboard/prediction_create_form.html:75
+msgid "Créer une équipe"
+msgstr "Create a team"
+
+#: templates/dashboard/event_form.html:34
+msgid "Ajouter l'événement"
+msgstr "Add event"
+
+#: templates/dashboard/events_list.html:3
+#: templates/dashboard/events_list.html:7
+#: templates/dashboard/settings_hub.html:57
+msgid "Événements"
+msgstr "Events"
+
+#: templates/dashboard/events_list.html:8
+msgid "Matchs disponibles pour la création de pronostics."
+msgstr "Matches available for creating predictions."
+
+#: templates/dashboard/events_list.html:14
+msgid "Ajouter un événement"
+msgstr "Add an event"
+
+#: templates/dashboard/events_list.html:25
+#: templates/dashboard/links_list.html:61
+#: templates/dashboard/predictions_list.html:117
+#: templates/dashboard/teams_list.html:27
 msgid "Modifier"
 msgstr "Edit"
 
-msgid "Supprimer ce lien ?"
-msgstr "Delete this link?"
+#: templates/dashboard/events_list.html:28
+msgid "Supprimer cet événement ?"
+msgstr "Delete this event?"
 
+#: templates/dashboard/events_list.html:30
+#: templates/dashboard/links_list.html:66
+#: templates/dashboard/predictions_list.html:127
+#: templates/dashboard/teams_list.html:32
 msgid "Supprimer"
 msgstr "Delete"
 
+#: templates/dashboard/events_list.html:38
+msgid "Aucun événement pour le moment."
+msgstr "No events yet."
+
+#: templates/dashboard/fixtures_search.html:3
+#: templates/dashboard/fixtures_search.html:7
+#: templates/dashboard/fixtures_search.html:69
+msgid "Recharger les matchs"
+msgstr "Reload matches"
+
+#: templates/dashboard/fixtures_search.html:6
+#: templates/dashboard/prediction_create_form.html:8
+#: templates/dashboard/prediction_form.html:8
+msgid "Retour aux pronostics"
+msgstr "Back to predictions"
+
+#: templates/dashboard/fixtures_search.html:8
+msgid "API-Football"
+msgstr "API-Football"
+
+#: templates/dashboard/fixtures_search.html:15
+msgid "Filtres"
+msgstr "Filters"
+
+#: templates/dashboard/fixtures_search.html:18
+msgid "Période"
+msgstr "Period"
+
+#: templates/dashboard/fixtures_search.html:26
+msgid "Demain"
+msgstr "Tomorrow"
+
+#: templates/dashboard/fixtures_search.html:30
+msgid "Choisir une date"
+msgstr "Choose a date"
+
+#: templates/dashboard/fixtures_search.html:46
+msgid "Compétition"
+msgstr "Competition"
+
+#: templates/dashboard/fixtures_search.html:48
+msgid "Toutes compétitions"
+msgstr "All competitions"
+
+#: templates/dashboard/fixtures_search.html:58
+msgid "Statut du match"
+msgstr "Match status"
+
+#: templates/dashboard/fixtures_search.html:60
+#: templates/dashboard/predictions_list.html:39
+#: templates/predictions/list.html:72
+msgid "Tous"
+msgstr "All"
+
+#: templates/dashboard/fixtures_search.html:61
+#: templates/dashboard/predictions_list.html:44
+#: templates/dashboard/predictions_list.html:88
+msgid "À venir"
+msgstr "Upcoming"
+
+#: templates/dashboard/fixtures_search.html:62
+msgid "En cours"
+msgstr "In progress"
+
+#: templates/dashboard/fixtures_search.html:63
+#: templates/dashboard/predictions_list.html:98
+msgid "Terminé"
+msgstr "Finished"
+
+#: templates/dashboard/fixtures_search.html:74
+msgid "Dernière mise à jour"
+msgstr "Last updated"
+
+#: templates/dashboard/fixtures_search.html:76
+msgid "Échec"
+msgstr "Failed"
+
+#: templates/dashboard/fixtures_search.html:78
+msgid "Succès"
+msgstr "Success"
+
+#: templates/dashboard/fixtures_search.html:89
+msgid ""
+"Ajoute ta clé dans le fichier .env : API_FOOTBALL_KEY=ta-cle-ici, puis "
+"relance le serveur."
+msgstr ""
+"Add your key in the .env file: API_FOOTBALL_KEY=your-key-here, then restart "
+"the server."
+
+#: templates/dashboard/fixtures_search.html:96
+msgid "Résultat"
+msgstr "Result"
+
+#: templates/dashboard/fixtures_search.html:107
+msgid "matchs trouvés"
+msgstr "matches found"
+
+#: templates/dashboard/fixtures_search.html:119
+#: templates/dashboard/predictions_list.html:78
+#: templates/predictions/list.html:146
+msgid "VS"
+msgstr "VS"
+
+#: templates/dashboard/fixtures_search.html:129
+msgid "Déjà importé"
+msgstr "Already imported"
+
+#: templates/dashboard/fixtures_search.html:136
+msgid "Importer"
+msgstr "Import"
+
+#: templates/dashboard/fixtures_search.html:148
+msgid "Aucun match trouvé pour cette date/compétition."
+msgstr "No matches found for this date/competition."
+
+#: templates/dashboard/home.html:3
+msgid "Tableau de bord"
+msgstr "Dashboard"
+
+#: templates/dashboard/home.html:17
+msgid "Voici votre tableau de bord"
+msgstr "Here's your dashboard"
+
+#: templates/dashboard/home.html:48
+msgid "Pronostics actifs"
+msgstr "Active predictions"
+
+#: templates/dashboard/home.html:56
+msgid "Visites aujourd'hui"
+msgstr "Visits today"
+
+#: templates/dashboard/home.html:64
+msgid "Accès rapide"
+msgstr "Quick access"
+
+#: templates/dashboard/home.html:73
+msgid "Gérer les messages"
+msgstr "Manage messages"
+
+#: templates/dashboard/home.html:82
+msgid "Gérer les pronostics"
+msgstr "Manage predictions"
+
+#: templates/dashboard/home.html:91 templates/dashboard/settings_hub.html:40
+msgid "Voir et gérer"
+msgstr "View and manage"
+
+#: templates/dashboard/home.html:100
+msgid "Gérer les liens"
+msgstr "Manage links"
+
+#: templates/dashboard/home.html:109
+msgid "Texte, vocal, vidéo"
+msgstr "Text, voice, video"
+
+#: templates/dashboard/home.html:118 templates/dashboard/settings_hub.html:49
+msgid "Gérer les équipes"
+msgstr "Manage teams"
+
+#: templates/dashboard/home.html:127
+msgid "Activité récente"
+msgstr "Recent activity"
+
+#: templates/dashboard/home.html:152
+msgid "Aucune activité pour le moment."
+msgstr "No activity yet."
+
+#: templates/dashboard/home.html:156
+msgid "Défiler pour voir la suite"
+msgstr "Scroll to see more"
+
+#: templates/dashboard/link_form.html:4 templates/dashboard/link_form.html:9
+msgid "Modifier le lien"
+msgstr "Edit link"
+
+#: templates/dashboard/link_form.html:4 templates/dashboard/link_form.html:9
+msgid "Nouveau lien"
+msgstr "New link"
+
+#: templates/dashboard/link_form.html:8
+msgid "Retour aux liens"
+msgstr "Back to links"
+
+#: templates/dashboard/link_form.html:10
+msgid "Plateformes et liens externes proposés aux clients."
+msgstr "External platforms and links offered to clients."
+
+#: templates/dashboard/link_form.html:31
+msgid "Ajouter le lien"
+msgstr "Add link"
+
+#: templates/dashboard/links_list.html:3 templates/dashboard/links_list.html:8
+#: templates/dashboard/settings_hub.html:30
+msgid "Liens pour le chat"
+msgstr "Links for chat"
+
+#: templates/dashboard/links_list.html:9
+msgid "Gérer les liens disponibles pour les utilisateurs."
+msgstr "Manage the links available to users."
+
+#: templates/dashboard/links_list.html:14
+msgid "Liens rapides"
+msgstr "Quick links"
+
+#: templates/dashboard/links_list.html:15
+#: templates/dashboard/links_list.html:81
+msgid "Ajouter un lien"
+msgstr "Add a link"
+
+#: templates/dashboard/links_list.html:19
+msgid ""
+"Ces liens seront visibles par les utilisateurs dans la section liens du chat."
+msgstr "These links will be visible to users in the chat's links section."
+
+#: templates/dashboard/links_list.html:56
+msgid "Masqué"
+msgstr "Hidden"
+
+#: templates/dashboard/links_list.html:64
+msgid "Supprimer ce lien ?"
+msgstr "Delete this link?"
+
+#: templates/dashboard/links_list.html:74
 msgid "Aucun lien pour le moment."
 msgstr "No links yet."
 
+#: templates/dashboard/login.html:3
 msgid "Espace de gestion"
 msgstr "Management area"
 
+#: templates/dashboard/login.html:6
+msgid "Espace entreprise"
+msgstr "Company area"
+
+#: templates/dashboard/login.html:8
+msgid "Connectez-vous à l'espace de gestion SPORTI."
+msgstr "Log in to the SPORTI management area."
+
+#: templates/dashboard/login.html:12
 msgid "Identifiants incorrects. Réessayez."
 msgstr "Incorrect credentials. Please try again."
 
-msgid "Nom d'utilisateur"
-msgstr "Username"
+#: templates/dashboard/login.html:46
+msgid "Espace client"
+msgstr "Client area"
+
+#: templates/dashboard/prediction_create_form.html:4
+#: templates/dashboard/prediction_form.html:4
+#: templates/dashboard/prediction_form.html:9
+#: templates/dashboard/predictions_list.html:144
+msgid "Nouveau pronostic"
+msgstr "New prediction"
+
+#: templates/dashboard/prediction_create_form.html:10
+msgid "Ajouter un match pour pronostic."
+msgstr "Add a match for prediction."
+
+#: templates/dashboard/prediction_create_form.html:18
+msgid "Match importé"
+msgstr "Imported match"
+
+#: templates/dashboard/prediction_create_form.html:36
+msgid "Rechercher un match déjà joué (remplit le formulaire ci-dessous)"
+msgstr "Search for an existing match (fills the form below)"
+
+#: templates/dashboard/prediction_create_form.html:39
+msgid "Rechercher une équipe ou une compétition…"
+msgstr "Search for a team or competition…"
+
+#: templates/dashboard/prediction_create_form.html:42
+msgid "Aucun match trouvé, remplissez les champs ci-dessous."
+msgstr "No match found, fill in the fields below."
+
+#: templates/dashboard/prediction_create_form.html:46
+msgid "Détails du match"
+msgstr "Match details"
+
+#: templates/dashboard/prediction_create_form.html:47
+msgid "✓ Champs pré-remplis, modifiez-les si besoin avant d'enregistrer."
+msgstr "✓ Fields pre-filled, edit them if needed before saving."
+
+#: templates/dashboard/prediction_create_form.html:82
+#: templates/predictions/list.html:158
+msgid "Pronostic"
+msgstr "Prediction"
+
+#: templates/dashboard/prediction_create_form.html:84
+msgid "Domicile"
+msgstr "Home"
+
+#: templates/dashboard/prediction_create_form.html:85
+msgid "Nul"
+msgstr "Draw"
+
+#: templates/dashboard/prediction_create_form.html:86
+msgid "Extérieur"
+msgstr "Away"
+
+#: templates/dashboard/prediction_create_form.html:87
+msgid "Double chance"
+msgstr "Double chance"
+
+#: templates/dashboard/prediction_create_form.html:101
+msgid "Lien de pari"
+msgstr "Betting link"
+
+#: templates/dashboard/prediction_create_form.html:119
+msgid "Options"
+msgstr "Options"
+
+#: templates/dashboard/prediction_create_form.html:131
+msgid "Statut"
+msgstr "Status"
+
+#: templates/dashboard/prediction_create_form.html:133
+msgid "Brouillon"
+msgstr "Draft"
+
+#: templates/dashboard/prediction_create_form.html:134
+msgid "Publier maintenant"
+msgstr "Publish now"
+
+#: templates/dashboard/prediction_create_form.html:141
+msgid "Enregistrer le pronostic"
+msgstr "Save prediction"
+
+#: templates/dashboard/prediction_create_form.html:202
+msgid "l’équipe à domicile"
+msgstr "the home team"
+
+#: templates/dashboard/prediction_create_form.html:203
+msgid "l’équipe à l’extérieur"
+msgstr "the away team"
+
+#: templates/dashboard/prediction_create_form.html:215
+#: templates/dashboard/prediction_create_form.html:217
+msgid "gagne"
+msgstr "wins"
+
+#: templates/dashboard/prediction_create_form.html:216
+msgid "Match nul"
+msgstr "Draw"
+
+#: templates/dashboard/prediction_create_form.html:218
+msgid "ou match nul (double chance)"
+msgstr "or draw (double chance)"
+
+#: templates/dashboard/prediction_form.html:4
+#: templates/dashboard/prediction_form.html:9
+msgid "Modifier le pronostic"
+msgstr "Edit prediction"
+
+#: templates/dashboard/prediction_form.html:10
+msgid "Ce pronostic sera visible par les clients dans le hub."
+msgstr "This prediction will be visible to clients in the hub."
+
+#: templates/dashboard/prediction_form.html:16
+msgid "Aucun événement n'a encore été créé."
+msgstr "No event has been created yet."
+
+#: templates/dashboard/prediction_form.html:17
+msgid "Créer un événement"
+msgstr "Create an event"
+
+#: templates/dashboard/prediction_form.html:19
+msgid "importer un match réel"
+msgstr "import a real match"
+
+#: templates/dashboard/prediction_form.html:42
+msgid "Ajouter le pronostic"
+msgstr "Add prediction"
+
+#: templates/dashboard/predictions_list.html:12
+msgid "Gérez tous les pronostics de la plateforme."
+msgstr "Manage all predictions on the platform."
+
+#: templates/dashboard/predictions_list.html:15
+msgid "Nouveau"
+msgstr "New"
+
+#: templates/dashboard/predictions_list.html:27
+msgid "Rechercher un match, une équipe…"
+msgstr "Search for a match, a team…"
+
+#: templates/dashboard/predictions_list.html:29
+msgid "Importer un match"
+msgstr "Import a match"
+
+#: templates/dashboard/predictions_list.html:52
+#: templates/dashboard/predictions_list.html:95
+#: templates/predictions/list.html:85
+msgid "Live"
+msgstr "Live"
+
+#: templates/dashboard/predictions_list.html:57
+msgid "Terminés"
+msgstr "Finished"
+
+#: templates/dashboard/predictions_list.html:121
+msgid "Voir"
+msgstr "View"
+
+#: templates/dashboard/predictions_list.html:123
+msgid "Supprimer ce pronostic ?"
+msgstr "Delete this prediction?"
+
+#: templates/dashboard/predictions_list.html:136
+msgid "Aucun pronostic ne correspond à cette recherche."
+msgstr "No prediction matches this search."
+
+#: templates/dashboard/predictions_list.html:138
+msgid "Aucun pronostic pour le moment."
+msgstr "No predictions yet."
+
+#: templates/dashboard/settings_hub.html:12
+msgid "Gérez votre plateforme et votre compte."
+msgstr "Manage your platform and your account."
+
+#: templates/dashboard/settings_hub.html:22
+msgid "Profil, logo, messages"
+msgstr "Profile, logo, messages"
+
+#: templates/dashboard/settings_hub.html:31
+msgid "Liens utiles"
+msgstr "Useful links"
+
+#: templates/dashboard/settings_hub.html:58
+msgid "Matchs créés"
+msgstr "Matches created"
+
+#: templates/dashboard/settings_hub.html:67
+msgid "Changer l'accès"
+msgstr "Change access"
+
+#: templates/dashboard/team_form.html:4 templates/dashboard/team_form.html:9
+msgid "Modifier l'équipe"
+msgstr "Edit team"
+
+#: templates/dashboard/team_form.html:4 templates/dashboard/team_form.html:9
+msgid "Nouvelle équipe"
+msgstr "New team"
+
+#: templates/dashboard/team_form.html:8
+msgid "Retour aux équipes"
+msgstr "Back to teams"
+
+#: templates/dashboard/team_form.html:10 templates/dashboard/teams_list.html:8
+msgid "Équipes réutilisables pour créer des événements sportifs."
+msgstr "Reusable teams for creating sports events."
+
+#: templates/dashboard/team_form.html:25
+msgid "Ajouter l'équipe"
+msgstr "Add team"
+
+#: templates/dashboard/teams_list.html:14
+msgid "Ajouter une équipe"
+msgstr "Add a team"
+
+#: templates/dashboard/teams_list.html:30
+msgid "Supprimer cette équipe ?"
+msgstr "Delete this team?"
+
+#: templates/dashboard/teams_list.html:40
+msgid "Aucune équipe pour le moment."
+msgstr "No teams yet."
+
+#: templates/dashboard/users_list.html:8
+msgid "Tous les clients inscrits sur la plateforme."
+msgstr "All clients registered on the platform."
+
+#: templates/dashboard/users_list.html:16
+msgid "Rechercher un utilisateur…"
+msgstr "Search for a user…"
+
+#: templates/dashboard/users_list.html:28
+msgid "inscrit le"
+msgstr "joined on"
+
+#: templates/dashboard/users_list.html:31
+msgid "Actif"
+msgstr "Active"
+
+#: templates/dashboard/users_list.html:33
+msgid "Désactivé"
+msgstr "Disabled"
+
+#: templates/dashboard/users_list.html:35
+msgid "Confirmer ?"
+msgstr "Confirm?"
+
+#: templates/dashboard/users_list.html:37
+msgid "Désactiver"
+msgstr "Disable"
+
+#: templates/dashboard/users_list.html:37
+msgid "Réactiver"
+msgstr "Reactivate"
+
+#: templates/dashboard/users_list.html:48
+msgid "Aucun utilisateur trouvé."
+msgstr "No user found."
+
+#: templates/offline/offline.html:10
+msgid "Vous semblez etre hors ligne."
+msgstr "You seem to be offline."
+
+#: templates/offline/offline.html:12
+msgid "Verifiez votre connexion internet, puis reessayez."
+msgstr "Check your internet connection, then try again."
+
+#: templates/offline/offline.html:15
+msgid "Reessayer"
+msgstr "Retry"
+
+#: templates/predictions/list.html:40
+msgid "Prêt à gagner aujourd'hui ?"
+msgstr "Ready to win today?"
+
+#: templates/predictions/list.html:45
+msgid "pronostics"
+msgstr "predictions"
+
+#: templates/predictions/list.html:45
+msgid "disponibles aujourd'hui"
+msgstr "available today"
+
+#: templates/predictions/list.html:59
+msgid "Analyses professionnelles. Cotes optimisées et confiance élevée."
+msgstr "Professional analysis. Optimized odds and high confidence."
+
+#: templates/predictions/list.html:89
+msgid "Top matchs"
+msgstr "Top matches"
+
+#: templates/predictions/list.html:107
+msgid "TOP MATCH"
+msgstr "TOP MATCH"
+
+#: templates/predictions/list.html:121
+msgid "LIVE"
+msgstr "LIVE"
+
+#: templates/predictions/list.html:128
+msgid "Gagné"
+msgstr "Won"
+
+#: templates/predictions/list.html:130
+msgid "Perdu"
+msgstr "Lost"
+
+#: templates/predictions/list.html:132
+msgid "confiance"
+msgstr "confidence"
+
+#: templates/predictions/list.html:165
+msgid "Cote"
+msgstr "Odds"
+
+#: templates/predictions/list.html:175
+msgid "PARIEZ AVEC"
+msgstr "BET WITH"
+
+#: templates/predictions/list.html:183
+msgid "PARIEZ"
+msgstr "BET"
+
+#: templates/predictions/list.html:185
+msgid "Voir l'offre"
+msgstr "View offer"
+
+#: templates/predictions/list.html:193
+msgid "Code coupon"
+msgstr "Coupon code"
+
+#: templates/predictions/list.html:197
+msgid "Offre exclusive"
+msgstr "Exclusive offer"
+
+#: templates/predictions/list.html:197
+msgid "Code"
+msgstr "Code"
+
+#: templates/predictions/list.html:204
+msgid "Aucun pronostic pour le moment. Revenez bientôt !"
+msgstr "No predictions yet. Check back soon!"
+
+#: templates/predictions/list.html:229
+msgid "Paiements"
+msgstr "Payments"
+
+#: templates/predictions/list.html:229
+msgid "sécurisés"
+msgstr "secure"
+
+#: templates/predictions/list.html:238
+msgid "Une question sur un pronostic ?"
+msgstr "A question about a prediction?"
+
+#: templates/predictions/list.html:239
+msgid "Discute directement avec l'équipe SPORTI."
+msgstr "Chat directly with the SPORTI team."
+
+#: templates/predictions/list.html:243
+msgid "Discuter"
+msgstr "Chat"
+
+#: templates/socialaccount/login.html:4 templates/socialaccount/login.html:23
+msgid "Connexion via Google"
+msgstr "Sign in with Google"
+
+#: templates/socialaccount/login.html:25
+msgid ""
+"Vous êtes sur le point de vous connecter en utilisant un compte tiers de "
+"Google."
+msgstr "You are about to sign in using a third-party Google account."
+
+#: templates/socialaccount/login.html:29
+msgid "Continuer"
+msgstr "Continue"
+
+#: templates/socialaccount/login.html:32
+msgid "Annuler"
+msgstr "Cancel"
+
+#~ msgid "Actifs"
+#~ msgstr "Active"
+
+#~ msgid "En attente"
+#~ msgstr "Pending"
+
+#~ msgid "Content de vous revoir"
+#~ msgstr "Welcome back"
+
+#~ msgid "Connectez-vous pour retrouver votre conversation."
+#~ msgstr "Log in to get back to your conversation."
+
+#~ msgid "Pas encore de compte ?"
+#~ msgstr "Don't have an account yet?"
+
+#~ msgid "Inscrivez-vous"
+#~ msgstr "Sign up"
+
+#~ msgid "Nom et photo récupérés automatiquement, sans mot de passe."
+#~ msgstr "Name and photo retrieved automatically, no password needed."
+
+#~ msgid "Envoyer"
+#~ msgstr "Send"
+
+#~ msgid "Vue d'ensemble"
+#~ msgstr "Overview"
+
+#~ msgid "Accueil & Profil"
+#~ msgstr "Home & Profile"
+
+#~ msgid "Vue"
+#~ msgstr "Overview"
+
+#~ msgid "Protégez l'accès à l'ensemble des conversations clients."
+#~ msgstr "Protect access to all client conversations."
+
+#~ msgid ""
+#~ "Ce que voit un visiteur en arrivant sur la plateforme, avant de se "
+#~ "connecter."
+#~ msgstr ""
+#~ "What a visitor sees when arriving on the platform, before logging in."
+
+#~ msgid "Logo, nom et description affichés en haut de la page d'accueil."
+#~ msgstr "Logo, name and description shown at the top of the homepage."
+
+#~ msgid ""
+#~ "Texte, audio et vidéo affichés dès l'arrivée du visiteur, chacun "
+#~ "activable indépendamment."
+#~ msgstr ""
+#~ "Text, audio and video shown as soon as a visitor arrives, each toggled "
+#~ "independently."
+
+#~ msgid ""
+#~ "Tous vos clients, triés par activité récente. Cette liste ne disparaît "
+#~ "jamais."
+#~ msgstr ""
+#~ "All your clients, sorted by recent activity. This list never disappears."
+
+#~ msgid "Client"
+#~ msgstr "Client"
+
+#~ msgid "Date"
+#~ msgstr "Date"
+
+#~ msgid "Non lus"
+#~ msgstr "Unread"
+
+#~ msgid "Non lues"
+#~ msgstr "Unread"
+
+#~ msgid "Évolution du nombre de clients"
+#~ msgstr "Client growth over time"
+
+#~ msgid ""
+#~ "WhatsApp, Telegram, réseaux sociaux… affichés sur la page d'accueil "
+#~ "publique."
+#~ msgstr "WhatsApp, Telegram, social media… shown on the public homepage."
+
+#~ msgid "Plateforme"
+#~ msgstr "Platform"
+
+#~ msgid "Lien"
+#~ msgstr "Link"
+
+#~ msgid "Visible"
+#~ msgstr "Visible"
+
+#~ msgid "Ordre"
+#~ msgstr "Order"

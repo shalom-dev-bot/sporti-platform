@@ -1,0 +1,13 @@
+{% load i18n static %}
+<div class="hidden dark:block absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+    <img src="{% static 'images/design/promo-ball.jpg' %}" alt="" class="w-full h-full object-cover object-right opacity-70">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#04060a]/55 via-[#04060a]/70 to-[#04060a]/95"></div>
+</div>
+<a href="{{ back_url }}" class="inline-flex items-center gap-1.5 text-xs text-navy-900/45 dark:text-white/45 hover:text-navy-900 dark:hover:text-white transition-colors mb-3">
+    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    {{ back_label }}
+</a>
+<div class="mb-5">
+    <h1 class="font-display text-lg lg:text-2xl font-bold">{{ form_title }}</h1>
+    {% if form_subtitle %}<p class="text-xs lg:text-sm text-navy-900/60 dark:text-white/60 mt-0.5">{{ form_subtitle }}</p>{% endif %}
+</div>

@@ -11,8 +11,11 @@
         <a href="{% url 'chat:home' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
             {% trans "Accueil" %}
         </a>
-        <a href="{% url 'predictions:list' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}">
+        <a href="{% url 'predictions:list' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'list' and request.GET.filtre != 'historique' %}active{% endif %}">
             {% trans "Pronostics" %}
+        </a>
+        <a href="{% url 'predictions:list' %}?filtre=historique" class="desktop-nav-link {% if request.resolver_match.url_name == 'list' and request.GET.filtre == 'historique' %}active{% endif %}">
+            {% trans "Historique" %}
         </a>
         <a href="{% url 'chat:room' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'room' %}active{% endif %}">
             {% trans "Chat" %}

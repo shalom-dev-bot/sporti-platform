@@ -1,82 +1,90 @@
-{% extends "base.html" %}
+{% extends "account/_auth_base.html" %}
 {% load i18n %}
-{% load static %}
 {% block title %}{% trans "Créer un compte" %} — SPORTI{% endblock %}
 
-{% block content %}
-<div class="auth-shell">
+{% block auth_content %}
+<h2 class="font-display text-lg font-semibold text-center text-white mb-0.5">{% trans "Créer votre compte" %}</h2>
+<p class="text-xs text-center text-white/50 mb-3">
+    {% trans "Rejoignez SPORTI pour accéder à vos pronostics." %}
+</p>
 
+{% if form.non_field_errors %}
+    <div class="form-alert !mb-3 !py-2">
+        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+    </div>
+{% endif %}
 
-    <div class="relative w-full max-w-md text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 hud-corners mb-4 overflow-hidden bg-navy-950">
-            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+<a href="{% url 'google_login' %}" class="btn-google">
+    <svg class="w-4 h-4" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.47c-.28 1.5-1.13 2.78-2.4 3.63v3.01h3.89c2.28-2.1 3.56-5.19 3.56-8.83z"/>
+        <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.89-3.01c-1.08.72-2.46 1.15-4.06 1.15-3.12 0-5.77-2.11-6.72-4.94H1.27v3.1C3.25 21.3 7.31 24 12 24z"/>
+        <path fill="#FBBC05" d="M5.28 14.3c-.24-.72-.38-1.49-.38-2.3s.14-1.58.38-2.3v-3.1H1.27A11.96 11.96 0 000 12c0 1.94.46 3.77 1.27 5.4l4.01-3.1z"/>
+        <path fill="#EA4335" d="M12 4.77c1.76 0 3.35.6 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.6l4.01 3.1C6.23 6.88 8.88 4.77 12 4.77z"/>
+    </svg>
+    {% trans "Continuer avec Google" %}
+</a>
+
+<div class="divider-row">{% trans "ou avec un e-mail" %}</div>
+
+<form method="post" action="{% url 'account_signup' %}" novalidate>
+    {% csrf_token %}
+    <div class="field-group !mb-2">
+        <label for="{{ form.username.id_for_label }}" class="field-label !mb-1">{{ form.username.label }}</label>
+        <div class="auth-input-wrap">
+            <span class="auth-input-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            {{ form.username }}
         </div>
-        <h1 class="font-display text-2xl font-bold tracking-wide">SPORTI</h1>
-        <p class="text-[11px] uppercase tracking-[0.2em] text-navy-900/40 dark:text-white/35 mt-1">
-            Vision · Speed · Strength
-        </p>
+        {% for error in form.username.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    </div>
+    <div class="field-group !mb-2">
+        <label for="{{ form.email.id_for_label }}" class="field-label !mb-1">{{ form.email.label }}</label>
+        <div class="auth-input-wrap">
+            <span class="auth-input-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            </span>
+            {{ form.email }}
+        </div>
+        {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    </div>
+    <div class="field-group !mb-2">
+        <label for="{{ form.password1.id_for_label }}" class="field-label !mb-1">{{ form.password1.label }}</label>
+        <div class="auth-input-wrap">
+            <span class="auth-input-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            {{ form.password1 }}
+            <button type="button" class="auth-password-toggle" data-target="{{ form.password1.id_for_label }}" aria-label="{% trans 'Afficher le mot de passe' %}">
+                <svg class="w-4 h-4 icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="w-4 h-4 icon-eye-off hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.6 18.6 0 0 1 5.06-5.94M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+        </div>
+        {% for error in form.password1.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    </div>
+    <div class="field-group !mb-3">
+        <label for="{{ form.password2.id_for_label }}" class="field-label !mb-1">{{ form.password2.label }}</label>
+        <div class="auth-input-wrap">
+            <span class="auth-input-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            {{ form.password2 }}
+            <button type="button" class="auth-password-toggle" data-target="{{ form.password2.id_for_label }}" aria-label="{% trans 'Afficher le mot de passe' %}">
+                <svg class="w-4 h-4 icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="w-4 h-4 icon-eye-off hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.6 18.6 0 0 1 5.06-5.94M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+        </div>
+        {% for error in form.password2.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
     </div>
 
-    <div class="auth-card auth-card-enter" id="auth-card">
-        <h2 class="font-display text-xl font-semibold text-center mb-1">{% trans "Créer votre compte" %}</h2>
-        <p class="text-sm text-center text-navy-900/50 dark:text-white/45 mb-7">
-            {% trans "Rejoignez SPORTI pour discuter directement avec nous." %}
-        </p>
+    <button type="submit" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-sm font-semibold shadow-[0_0_18px_rgba(55,92,255,0.4)]">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        {% trans "Créer mon compte" %}
+    </button>
+</form>
 
-        {% if form.non_field_errors %}
-            <div class="form-alert">
-                {% for error in form.non_field_errors %}{{ error }}{% endfor %}
-            </div>
-        {% endif %}
-
-        <a href="{% url 'google_login' %}" class="btn-google">
-            <svg class="w-4 h-4" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.47c-.28 1.5-1.13 2.78-2.4 3.63v3.01h3.89c2.28-2.1 3.56-5.19 3.56-8.83z"/>
-                <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.89-3.01c-1.08.72-2.46 1.15-4.06 1.15-3.12 0-5.77-2.11-6.72-4.94H1.27v3.1C3.25 21.3 7.31 24 12 24z"/>
-                <path fill="#FBBC05" d="M5.28 14.3c-.24-.72-.38-1.49-.38-2.3s.14-1.58.38-2.3v-3.1H1.27A11.96 11.96 0 000 12c0 1.94.46 3.77 1.27 5.4l4.01-3.1z"/>
-                <path fill="#EA4335" d="M12 4.77c1.76 0 3.35.6 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.6l4.01 3.1C6.23 6.88 8.88 4.77 12 4.77z"/>
-            </svg>
-            {% trans "Continuer avec Google" %}
-        </a>
-        <p class="text-center text-[11px] text-navy-900/35 dark:text-white/30 mt-2">
-            {% trans "Nom et photo récupérés automatiquement, sans mot de passe." %}
-        </p>
-
-        <div class="divider-row">{% trans "ou avec un e-mail" %}</div>
-
-        <form method="post" action="{% url 'account_signup' %}" novalidate>
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="field-group">
-                    <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% for error in field.errors %}
-                        <p class="field-error">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-
-            <button type="submit" class="btn-primary w-full">{% trans "Créer mon compte" %}</button>
-        </form>
-
-        <p class="text-center text-sm text-navy-900/50 dark:text-white/45 mt-7">
-            {% trans "Déjà un compte ?" %}
-            <a href="{% url 'account_login' %}" id="switch-auth-link" class="text-accent-600 hover:text-accent-500 font-medium">{% trans "Connectez-vous" %}</a>
-        </p>
-    </div>
-</div>
-{% endblock %}
-{% block extra_scripts %}
-<script>
-    const switchLink = document.getElementById("switch-auth-link");
-    const authCard = document.getElementById("auth-card");
-    if (switchLink && authCard) {
-        switchLink.addEventListener("click", (event) => {
-            event.preventDefault();
-            authCard.classList.remove("auth-card-enter");
-            authCard.classList.add("auth-card-exit");
-            setTimeout(() => { window.location.href = switchLink.href; }, 260);
-        });
-    }
-</script>
+<p class="text-center text-xs text-white/50 mt-3">
+    {% trans "Déjà un compte ?" %}
+    <a href="{% url 'account_login' %}" id="switch-auth-link" class="text-accent-400 hover:text-accent-300 font-medium">{% trans "Connectez-vous" %}</a>
+</p>
 {% endblock %}

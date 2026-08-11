@@ -8,6 +8,7 @@ en parametre, elle agit toujours sur request.user.
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext as _
 
 from .forms import ProfileForm
 
@@ -21,7 +22,7 @@ def profile(request):
         form = ProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, "Profil mis a jour.")
+            messages.success(request, _("Profil mis a jour."))
             return redirect("accounts:profile")
     else:
         form = ProfileForm(instance=request.user)

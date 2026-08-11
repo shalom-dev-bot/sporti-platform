@@ -1,63 +1,84 @@
 {% extends "dashboard/_base.html" %}
 {% load i18n %}
-{% block title %}{% trans "Liens externes" %} — SPORTI{% endblock %}
+{% block title %}{% trans "Liens pour le chat" %} — SPORTI{% endblock %}
+
 {% block dashboard_content %}
-<div class="flex items-center justify-between mb-1">
-    <h1 class="dashboard-page-title mb-0">{% trans "Liens externes" %}</h1>
-    <a href="{% url 'dashboard:link_create' %}" class="btn-primary text-xs !px-4 !py-2.5">{% trans "+ Ajouter un lien" %}</a>
-</div>
-<p class="dashboard-page-subtitle">
-    {% trans "Réseaux sociaux et plateformes recommandées, affichés en bas de la page de chat." %}
-</p>
-<div class="panel !p-0 overflow-x-auto">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th class="px-6">{% trans "Catégorie" %}</th>
-                <th>{% trans "Plateforme" %}</th>
-                <th>{% trans "Lien" %}</th>
-                <th>{% trans "Code promo" %}</th>
-                <th>{% trans "Visible" %}</th>
-                <th>{% trans "Ordre" %}</th>
-                <th class="pr-6 text-right">{% trans "Actions" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for link in links %}
-            <tr>
-                <td class="px-6">
-                    {% if link.category == "platform" %}
-                        <span class="badge">{% trans "Plateforme" %}</span>
-                    {% else %}
-                        <span class="text-navy-900/50 dark:text-white/45 text-xs">{% trans "Réseau social" %}</span>
-                    {% endif %}
-                </td>
-                <td class="font-medium">{{ link.get_platform_display }}{% if link.label %} — {{ link.label }}{% endif %}</td>
-                <td class="text-navy-900/60 dark:text-white/50 max-w-xs truncate">{{ link.url }}</td>
-                <td class="text-navy-900/60 dark:text-white/50">{{ link.promo_code|default:"—" }}</td>
-                <td>
-                    {% if link.is_active %}
-                        <span class="text-emerald-500 text-xs font-semibold">{% trans "Actif" %}</span>
-                    {% else %}
-                        <span class="text-navy-900/35 dark:text-white/30 text-xs">{% trans "Masqué" %}</span>
-                    {% endif %}
-                </td>
-                <td class="text-navy-900/45 dark:text-white/40">{{ link.order }}</td>
-                <td class="pr-6 text-right whitespace-nowrap">
-                    <a href="{% url 'dashboard:link_edit' link.id %}" class="btn-ghost !px-2 !py-1 !text-xs">{% trans "Modifier" %}</a>
-                    <form method="post" action="{% url 'dashboard:link_delete' link.id %}" class="inline"
-                          onsubmit="return confirm('{% trans "Supprimer ce lien ?" %}');">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-ghost !px-2 !py-1 !text-xs !text-red-500 hover:!text-red-600">{% trans "Supprimer" %}</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="7" class="px-6 py-10 text-center text-navy-900/40 dark:text-white/35">
-                {% trans "Aucun lien pour le moment." %}
-            </td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% url 'dashboard:settings_hub' as back_url %}
+{% trans "Retour aux paramètres" as back_label %}
+{% trans "Liens pour le chat" as form_title %}
+{% trans "Gérer les liens disponibles pour les utilisateurs." as form_subtitle %}
+{% include "dashboard/_form_header.html" with back_url=back_url back_label=back_label form_title=form_title form_subtitle=form_subtitle %}
+
+<div class="max-w-2xl">
+    <div class="flex items-center justify-between mb-1">
+        <p class="sporti-section-label !mb-0">{% trans "Liens rapides" %}</p>
+        <a href="{% url 'dashboard:link_create' %}" class="w-8 h-8 rounded-full bg-gradient-to-r from-[#1f46dd] to-[#375dff] flex items-center justify-center shrink-0" aria-label="{% trans 'Ajouter un lien' %}">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </a>
+    </div>
+    <p class="text-[11px] text-navy-900/45 dark:text-white/40 mb-3">{% trans "Ces liens seront visibles par les utilisateurs dans la section liens du chat." %}</p>
+
+    <div class="space-y-2">
+        {% for link in links %}
+        <div class="glass-panel rounded-2xl p-3 flex items-center gap-3">
+            <span class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                  style="background-color:
+                    {% if link.platform == 'whatsapp' %}rgba(37,211,102,0.18)
+                    {% elif link.platform == 'telegram' %}rgba(41,169,234,0.18)
+                    {% elif link.platform == 'facebook' %}rgba(24,119,242,0.18)
+                    {% elif link.platform == 'instagram' %}rgba(193,53,132,0.18)
+                    {% elif link.category == 'platform' %}rgba(31,70,221,0.18)
+                    {% else %}rgba(255,255,255,0.08){% endif %};
+                  color:
+                    {% if link.platform == 'whatsapp' %}#25D366
+                    {% elif link.platform == 'telegram' %}#29A9EA
+                    {% elif link.platform == 'facebook' %}#1877F2
+                    {% elif link.platform == 'instagram' %}#C13584
+                    {% elif link.category == 'platform' %}#5b8def
+                    {% else %}rgba(255,255,255,0.6){% endif %};">
+                {% if link.platform == 'whatsapp' %}
+                    <svg class="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.5-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5C10 9 9.5 7.8 9.3 7.3c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z"/></svg>
+                {% elif link.platform == 'telegram' %}
+                    <svg class="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M21.9 4.3 2.8 11.6c-1.1.4-1.1 1 .2 1.4l4.9 1.5 1.9 6c.2.6.4.8.9.8.4 0 .6-.2.9-.5l2.2-2.1 4.7 3.4c.8.5 1.5.2 1.7-.8L23.9 5.6c.3-1.3-.5-1.9-2-1.3z"/></svg>
+                {% elif link.platform == 'facebook' %}
+                    <svg class="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg>
+                {% elif link.platform == 'instagram' %}
+                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+                {% elif link.category == 'platform' %}
+                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                {% else %}
+                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                {% endif %}
+            </span>
+            <div class="min-w-0 flex-1">
+                <p class="text-sm font-semibold truncate flex items-center gap-1.5">
+                    {{ link.label|default:link.get_platform_display }}
+                    {% if not link.is_active %}<span class="shrink-0 text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-navy-900/10 dark:bg-white/10 text-navy-900/45 dark:text-white/40">{% trans "Masqué" %}</span>{% endif %}
+                </p>
+                <p class="text-[11px] text-navy-900/45 dark:text-white/40 truncate">{{ link.url }}</p>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+                <a href="{% url 'dashboard:link_edit' link.id %}" class="w-8 h-8 rounded-full bg-navy-900/5 dark:bg-white/5 flex items-center justify-center hover:bg-navy-900/10 dark:hover:bg-white/10" aria-label="{% trans 'Modifier' %}">
+                    <svg class="w-3.5 h-3.5 text-navy-900/60 dark:text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </a>
+                <form method="post" action="{% url 'dashboard:link_delete' link.id %}" onsubmit="return confirm('{% trans "Supprimer ce lien ?" %}');">
+                    {% csrf_token %}
+                    <button type="submit" class="w-8 h-8 rounded-full bg-navy-900/5 dark:bg-white/5 flex items-center justify-center hover:bg-red-500/10" aria-label="{% trans 'Supprimer' %}">
+                        <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="glass-panel rounded-2xl text-center py-12 text-sm text-navy-900/45 dark:text-white/40">
+            {% trans "Aucun lien pour le moment." %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'dashboard:link_create' %}" class="mt-4 flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-sm font-semibold shadow-[0_0_18px_rgba(55,92,255,0.35)]">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        {% trans "Ajouter un lien" %}
+    </a>
 </div>
 {% endblock %}

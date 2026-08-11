@@ -112,13 +112,18 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             return
 
         user = self.scope["user"]
+        reply_to_id = content.get("reply_to")
         recipient_connected = self._is_other_party_connected(user)
         initial_status = Message.Status.DELIVERED if recipient_connected else Message.Status.SENT
-        message = await self._save_message(self.conversation, user, text, initial_status)
+        message, reply_summary = await self._save_message(
+            self.conversation, user, text, initial_status, reply_to_id
+        )
         await self._invalidate_dashboard_cache()
 
         if not recipient_connected:
             await self._notify_recipient_offline(user, text)
+
+        await self._broadcast_to_admin_dashboard(user, text, message)
 
         await self.channel_layer.group_send(
             self.group_name,
@@ -132,6 +137,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     "content": message.content,
                     "status": message.status,
                     "created_at": message.created_at.isoformat(),
+                    "reply_to": reply_summary,
                 },
             },
         )
@@ -241,7 +247,38 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     @sync_to_async
     def _get_conversation_or_none(self, conversation_id):
-        return Conversation.objects.filter(id=conversation_id).first()
+        return Conversation.objects.select_related("client").filter(id=conversation_id).first()
+
+    async def _broadcast_to_admin_dashboard(self, sender, text, message):
+        """Fait remonter la conversation en tete de la liste admin (barre
+        laterale/page Conversations) en temps reel, sans rafraichissement,
+        que ce soit le client ou l'admin qui vient d'ecrire."""
+        from apps.chat.consumers.admin_dashboard_consumer import ADMIN_DASHBOARD_GROUP
+
+        # Si c'est le client qui ecrit, c'est lui-meme le "client" de la
+        # conversation -- pas besoin de requete. Si c'est l'admin, il faut
+        # aller chercher le client via une requete synchrone protegee.
+        client_name = (
+            str(sender) if not sender.is_staff else await self._get_conversation_client_name()
+        )
+
+        await self.channel_layer.group_send(
+            ADMIN_DASHBOARD_GROUP,
+            {
+                "type": "conversation.updated",
+                "payload": {
+                    "conversation_id": self.conversation.id,
+                    "client_name": client_name,
+                    "preview": text[:80] if text else "[Pièce jointe]",
+                    "updated_at": message.created_at.isoformat(),
+                    "is_from_client": not sender.is_staff,
+                },
+            },
+        )
+
+    @sync_to_async
+    def _get_conversation_client_name(self):
+        return str(self.conversation.client)
 
     @sync_to_async
     def _toggle_reaction(self, conversation, message_id, user, emoji):
@@ -264,16 +301,28 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         return list(message.reactions.values_list("emoji", flat=True))
 
     @sync_to_async
-    def _save_message(self, conversation, sender, text, initial_status):
+    def _save_message(self, conversation, sender, text, initial_status, reply_to_id=None):
+        from apps.chat.serializers import _reply_to_summary
+
+        reply_to = None
+        if reply_to_id:
+            # Une reponse ne peut citer qu'un message de la MEME conversation
+            # -- jamais celui d'une conversation d'un autre client.
+            reply_to = conversation.messages.filter(id=reply_to_id).first()
+
         message = Message.objects.create(
-            conversation=conversation, sender=sender, content=text, status=initial_status
+            conversation=conversation,
+            sender=sender,
+            content=text,
+            status=initial_status,
+            reply_to=reply_to,
         )
         # Touche la conversation pour que son updated_at avance -> c'est ce
         # qui la fait remonter en haut de la liste cote dashboard (tri par
         # -updated_at). Sans ca, envoyer un message ne bougeait jamais la
         # conversation dans la liste.
         conversation.save(update_fields=["updated_at"])
-        return message
+        return message, _reply_to_summary(reply_to)
 
     @sync_to_async
     def _set_online_status(self, user, is_online):

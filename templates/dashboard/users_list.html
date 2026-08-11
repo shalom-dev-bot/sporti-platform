@@ -1,0 +1,53 @@
+{% extends "dashboard/_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Utilisateurs" %} — SPORTI{% endblock %}
+{% block dashboard_content %}
+{% url 'dashboard:settings_hub' as back_url %}
+{% trans "Retour aux paramètres" as back_label %}
+{% trans "Utilisateurs" as form_title %}
+{% trans "Tous les clients inscrits sur la plateforme." as form_subtitle %}
+{% include "dashboard/_form_header.html" with back_url=back_url back_label=back_label form_title=form_title form_subtitle=form_subtitle %}
+
+<div class="max-w-2xl">
+    <form method="get" class="relative mb-4">
+        <svg class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-navy-900/30 dark:text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input type="text" name="q" value="{{ query }}" placeholder="{% trans 'Rechercher un utilisateur…' %}" class="chats-search-input" style="padding-left:2.5rem;">
+    </form>
+
+    <div class="space-y-2">
+        {% for u in users %}
+        <div class="glass-panel rounded-2xl p-3 flex items-center gap-3">
+            <span class="relative w-10 h-10 rounded-full bg-navy-900/5 dark:bg-white/5 flex items-center justify-center text-xs font-semibold shrink-0">
+                {{ u.username|slice:":2"|upper }}
+                {% if u.is_online %}<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#f7f9fc] dark:border-[#0b1330]"></span>{% endif %}
+            </span>
+            <div class="min-w-0 flex-1">
+                <p class="text-sm font-semibold truncate">{{ u }}</p>
+                <p class="text-[11px] text-navy-900/45 dark:text-white/40 truncate">{{ u.email|default:"—" }} &middot; {% trans "inscrit le" %} {{ u.date_joined|date:"d M Y" }}</p>
+            </div>
+            {% if u.is_active %}
+                <span class="shrink-0 text-[10px] font-semibold px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-400">{% trans "Actif" %}</span>
+            {% else %}
+                <span class="shrink-0 text-[10px] font-semibold px-2 py-1 rounded-full bg-red-500/15 text-red-400">{% trans "Désactivé" %}</span>
+            {% endif %}
+            <form method="post" action="{% url 'dashboard:user_toggle_active' u.id %}" onsubmit="return confirm('{% trans "Confirmer ?" %}');" class="shrink-0">
+                {% csrf_token %}
+                <button type="submit" class="w-8 h-8 rounded-full bg-navy-900/5 dark:bg-white/5 flex items-center justify-center hover:bg-navy-900/10 dark:hover:bg-white/10" aria-label="{% if u.is_active %}{% trans 'Désactiver' %}{% else %}{% trans 'Réactiver' %}{% endif %}">
+                    {% if u.is_active %}
+                        <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg>
+                    {% else %}
+                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+        {% empty %}
+        <div class="glass-panel rounded-2xl text-center py-14 text-sm text-navy-900/45 dark:text-white/40">
+            {% trans "Aucun utilisateur trouvé." %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

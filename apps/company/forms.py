@@ -78,6 +78,10 @@ class WelcomeMessageForm(_StyledFormMixin, forms.ModelForm):
             "audio_file": "Fichier audio",
             "is_audio_enabled": "Afficher le message vocal",
         }
+        widgets = {
+            "text_fr": forms.Textarea(attrs={"rows": 2}),
+            "text_en": forms.Textarea(attrs={"rows": 2}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

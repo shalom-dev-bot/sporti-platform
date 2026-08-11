@@ -1,21 +1,51 @@
 {% extends "dashboard/_base.html" %}
 {% load i18n %}
-{% block title %}{% trans "Importer des matchs" %} — SPORTI{% endblock %}
+{% block title %}{% trans "Recharger les matchs" %} — SPORTI{% endblock %}
 {% block dashboard_content %}
-<h1 class="dashboard-page-title">{% trans "Importer des matchs (API-Football)" %}</h1>
-<p class="dashboard-page-subtitle">
-    {% trans "Recherche des matchs reels et importe-les en un clic plutot que de les saisir a la main." %}
-</p>
+{% url 'dashboard:predictions_list' as back_url %}
+{% trans "Retour aux pronostics" as back_label %}
+{% trans "Recharger les matchs" as form_title %}
+{% trans "API-Football" as form_subtitle %}
+{% include "dashboard/_form_header.html" with back_url=back_url back_label=back_label form_title=form_title form_subtitle=form_subtitle %}
 
-<form method="get" class="panel !p-5 flex flex-wrap items-end gap-4 mb-6">
-    <div class="field-group !mb-0">
-        <label for="id_date" class="field-label">{% trans "Date" %}</label>
-        <input type="date" id="id_date" name="date" value="{{ date_str }}" class="field-input">
+<div class="max-w-2xl">
+
+
+<form method="get" class="glass-panel rounded-2xl p-4 lg:p-5 space-y-3 mb-4">
+    <p class="sporti-section-label !mb-1.5">{% trans "Filtres" %}</p>
+
+    <div>
+        <label class="field-label">{% trans "Période" %}</label>
+        <div class="grid grid-cols-3 gap-1.5">
+            <label class="status-toggle-btn cursor-pointer {% if periode == 'aujourdhui' %}status-toggle-btn-active{% endif %}" style="text-transform:none;">
+                <input type="radio" name="periode" value="aujourdhui" class="hidden" {% if periode == 'aujourdhui' %}checked{% endif %} onchange="this.form.submit()">
+                {% trans "Aujourd'hui" %}
+            </label>
+            <label class="status-toggle-btn cursor-pointer {% if periode == 'demain' %}status-toggle-btn-active{% endif %}" style="text-transform:none;">
+                <input type="radio" name="periode" value="demain" class="hidden" {% if periode == 'demain' %}checked{% endif %} onchange="this.form.submit()">
+                {% trans "Demain" %}
+            </label>
+            <label class="status-toggle-btn cursor-pointer {% if periode == 'date' %}status-toggle-btn-active{% endif %}" style="text-transform:none;" id="periode-date-label">
+                <input type="radio" name="periode" value="date" class="hidden" id="periode-date-radio" {% if periode == 'date' %}checked{% endif %} onchange="document.getElementById('periode-date-input').classList.remove('hidden')">
+                {% trans "Choisir une date" %}
+            </label>
+        </div>
+        <input type="date" name="date" value="{{ date_str }}" id="periode-date-input" class="field-input mt-2 {% if periode != 'date' %}hidden{% endif %}">
     </div>
+    <script>
+        document.querySelectorAll('input[name="periode"]').forEach((radio) => {
+            radio.addEventListener("change", () => {
+                document.querySelectorAll(".status-toggle-btn").forEach((l) => l.classList.remove("status-toggle-btn-active"));
+                radio.closest("label").classList.add("status-toggle-btn-active");
+                document.getElementById("periode-date-input").classList.toggle("hidden", radio.value !== "date");
+            });
+        });
+    </script>
+
     <div class="field-group !mb-0">
-        <label for="id_league" class="field-label">{% trans "Competition (optionnel)" %}</label>
+        <label for="id_league" class="field-label">{% trans "Compétition" %}</label>
         <select id="id_league" name="league" class="field-input">
-            <option value="">{% trans "Toutes competitions" %}</option>
+            <option value="">{% trans "Toutes compétitions" %}</option>
             {% for league_value, league_label in popular_leagues %}
             <option value="{{ league_value }}" {% if league_id == league_value|stringformat:"s" %}selected{% endif %}>
                 {{ league_label }}
@@ -23,57 +53,101 @@
             {% endfor %}
         </select>
     </div>
-    <button type="submit" class="btn-primary !px-6">{% trans "Rechercher" %}</button>
+
+    <div class="field-group !mb-0">
+        <label for="id_statut" class="field-label">{% trans "Statut du match" %}</label>
+        <select id="id_statut" name="statut" class="field-input">
+            <option value="" {% if not statut %}selected{% endif %}>{% trans "Tous" %}</option>
+            <option value="a_venir" {% if statut == "a_venir" %}selected{% endif %}>{% trans "À venir" %}</option>
+            <option value="en_cours" {% if statut == "en_cours" %}selected{% endif %}>{% trans "En cours" %}</option>
+            <option value="termine" {% if statut == "termine" %}selected{% endif %}>{% trans "Terminé" %}</option>
+        </select>
+    </div>
+
+    <button type="submit" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-sm font-semibold shadow-[0_0_18px_rgba(55,92,255,0.35)]">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        {% trans "Recharger les matchs" %}
+    </button>
+
+    {% if last_updated %}
+    <div class="flex items-center justify-between pt-1">
+        <p class="text-[11px] text-navy-900/45 dark:text-white/40">{% trans "Dernière mise à jour" %} : {{ last_updated|date:"d M Y à H:i" }}</p>
+        {% if error %}
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400">{% trans "Échec" %}</span>
+        {% else %}
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">{% trans "Succès" %}</span>
+        {% endif %}
+    </div>
+    {% endif %}
 </form>
 
 {% if error %}
-<div class="panel !p-5 mb-6 !border-red-500/30">
-    <p class="text-sm text-red-500 font-medium">{{ error }}</p>
+<div class="glass-panel rounded-2xl p-4 mb-4 !border-red-500/30">
+    <p class="text-sm text-red-400 font-medium">{{ error }}</p>
     {% if "API_FOOTBALL_KEY" in error or "cle" in error %}
     <p class="text-xs text-navy-900/50 dark:text-white/45 mt-2">
-        {% trans "Ajoute ta cle dans le fichier .env : API_FOOTBALL_KEY=ta-cle-ici, puis relance le serveur." %}
+        {% trans "Ajoute ta clé dans le fichier .env : API_FOOTBALL_KEY=ta-cle-ici, puis relance le serveur." %}
     </p>
     {% endif %}
 </div>
 {% endif %}
 
-{% if fixtures %}
-<div class="panel !p-0 overflow-x-auto">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th class="px-6">{% trans "Match" %}</th>
-                <th>{% trans "Competition" %}</th>
-                <th>{% trans "Date" %}</th>
-                <th class="pr-6 text-right">{% trans "Action" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for fixture in fixtures %}
-            <tr>
-                <td class="px-6 font-medium">{{ fixture.home_name }} — {{ fixture.away_name }}</td>
-                <td class="text-navy-900/60 dark:text-white/50">{{ fixture.competition }}</td>
-                <td class="text-navy-900/45 dark:text-white/40">{{ fixture.kickoff_at }}</td>
-                <td class="pr-6 text-right">
-                    {% if fixture.api_id in already_imported_ids %}
-                        <span class="badge">{% trans "Deja importe" %}</span>
-                    {% else %}
-                        <form method="post" action="{% url 'dashboard:fixture_import' fixture.api_id %}" class="inline">
-                            {% csrf_token %}
-                            <input type="hidden" name="date_str" value="{{ date_str }}">
-                            <input type="hidden" name="league_id" value="{{ league_id }}">
-                            <button type="submit" class="btn-ghost !px-3 !py-1.5 !text-xs">{% trans "Importer" %}</button>
-                        </form>
+{% if competitions %}
+<p class="sporti-section-label mb-2">{% trans "Résultat" %}</p>
+<div class="space-y-2">
+    {% for comp in competitions %}
+    <details class="glass-panel rounded-2xl overflow-hidden">
+        <summary class="flex items-center justify-between gap-2 p-3.5 cursor-pointer select-none list-none">
+            <span class="flex items-center gap-2.5 min-w-0">
+                <span class="w-8 h-8 rounded-full bg-[#1f46dd]/20 text-[#5b8def] flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                </span>
+                <span class="min-w-0">
+                    <span class="block text-sm font-semibold truncate">{{ comp.name }}</span>
+                    <span class="block text-[11px] text-emerald-400">&#10003; {{ comp.count }} {% trans "matchs trouvés" %}</span>
+                </span>
+            </span>
+            <svg class="w-4 h-4 text-navy-900/35 dark:text-white/30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </summary>
+        <div class="border-t border-navy-900/10 dark:border-white/10 p-2.5 space-y-2">
+            {% for fixture in comp.fixtures %}
+            <div data-teams="{{ fixture.home_name|lower }} {{ fixture.away_name|lower }}" class="rounded-xl bg-navy-900/5 dark:bg-black/20 p-2.5 flex items-center gap-2.5">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                    {% if fixture.home_logo %}
+                        <img src="{{ fixture.home_logo }}" alt="" class="w-7 h-7 object-contain rounded-full bg-white p-1 shrink-0">
                     {% endif %}
-                </td>
-            </tr>
+                    <span class="text-[10px] font-display text-navy-900/35 dark:text-white/30 shrink-0">{% trans "VS" %}</span>
+                    {% if fixture.away_logo %}
+                        <img src="{{ fixture.away_logo }}" alt="" class="w-7 h-7 object-contain rounded-full bg-white p-1 shrink-0">
+                    {% endif %}
+                    <div class="min-w-0">
+                        <p class="text-xs font-semibold truncate">{{ fixture.home_name }} <span class="text-navy-900/35 dark:text-white/30 font-normal">vs</span> {{ fixture.away_name }}</p>
+                        <p class="text-[10px] text-navy-900/50 dark:text-white/45 truncate">{{ fixture.kickoff_dt|date:"d M, H:i"|default:fixture.kickoff_at }}</p>
+                    </div>
+                </div>
+                {% if fixture.api_id in already_imported_ids %}
+                    <span class="shrink-0 badge">{% trans "Déjà importé" %}</span>
+                {% else %}
+                    <form method="post" action="{% url 'dashboard:fixture_import' fixture.api_id %}" class="shrink-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="date_str" value="{{ date_str }}">
+                        <input type="hidden" name="league_id" value="{{ league_id }}">
+                        <button type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-[11px] font-semibold">
+                            {% trans "Importer" %}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    </details>
+    {% endfor %}
 </div>
 {% elif not error and searched %}
-<div class="panel text-center py-10 text-sm text-navy-900/40 dark:text-white/35">
-    {% trans "Aucun match trouve pour cette date/competition." %}
+<div class="glass-panel rounded-2xl text-center py-14 text-sm text-navy-900/45 dark:text-white/40">
+    {% trans "Aucun match trouvé pour cette date/compétition." %}
 </div>
 {% endif %}
+
+</div>
 {% endblock %}

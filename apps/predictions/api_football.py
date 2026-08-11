@@ -101,4 +101,11 @@ def search_fixtures(date_str, league_id=None, season=None):
         )
 
     fixtures.sort(key=lambda f: f["kickoff_at"] or "")
-    return fixtures
+
+    quota = None
+    limit_header = response.headers.get("x-ratelimit-requests-limit")
+    remaining_header = response.headers.get("x-ratelimit-requests-remaining")
+    if limit_header is not None and remaining_header is not None:
+        quota = {"limit": int(limit_header), "remaining": int(remaining_header)}
+
+    return fixtures, quota

@@ -1,68 +1,147 @@
 {% extends "dashboard/_base.html" %}
-{% load i18n %}
+{% load i18n static %}
 {% block title %}{% trans "Pronostics" %} — SPORTI{% endblock %}
 {% block dashboard_content %}
-<div class="flex items-center justify-between mb-1">
-    <h1 class="dashboard-page-title mb-0">{% trans "Pronostics" %}</h1>
-    <a href="{% url 'dashboard:prediction_create' %}" class="btn-primary text-xs !px-4 !py-2.5">{% trans "+ Ajouter un pronostic" %}</a>
+<!-- Bandeau -->
+<div class="relative h-24 lg:h-32 rounded-2xl overflow-hidden mb-3 border border-navy-900/10 dark:border-white/10">
+    <img src="{% static 'images/design/promo-ball.jpg' %}" alt="" class="absolute inset-0 w-full h-full object-cover">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_78%_50%,rgba(66,130,255,.35),transparent_20%),linear-gradient(90deg,rgba(7,10,19,.95)_0%,rgba(7,10,19,.8)_48%,rgba(7,10,19,.3)_100%)]"></div>
+    <div class="relative z-10 h-full px-4 lg:px-6 flex items-center justify-between gap-2">
+        <div class="max-w-[75%] lg:max-w-none">
+            <h1 class="font-display text-lg lg:text-2xl font-bold leading-tight text-white">{% trans "Pronostics" %}</h1>
+            <p class="mt-1 text-[11px] lg:text-sm text-white/75 leading-snug">{% trans "Gérez tous les pronostics de la plateforme." %}</p>
+        </div>
+        <a href="{% url 'dashboard:prediction_create' %}" class="shrink-0 hidden sm:inline-flex items-center gap-1.5 px-3 lg:px-4 py-2 lg:py-2.5 rounded-xl bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-[11px] lg:text-sm font-semibold shadow-[0_0_18px_rgba(55,92,255,0.35)]">
+            + {% trans "Nouveau" %}
+        </a>
+    </div>
 </div>
-<p class="dashboard-page-subtitle">
-    {% trans "Pronostics visibles par les clients dans le hub." %}
-</p>
-<div class="panel !p-0 overflow-x-auto">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th class="px-6">{% trans "Match" %}</th>
-                <th>{% trans "Pronostic" %}</th>
-                <th>{% trans "Confiance" %}</th>
-                <th>{% trans "Cote" %}</th>
-                <th>{% trans "Résultat" %}</th>
-                <th>{% trans "Visible" %}</th>
-                <th class="pr-6 text-right">{% trans "Actions" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for prediction in predictions %}
-            <tr>
-                <td class="px-6 font-medium">
-                    {{ prediction.event }}
-                    {% if prediction.is_featured %}<span class="badge ml-1">★</span>{% endif %}
-                </td>
-                <td class="text-navy-900/60 dark:text-white/50">{{ prediction.pick }}</td>
-                <td class="text-navy-900/60 dark:text-white/50">{{ prediction.confidence|default:"—" }}{% if prediction.confidence %}%{% endif %}</td>
-                <td class="text-navy-900/60 dark:text-white/50">{{ prediction.odds|default:"—" }}</td>
-                <td>
-                    {% if prediction.result == "won" %}
-                        <span class="text-emerald-500 text-xs font-semibold">{% trans "Gagné" %}</span>
-                    {% elif prediction.result == "lost" %}
-                        <span class="text-red-500 text-xs font-semibold">{% trans "Perdu" %}</span>
-                    {% else %}
-                        <span class="text-navy-900/45 dark:text-white/40 text-xs">{% trans "En attente" %}</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if prediction.is_published %}
-                        <span class="text-emerald-500 text-xs font-semibold">{% trans "Actif" %}</span>
-                    {% else %}
-                        <span class="text-navy-900/35 dark:text-white/30 text-xs">{% trans "Masqué" %}</span>
-                    {% endif %}
-                </td>
-                <td class="pr-6 text-right whitespace-nowrap">
-                    <a href="{% url 'dashboard:prediction_edit' prediction.id %}" class="btn-ghost !px-2 !py-1 !text-xs">{% trans "Modifier" %}</a>
-                    <form method="post" action="{% url 'dashboard:prediction_delete' prediction.id %}" class="inline"
-                          onsubmit="return confirm('{% trans "Supprimer ce pronostic ?" %}');">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-ghost !px-2 !py-1 !text-xs !text-red-500 hover:!text-red-600">{% trans "Supprimer" %}</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="7" class="px-6 py-10 text-center text-navy-900/40 dark:text-white/35">
-                {% trans "Aucun pronostic pour le moment." %}
-            </td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+<!-- Recherche -->
+<form method="get" class="flex items-center gap-2 mt-4 mb-3">
+    {% if active_filter %}<input type="hidden" name="filtre" value="{{ active_filter }}">{% endif %}
+    <div class="relative flex-1">
+        <svg class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-navy-900/30 dark:text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input type="text" name="q" value="{{ query }}" placeholder="{% trans 'Rechercher un match, une équipe…' %}" class="chats-search-input" style="padding-left:2.5rem;">
+    </div>
+    <a href="{% url 'dashboard:fixtures_search' %}" class="shrink-0 w-11 h-11 rounded-full glass-panel flex items-center justify-center" aria-label="{% trans 'Importer un match' %}" title="{% trans 'Importer un match' %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+    </a>
+</form>
+
+<!-- Onglets de filtre -->
+<div class="relative mb-4">
+<div class="thin-scroll flex gap-2 overflow-x-auto pb-1">
+    <a href="?filtre=tous{% if query %}&q={{ query|urlencode }}{% endif %}" class="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors
+               {% if active_filter == 'tous' %}bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white{% else %}glass-panel text-navy-900/60 dark:text-white/60{% endif %}">
+        {% trans "Tous" %} <span class="opacity-70">{{ counts.tous }}</span>
+    </a>
+    <a href="?filtre=actifs{% if query %}&q={{ query|urlencode }}{% endif %}" class="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors
+               {% if active_filter == 'actifs' %}bg-gradient-to-r from-emerald-600 to-emerald-500 text-white{% else %}glass-panel text-navy-900/60 dark:text-white/60{% endif %}">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        {% trans "À venir" %} <span class="opacity-70">{{ counts.actifs }}</span>
+    </a>
+    <a href="?filtre=en_attente{% if query %}&q={{ query|urlencode }}{% endif %}" class="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors
+               {% if active_filter == 'en_attente' %}bg-gradient-to-r from-red-600 to-red-500 text-white{% else %}glass-panel text-navy-900/60 dark:text-white/60{% endif %}">
+        <span class="relative flex w-1.5 h-1.5">
+            <span class="{% if active_filter == 'en_attente' %}bg-white{% else %}bg-red-500{% endif %} absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping"></span>
+            <span class="{% if active_filter == 'en_attente' %}bg-white{% else %}bg-red-500{% endif %} relative inline-flex rounded-full h-1.5 w-1.5"></span>
+        </span>
+        {% trans "Live" %} <span class="opacity-70">{{ counts.en_attente }}</span>
+    </a>
+    <a href="?filtre=termines{% if query %}&q={{ query|urlencode }}{% endif %}" class="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors
+               {% if active_filter == 'termines' %}bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white{% else %}glass-panel text-navy-900/60 dark:text-white/60{% endif %}">
+        <span class="w-1.5 h-1.5 rounded-full bg-navy-900/30 dark:bg-white/40"></span>
+        {% trans "Terminés" %} <span class="opacity-70">{{ counts.termines }}</span>
+    </a>
 </div>
+<div class="pointer-events-none absolute top-0 right-0 bottom-1 w-8 bg-gradient-to-l from-[#f7f9fc] dark:from-[#04060a] to-transparent lg:hidden"></div>
+</div>
+
+<!-- Liste des pronostics -->
+<div class="space-y-3 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0 pb-20 lg:pb-4">
+    {% for prediction in predictions %}
+    <div class="relative glass-panel rounded-2xl overflow-hidden {% if prediction.is_featured %}border-amber-400/30{% endif %}">
+        {% if prediction.is_featured %}
+        <span class="absolute top-2 left-2 z-10 text-amber-400 text-sm">&#9733;</span>
+        {% endif %}
+        <div class="p-3.5 {% if prediction.is_featured %}pl-8{% endif %}">
+            <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                    {% if prediction.event.home_team.display_logo_url %}
+                        <img src="{{ prediction.event.home_team.display_logo_url }}" alt="" class="w-8 h-8 object-contain rounded-full bg-white p-1 shrink-0">
+                    {% else %}
+                        <span class="avatar-circle !w-8 !h-8 !text-xs shrink-0">{{ prediction.event.home_team.initials }}</span>
+                    {% endif %}
+                    <span class="text-[10px] font-display text-accent-400 font-bold shrink-0">{% trans "VS" %}</span>
+                    {% if prediction.event.away_team.display_logo_url %}
+                        <img src="{{ prediction.event.away_team.display_logo_url }}" alt="" class="w-8 h-8 object-contain rounded-full bg-white p-1 shrink-0">
+                    {% else %}
+                        <span class="avatar-circle !w-8 !h-8 !text-xs shrink-0">{{ prediction.event.away_team.initials }}</span>
+                    {% endif %}
+                    <span class="text-sm font-semibold truncate">{{ prediction.event.home_team.name }} <span class="text-navy-900/35 dark:text-white/30 font-normal">vs</span> {{ prediction.event.away_team.name }}</span>
+                </div>
+                {% if prediction.status_label == "upcoming" %}
+                    <span class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-400 text-[10px] font-semibold whitespace-nowrap">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>{% trans "À venir" %}
+                    </span>
+                {% elif prediction.status_label == "live" %}
+                    <span class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-500/15 text-red-400 text-[10px] font-semibold whitespace-nowrap">
+                        <span class="relative flex w-1.5 h-1.5">
+                            <span class="bg-red-500 absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping"></span>
+                            <span class="bg-red-500 relative inline-flex rounded-full h-1.5 w-1.5"></span>
+                        </span>{% trans "Live" %}
+                    </span>
+                {% else %}
+                    <span class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-navy-900/10 dark:bg-white/10 text-navy-900/55 dark:text-white/50 text-[10px] font-semibold whitespace-nowrap">{% trans "Terminé" %}</span>
+                {% endif %}
+            </div>
+
+            <p class="text-[11px] text-navy-900/50 dark:text-white/45 mb-2 truncate">
+                {{ prediction.event.competition }} &middot;
+                <svg class="w-3 h-3 inline -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {{ prediction.event.kickoff_at|date:"d M, H:i" }}
+            </p>
+
+            <p class="flex items-center gap-1.5 text-xs mb-3">
+                <svg class="w-3.5 h-3.5 text-accent-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                <span class="font-semibold text-accent-400 truncate">{{ prediction.pick }}</span>
+                {% if prediction.odds %}<span class="ml-auto shrink-0 font-bold">{{ prediction.odds }}</span>{% endif %}
+            </p>
+
+            <div class="grid grid-cols-3 gap-1.5">
+                <a href="{% url 'dashboard:prediction_edit' prediction.id %}" class="inline-flex items-center justify-center gap-1 py-1.5 rounded-lg glass-panel text-[11px] font-medium text-navy-900/70 dark:text-white/80">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    {% trans "Modifier" %}
+                </a>
+                <a href="{% url 'predictions:list' %}?apercu=1{% if prediction.status_label == "finished" %}&filtre=historique{% endif %}#pred-{{ prediction.id }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-1 py-1.5 rounded-lg glass-panel text-[11px] font-medium text-navy-900/70 dark:text-white/80">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    {% trans "Voir" %}
+                </a>
+                <form method="post" action="{% url 'dashboard:prediction_delete' prediction.id %}" onsubmit="return confirm('{% trans "Supprimer ce pronostic ?" %}');">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full inline-flex items-center justify-center gap-1 py-1.5 rounded-lg glass-panel text-[11px] font-medium text-red-400">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                        {% trans "Supprimer" %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="lg:col-span-2 xl:col-span-3 glass-panel rounded-2xl text-center py-14 text-sm text-navy-900/45 dark:text-white/40">
+        {% if query %}
+            {% trans "Aucun pronostic ne correspond à cette recherche." %}
+        {% else %}
+            {% trans "Aucun pronostic pour le moment." %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<a href="{% url 'dashboard:prediction_create' %}" class="sm:hidden fixed z-40 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white shadow-[0_8px_24px_rgba(55,92,255,0.5)]" style="bottom:5.5rem; right:1.25rem;" aria-label="{% trans 'Nouveau pronostic' %}">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</a>
 {% endblock %}

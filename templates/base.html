@@ -20,7 +20,7 @@
     <title>{% block title %}SPORTI{% endblock %}</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <meta name="theme-color" content="#2D6CDF">
-    <link rel="stylesheet" href="{% static 'css/dist/sporti.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dist/sporti.css' %}?v={{ STATIC_VERSION }}">
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-surface-light dark:bg-navy-950 text-navy-900 dark:text-white font-body transition-colors duration-300 min-h-screen">
@@ -31,7 +31,7 @@
             <input type="hidden" name="language" id="lang-input" value="">
             <button type="submit" id="lang-toggle" aria-label="{% trans 'Changer de langue' %}"
                 class="w-10 h-10 rounded-full flex items-center justify-center
-                       bg-white dark:bg-navy-850 border border-navy-900/10 dark:border-white/10
+                       bg-surface-light dark:bg-navy-850 border border-navy-900/10 dark:border-white/10
                        transition-colors text-lg leading-none">
                 {% if LANGUAGE_CODE == "en" %}🇬🇧{% else %}🇫🇷{% endif %}
             </button>
@@ -41,7 +41,7 @@
             type="button"
             aria-label="{% trans 'Changer de theme' %}"
             class="w-10 h-10 rounded-full flex items-center justify-center
-                   bg-white dark:bg-navy-850 border border-navy-900/10 dark:border-white/10
+                   bg-surface-light dark:bg-navy-850 border border-navy-900/10 dark:border-white/10
                    transition-colors"
         >
             <svg id="icon-sun" class="w-5 h-5 text-accent-600 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">

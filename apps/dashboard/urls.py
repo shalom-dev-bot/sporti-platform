@@ -9,14 +9,17 @@ app_name = "dashboard"
 urlpatterns = [
     path("connexion/", views.DashboardLoginView.as_view(), name="login"),
     path("deconnexion/", LogoutView.as_view(next_page="/gestion/connexion/"), name="logout"),
-    # Comme WhatsApp : l'ouverture de l'espace de gestion mene directement
-    # aux conversations, pas aux statistiques.
     path(
         "",
-        RedirectView.as_view(pattern_name="dashboard:conversations_list", permanent=False),
+        RedirectView.as_view(pattern_name="dashboard:stats", permanent=False),
         name="home",
     ),
     path("statistiques/", views.dashboard_home, name="stats"),
+    path("parametres/", views.settings_hub, name="settings_hub"),
+    path("utilisateurs/", views.users_list, name="users_list"),
+    path(
+        "utilisateurs/<int:user_id>/basculer/", views.user_toggle_active, name="user_toggle_active"
+    ),
     path("mot-de-passe/", views.change_password, name="change_password"),
     path("conversations/", views.conversations_list, name="conversations_list"),
     path(

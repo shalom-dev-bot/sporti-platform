@@ -49,6 +49,8 @@ MIDDLEWARE = [
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.accounts.middleware.UpdateLastSeenMiddleware",
+    "apps.dashboard.middleware.VisitTrackingMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -68,6 +70,8 @@ TEMPLATES = [
                 "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.dashboard.context_processors.admin_nav",
+                "apps.dashboard.context_processors.static_version",
             ],
         },
     },
@@ -120,8 +124,15 @@ ACCOUNT_SIGNUP_FIELDS = ["username*", "email*", "password1*", "password2*"]
 ACCOUNT_FORMS = {
     "signup": "apps.accounts.forms.SportiSignupForm",
     "login": "apps.accounts.forms.SportiLoginForm",
+    "reset_password": "apps.accounts.forms.SportiResetPasswordForm",
+    "reset_password_from_key": "apps.accounts.forms.SportiSetPasswordForm",
 }
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
+
+# Redirige directement vers Google au clic sur le bouton, sans page
+# intermediaire "Continuer" (non stylee) -- sans danger ici puisque le
+# clic est deja une action volontaire de l'utilisateur.
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -179,6 +190,7 @@ ALLOWED_UPLOAD_EXTENSIONS = [
     ".ogg",
     ".mp3",
     ".m4a",
+    ".wav",
     ".mp4",
     ".mov",
 ]

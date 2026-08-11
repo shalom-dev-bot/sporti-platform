@@ -1,4 +1,5 @@
-"""Reglages de production, penses pour un deploiement de demo sur Render.
+"""Reglages de production, penses pour un deploiement de demo (Railway,
+puis Hostinger pour la version finale une fois le client valide).
 
 Objectif : que le client puisse voir l'appli tourner sans avoir besoin
 d'un service Redis payant. Si une variable REDIS_URL est fournie plus
@@ -13,19 +14,22 @@ from .base import env
 
 DEBUG = False
 
-# Render fournit automatiquement le nom d'hote externe du service.
-RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME", "")
+# Railway (et la plupart des PaaS) fournissent automatiquement le nom
+# d'hote externe du service via une variable d'environnement.
+EXTERNAL_HOSTNAME = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "") or os.environ.get(
+    "RENDER_EXTERNAL_HOSTNAME", ""
+)
 
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[".onrender.com"])
-if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[".up.railway.app", ".onrender.com"])
+if EXTERNAL_HOSTNAME and EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(EXTERNAL_HOSTNAME)
 
 CSRF_TRUSTED_ORIGINS = [
     f"https://{host.lstrip('.')}" if not host.startswith(".") else f"https://*{host}"
     for host in ALLOWED_HOSTS
 ]
-if RENDER_EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
+if EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{EXTERNAL_HOSTNAME}")
 
 # --- Fichiers statiques servis directement par l'appli (WhiteNoise) ---
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # noqa: F405
@@ -54,4 +58,17 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# --- E-mail (mot de passe oublie, etc.) ---
+# Sans EMAIL_HOST configure, on reste sur la console (rien n'est reellement
+# envoye) -- des que EMAIL_HOST est fourni (ex: SMTP Gmail, Resend,
+# Mailgun...), les e-mails partent reellement, sans rien changer au code.
+EMAIL_HOST = env("EMAIL_HOST", default="")
+if EMAIL_HOST:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+    EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+    DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default=EMAIL_HOST_USER or "no-reply@sporti.app")
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

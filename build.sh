@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Script de build execute par Render avant chaque deploiement.
+# Script de build execute avant chaque deploiement (Railway, ou Render).
 set -o errexit
 
 pip install -r requirements/prod.txt
@@ -9,6 +9,16 @@ npm run build-css
 
 python manage.py collectstatic --noinput
 python manage.py migrate --noinput
+
+python manage.py shell -c "
+from django.contrib.sites.models import Site
+import os
+site, _ = Site.objects.get_or_create(id=1)
+site.name = 'SPORTI'
+site.domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN') or os.environ.get('RENDER_EXTERNAL_HOSTNAME', site.domain)
+site.save()
+print('Site', site.domain, 'pret')
+"
 
 python manage.py shell -c "
 from django.contrib.auth import get_user_model

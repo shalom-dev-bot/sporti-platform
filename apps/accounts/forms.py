@@ -10,7 +10,7 @@ dependre de la chaine par defaut d'allauth.
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from allauth.account.forms import LoginForm, SignupForm
+from allauth.account.forms import LoginForm, ResetPasswordForm, ResetPasswordKeyForm, SignupForm
 
 from .models import User
 
@@ -68,6 +68,27 @@ class SportiSignupForm(SignupForm):
         if username and User.objects.filter(username__iexact=username).exists():
             raise forms.ValidationError(_("Ce nom existe deja, choisissez-en un autre."))
         return username
+
+
+class SportiResetPasswordForm(ResetPasswordForm):
+    """Ajoute les classes CSS du design system au formulaire 'mot de passe oublie'."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "email" in self.fields:
+            self.fields["email"].widget.attrs.update(
+                {"class": "field-input", "placeholder": "vous@exemple.com"}
+            )
+
+
+class SportiSetPasswordForm(ResetPasswordKeyForm):
+    """Ajoute les classes CSS du design system au formulaire de nouveau mot
+    de passe (apres clic sur le lien recu par e-mail)."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            field.widget.attrs.update({"class": "field-input", "placeholder": "••••••••••"})
 
 
 class ProfileForm(forms.ModelForm):

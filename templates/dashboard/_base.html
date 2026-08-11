@@ -3,70 +3,15 @@
 {% load static %}
 
 {% block content %}
-<div class="dashboard-shell">
-    <aside class="dashboard-sidebar">
-        <div class="flex items-center gap-2 mb-8 px-1">
-            <div class="w-8 h-8 hud-corners flex items-center justify-center bg-navy-950 overflow-hidden">
-                <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
-            </div>
-            <span class="font-display font-bold tracking-wide">SPORTI</span>
-        </div>
+<div class="chats-shell">
+    {% include "dashboard/_admin_top.html" %}
 
-        <nav class="flex-1">
-            <a href="{% url 'dashboard:conversations_list' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'conversations_list' or request.resolver_match.url_name == 'conversation_detail' %}active{% endif %}">
-                {% trans "Conversations" %}
-            </a>
-            <a href="{% url 'dashboard:stats' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'stats' %}active{% endif %}">
-                {% trans "Vue d'ensemble" %}
-            </a>
-            <a href="{% url 'dashboard:company_settings' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'company_settings' %}active{% endif %}">
-                {% trans "Accueil & Profil" %}
-            </a>
-            <a href="{% url 'dashboard:links_list' %}" class="dashboard-nav-link {% if request.resolver_match.url_name in 'links_list link_create link_edit' %}active{% endif %}">
-                {% trans "Liens externes" %}
-            </a>
-            <a href="{% url 'dashboard:fixtures_search' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'fixtures_search' %}active{% endif %}">
-                {% trans "Importer des matchs" %}
-            </a>
-            <a href="{% url 'dashboard:predictions_list' %}" class="dashboard-nav-link {% if request.resolver_match.url_name in 'predictions_list prediction_create prediction_edit' %}active{% endif %}">
-                {% trans "Pronostics" %}
-            </a>
-            <a href="{% url 'dashboard:events_list' %}" class="dashboard-nav-link {% if request.resolver_match.url_name in 'events_list event_create event_edit' %}active{% endif %}">
-                {% trans "Événements" %}
-            </a>
-            <a href="{% url 'dashboard:teams_list' %}" class="dashboard-nav-link {% if request.resolver_match.url_name in 'teams_list team_create team_edit' %}active{% endif %}">
-                {% trans "Équipes" %}
-            </a>
-            <a href="{% url 'dashboard:change_password' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
-                {% trans "Mot de passe" %}
-            </a>
-        </nav>
-
-        <form method="post" action="{% url 'dashboard:logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="dashboard-nav-link w-full text-left">
-                {% trans "Déconnexion" %}
-            </button>
-        </form>
-    </aside>
-
-    <div class="flex-1 min-w-0 flex flex-col">
-        <div class="dashboard-topbar">
-            <span class="font-display font-bold">SPORTI</span>
-            <div class="flex items-center gap-3 text-xs">
-                <a href="{% url 'dashboard:conversations_list' %}" class="text-navy-900/60 dark:text-white/50">{% trans "Chat" %}</a>
-                <a href="{% url 'dashboard:stats' %}" class="text-navy-900/60 dark:text-white/50">{% trans "Vue" %}</a>
-                <a href="{% url 'dashboard:company_settings' %}" class="text-navy-900/60 dark:text-white/50">{% trans "Accueil" %}</a>
-                <a href="{% url 'dashboard:links_list' %}" class="text-navy-900/60 dark:text-white/50">{% trans "Liens" %}</a>
-                <a href="{% url 'dashboard:predictions_list' %}" class="text-navy-900/60 dark:text-white/50">{% trans "Pronostics" %}</a>
-            </div>
-        </div>
-
-        <main class="dashboard-main">
+    <div class="{% block scroll_wrapper_class %}thin-scroll flex-1 min-h-0 overflow-y-auto{% endblock %}">
+        <main class="{% block dashboard_main_class %}dashboard-main mx-auto relative z-0{% endblock %}">
             {% if messages %}
                 <div class="mb-6 space-y-2">
                     {% for message in messages %}
-                        <div class="px-4 py-3 text-sm border border-accent-500/25 bg-accent-500/5 text-accent-700 dark:text-accent-300">
+                        <div class="px-4 py-3 text-sm border border-accent-500/25 bg-accent-500/5 text-accent-300">
                             {{ message }}
                         </div>
                     {% endfor %}
@@ -75,5 +20,7 @@
             {% block dashboard_content %}{% endblock %}
         </main>
     </div>
+
+    {% include "dashboard/_bottom_nav.html" %}
 </div>
 {% endblock %}

@@ -1,64 +1,186 @@
-{% extends "dashboard/_base.html" %}
-{% load i18n %}
+{% extends "base.html" %}
+{% load i18n static %}
+{% block title %}{% trans "Tableau de bord" %} — SPORTI{% endblock %}
+{% block content %}
+<div class="chats-shell">
+    {% include "dashboard/_admin_top.html" %}
 
-{% block title %}{% trans "Vue d'ensemble" %} — SPORTI{% endblock %}
+    <div class="thin-scroll flex-1 min-h-0 overflow-y-auto px-4 lg:px-8 xl:px-12 pt-1 pb-1.5 lg:pt-4 lg:pb-5">
+        <div class="h-full flex flex-col lg:max-w-[1600px] lg:mx-auto">
 
-{% block dashboard_content %}
-<h1 class="dashboard-page-title">{% trans "Vue d'ensemble" %}</h1>
-<p class="dashboard-page-subtitle">{% trans "L'activité de votre plateforme, en un coup d'œil." %}</p>
+        <!-- En-tete -->
+        <div class="shrink-0 relative overflow-hidden rounded-xl lg:rounded-2xl glass-panel mb-1 lg:mb-3 flex items-start justify-between gap-2 px-3 py-1.5 lg:px-6 lg:py-3.5">
+            <img src="{% static 'images/design/promo-ball.jpg' %}" alt="" class="absolute inset-0 w-full h-full object-cover object-right opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#07111f] via-[#07111f]/85 to-transparent"></div>
+            <div class="relative z-10">
+                <h1 class="font-display text-sm lg:text-2xl font-medium text-white">{% trans "Bonjour" %}, {{ user.first_name|default:user.username }} <span class="text-amber-400">&#128081;</span> &#128075;</h1>
+                <p class="text-[10px] lg:text-base text-white/90">{% trans "Voici votre tableau de bord" %}</p>
+            </div>
+            <span class="relative z-10 shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-navy-900/80 border border-emerald-400/25 text-[9px] lg:text-xs font-semibold text-emerald-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                {% trans "En ligne" %}
+            </span>
+        </div>
 
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-    <div class="stat-card">
-        <p class="stat-card-label">{% trans "Total clients" %}</p>
-        <p class="stat-card-value">{{ total_clients }}</p>
+        <!-- Statistiques -->
+        <div class="shrink-0 grid grid-cols-4 gap-1.5 lg:gap-3 mb-1 lg:mb-3">
+            <div class="glass-panel rounded-xl lg:rounded-2xl py-1.5 lg:py-3 px-1 text-center">
+                <div class="admin-stat-icon mx-auto bg-[#1f46dd]/20 w-6 h-6 lg:w-7 lg:h-7">
+                    <svg class="w-3 h-3 lg:w-4 lg:h-4 text-[#5b8def]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="mt-0.5 lg:mt-1.5 text-sm lg:text-2xl font-bold">{{ total_clients }}</div>
+                <div class="text-[7px] lg:text-[11px] text-navy-900/50 dark:text-white/50 leading-tight">{% trans "Utilisateurs" %}</div>
+                {% if new_clients_today %}<div class="mt-0.5 text-[7px] lg:text-[10px] text-emerald-400 font-semibold">+{{ new_clients_today }} {% trans "aujourd'hui" %} &#8599;</div>{% endif %}
+            </div>
+            <div class="glass-panel rounded-xl lg:rounded-2xl py-1.5 lg:py-3 px-1 text-center">
+                <div class="admin-stat-icon mx-auto bg-[#1f46dd]/20 w-6 h-6 lg:w-7 lg:h-7">
+                    <svg class="w-3 h-3 lg:w-4 lg:h-4 text-[#5b8def]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </div>
+                <div class="mt-0.5 lg:mt-1.5 text-sm lg:text-2xl font-bold">{{ total_conversations }}</div>
+                <div class="text-[7px] lg:text-[11px] text-navy-900/50 dark:text-white/50 leading-tight">{% trans "Conversations" %}</div>
+                {% if new_conversations_today %}<div class="mt-0.5 text-[7px] lg:text-[10px] text-emerald-400 font-semibold">+{{ new_conversations_today }} {% trans "aujourd'hui" %} &#8599;</div>{% endif %}
+            </div>
+            <div class="glass-panel rounded-xl lg:rounded-2xl py-1.5 lg:py-3 px-1 text-center">
+                <div class="admin-stat-icon mx-auto bg-[#1f46dd]/20 w-6 h-6 lg:w-7 lg:h-7">
+                    <svg class="w-3 h-3 lg:w-4 lg:h-4 text-[#5b8def]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                </div>
+                <div class="mt-0.5 lg:mt-1.5 text-sm lg:text-2xl font-bold">{{ active_predictions }}</div>
+                <div class="text-[7px] lg:text-[11px] text-navy-900/50 dark:text-white/50 leading-tight">{% trans "Pronostics actifs" %}</div>
+                {% if new_predictions_today %}<div class="mt-0.5 text-[7px] lg:text-[10px] text-emerald-400 font-semibold">+{{ new_predictions_today }} {% trans "aujourd'hui" %} &#8599;</div>{% endif %}
+            </div>
+            <div class="glass-panel rounded-xl lg:rounded-2xl py-1.5 lg:py-3 px-1 text-center">
+                <div class="admin-stat-icon mx-auto bg-[#1f46dd]/20 w-6 h-6 lg:w-7 lg:h-7">
+                    <svg class="w-3 h-3 lg:w-4 lg:h-4 text-[#5b8def]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+                <div class="mt-0.5 lg:mt-1.5 text-sm lg:text-2xl font-bold">{{ visits_today }}</div>
+                <div class="text-[7px] lg:text-[11px] text-navy-900/50 dark:text-white/50 leading-tight">{% trans "Visites aujourd'hui" %}</div>
+                {% if visits_change_percent != None %}<div class="mt-0.5 text-[7px] lg:text-[10px] {% if visits_change_percent >= 0 %}text-emerald-400{% else %}text-red-400{% endif %} font-semibold">{{ visits_change_percent }}% &#8599;</div>{% endif %}
+            </div>
+        </div>
+
+        <!-- Acces rapide -->
+        <div class="shrink-0">
+        <div class="flex items-center justify-between mb-1 lg:mb-2">
+            <p class="text-[11px] lg:text-sm font-semibold">{% trans "Accès rapide" %}</p>
+        </div>
+        <div class="grid grid-cols-2 gap-1 lg:gap-2.5">
+            <a href="{% url 'dashboard:conversations_list' %}" class="admin-quick-tile glass-panel">
+                <span class="admin-stat-icon bg-[#1f46dd]/20 text-[#5b8def] w-6 h-6 lg:w-8 lg:h-8">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </span>
+                <span class="min-w-0">
+                    <span class="block text-[10px] lg:text-sm font-semibold truncate">{% trans "Conversations" %}</span>
+                    <span class="hidden lg:block text-[11px] text-navy-900/50 dark:text-white/45 truncate">{% trans "Gérer les messages" %}</span>
+                </span>
+            </a>
+            <a href="{% url 'dashboard:predictions_list' %}" class="admin-quick-tile glass-panel">
+                <span class="admin-stat-icon bg-[#8b5cf6]/20 text-[#a78bfa] w-6 h-6 lg:w-8 lg:h-8">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                </span>
+                <span class="min-w-0">
+                    <span class="block text-[10px] lg:text-sm font-semibold truncate">{% trans "Pronostics" %}</span>
+                    <span class="hidden lg:block text-[11px] text-navy-900/50 dark:text-white/45 truncate">{% trans "Gérer les pronostics" %}</span>
+                </span>
+            </a>
+            <a href="{% url 'dashboard:users_list' %}" class="admin-quick-tile glass-panel">
+                <span class="admin-stat-icon bg-[#22c55e]/20 text-[#4ade80] w-6 h-6 lg:w-8 lg:h-8">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </span>
+                <span class="min-w-0">
+                    <span class="block text-[10px] lg:text-sm font-semibold truncate">{% trans "Utilisateurs" %}</span>
+                    <span class="hidden lg:block text-[11px] text-navy-900/50 dark:text-white/45 truncate">{% trans "Voir et gérer" %}</span>
+                </span>
+            </a>
+            <a href="{% url 'dashboard:links_list' %}" class="admin-quick-tile glass-panel">
+                <span class="admin-stat-icon bg-[#f59e0b]/20 text-[#fbbf24] w-6 h-6 lg:w-8 lg:h-8">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </span>
+                <span class="min-w-0">
+                    <span class="block text-[10px] lg:text-sm font-semibold truncate">{% trans "Liens" %}</span>
+                    <span class="hidden lg:block text-[11px] text-navy-900/50 dark:text-white/45 truncate">{% trans "Gérer les liens" %}</span>
+                </span>
+            </a>
+            <a href="{% url 'dashboard:company_settings' %}" class="admin-quick-tile glass-panel">
+                <span class="admin-stat-icon bg-[#ec4899]/20 text-[#f472b6] w-6 h-6 lg:w-8 lg:h-8">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/></svg>
+                </span>
+                <span class="min-w-0">
+                    <span class="block text-[10px] lg:text-sm font-semibold truncate">{% trans "Accueil" %}</span>
+                    <span class="hidden lg:block text-[11px] text-navy-900/50 dark:text-white/45 truncate">{% trans "Texte, vocal, vidéo" %}</span>
+                </span>
+            </a>
+            <a href="{% url 'dashboard:teams_list' %}" class="admin-quick-tile glass-panel">
+                <span class="admin-stat-icon bg-[#10b981]/20 text-[#34d399] w-6 h-6 lg:w-8 lg:h-8">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+                </span>
+                <span class="min-w-0">
+                    <span class="block text-[10px] lg:text-sm font-semibold truncate">{% trans "Équipes" %}</span>
+                    <span class="hidden lg:block text-[11px] text-navy-900/50 dark:text-white/45 truncate">{% trans "Gérer les équipes" %}</span>
+                </span>
+            </a>
+        </div>
+        </div>
+
+        <!-- Activite recente -->
+        <div class="mt-1 lg:mt-2 flex flex-col lg:flex-1 lg:min-h-0">
+        <div class="flex items-center justify-between mb-1 lg:mb-1.5">
+            <p class="text-[11px] lg:text-sm font-semibold">{% trans "Activité récente" %}</p>
+        </div>
+        <div class="glass-panel rounded-xl lg:rounded-2xl p-1.5 lg:p-2.5 max-h-[92px] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto thin-scroll space-y-0.5 lg:space-y-1">
+            {% for item in activity %}
+            <div class="activity-row flex items-center gap-1.5 lg:gap-2 py-0.5">
+                {% if item.kind == 'member' %}
+                <span class="admin-activity-icon bg-[#22c55e]/20 text-[#4ade80] w-5 h-5 lg:w-7 lg:h-7">
+                    <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                </span>
+                {% elif item.kind == 'prediction' %}
+                <span class="admin-activity-icon bg-[#8b5cf6]/20 text-[#a78bfa] w-5 h-5 lg:w-7 lg:h-7">
+                    <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                </span>
+                {% else %}
+                <span class="admin-activity-icon bg-[#1f46dd]/20 text-[#5b8def] w-5 h-5 lg:w-7 lg:h-7">
+                    <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </span>
+                {% endif %}
+                <span class="min-w-0 flex-1">
+                    <span class="block text-[10px] lg:text-sm font-semibold truncate">{{ item.title }}</span>
+                    <span class="block text-[9px] lg:text-xs text-navy-900/50 dark:text-white/45 truncate">{{ item.detail }}</span>
+                </span>
+                <span class="shrink-0 text-[8px] lg:text-[11px] text-navy-900/35 dark:text-white/35">{{ item.at|timesince }}</span>
+            </div>
+            {% empty %}
+            <p class="text-center text-[11px] text-navy-900/35 dark:text-white/35 py-4">{% trans "Aucune activité pour le moment." %}</p>
+            {% endfor %}
+        </div>
+        {% if activity|length > 2 %}
+        <p class="lg:hidden mt-1 text-center text-[9px] text-navy-900/30 dark:text-white/30">{% trans "Défiler pour voir la suite" %}</p>
+        {% endif %}
+        </div>
+
+        <!-- Decoration -->
+        <div class="lg:hidden flex-1 min-h-0 flex items-center justify-center">
+            <svg class="w-20 h-20 trophy-glow" viewBox="0 0 24 24" fill="none">
+                <defs>
+                    <linearGradient id="silverTrophyGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#f8fafc"/>
+                        <stop offset="50%" stop-color="#cbd5e1"/>
+                        <stop offset="100%" stop-color="#64748b"/>
+                    </linearGradient>
+                </defs>
+                <g stroke="url(#silverTrophyGrad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                    <path d="M4 22h16"/>
+                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" fill="url(#silverTrophyGrad)" fill-opacity="0.35"/>
+                </g>
+            </svg>
+        </div>
+
+        </div>
     </div>
-    <div class="stat-card">
-        <p class="stat-card-label">{% trans "Conversations" %}</p>
-        <p class="stat-card-value">{{ total_conversations }}</p>
-    </div>
-    <div class="stat-card">
-        <p class="stat-card-label">{% trans "Messages aujourd'hui" %}</p>
-        <p class="stat-card-value">{{ messages_today }}</p>
-    </div>
-    <div class="stat-card">
-        <p class="stat-card-label">{% trans "Non lues" %}</p>
-        <p class="stat-card-value {% if unread_conversations > 0 %}text-accent-600{% endif %}">{{ unread_conversations }}</p>
-    </div>
+
+    {% include "dashboard/_bottom_nav.html" %}
 </div>
-
-<div class="panel">
-    <h2 class="font-display font-semibold mb-4">{% trans "Évolution du nombre de clients" %}</h2>
-    <canvas id="growthChart" height="90"></canvas>
-</div>
-{% endblock %}
-
-{% block extra_scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script>
-    const ctx = document.getElementById('growthChart');
-    const isDark = document.documentElement.classList.contains('dark');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: {{ growth_labels|safe }},
-            datasets: [{
-                label: "{% trans 'Nouveaux clients' %}",
-                data: {{ growth_values|safe }},
-                borderColor: '#2D6CDF',
-                backgroundColor: 'rgba(45, 108, 223, 0.12)',
-                fill: true,
-                tension: 0.35,
-                pointRadius: 3,
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, ticks: { stepSize: 1, color: isDark ? '#ffffff88' : '#0D1321aa' }, grid: { color: isDark ? '#ffffff14' : '#0D13210f' } },
-                x: { ticks: { color: isDark ? '#ffffff88' : '#0D1321aa' }, grid: { display: false } }
-            }
-        }
-    });
-</script>
 {% endblock %}

@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}SPORTI -- Hors ligne{% endblock %}
+{% block title %}SPORTI -- {% trans "Hors ligne" %}{% endblock %}
 
 {% block content %}
 <div class="max-w-sm mx-auto px-4 py-24 text-center animate-fade-in-up">
     <h1 class="font-display text-2xl font-bold">SPORTI</h1>
-    <div class="hud-corners inline-block mt-6 p-6 border border-navy-900/10 dark:border-white/10 bg-white dark:bg-navy-850">
+    <div class="hud-corners inline-block mt-6 p-6 border border-navy-900/10 dark:border-white/10 bg-surface-light dark:bg-navy-850">
         <p class="text-navy-900/80 dark:text-white/80">{% trans "Vous semblez etre hors ligne." %}</p>
         <p class="mt-2 text-sm text-navy-900/50 dark:text-white/50">
             {% trans "Verifiez votre connexion internet, puis reessayez." %}

@@ -4,32 +4,33 @@
 {% block title %}{% if is_edit %}{% trans "Modifier l'événement" %}{% else %}{% trans "Nouvel événement" %}{% endif %} — SPORTI{% endblock %}
 
 {% block dashboard_content %}
-<a href="{% url 'dashboard:events_list' %}" class="btn-ghost !px-0 mb-4 inline-flex">&laquo; {% trans "Retour aux événements" %}</a>
-
-<h1 class="dashboard-page-title">
-    {% if is_edit %}{% trans "Modifier l'événement" %}{% else %}{% trans "Nouvel événement" %}{% endif %}
-</h1>
+{% url 'dashboard:events_list' as back_url %}
+{% trans "Retour aux événements" as back_label %}
+{% if is_edit %}{% trans "Modifier l'événement" as form_title %}{% else %}{% trans "Nouvel événement" as form_title %}{% endif %}
+{% trans "Un événement regroupe deux équipes, une compétition et une date." as form_subtitle %}
+{% include "dashboard/_form_header.html" with back_url=back_url back_label=back_label form_title=form_title form_subtitle=form_subtitle %}
 
 {% if not form.fields.home_team.queryset.exists %}
-<div class="panel max-w-lg mt-6 !border-accent-500/25">
-    <p class="text-sm text-navy-900/60 dark:text-white/50">
+<div class="glass-panel rounded-2xl p-4 max-w-lg mb-5 !border-accent-500/25">
+    <p class="text-sm text-navy-900/60 dark:text-white/60">
         {% trans "Aucune équipe n'a encore été créée." %}
-        <a href="{% url 'dashboard:team_create' %}" class="text-accent-600 dark:text-accent-400 underline">{% trans "Créer une équipe" %}</a>
+        <a href="{% url 'dashboard:team_create' %}" class="text-accent-400 underline">{% trans "Créer une équipe" %}</a>
     </p>
 </div>
 {% endif %}
 
-<div class="panel max-w-lg mt-6">
+<div class="glass-panel rounded-2xl p-4 lg:p-6 max-w-lg">
     <form method="post">
         {% csrf_token %}
         {% for field in form %}
         <div class="field-group">
             <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
             {{ field }}
+            {% if field.help_text %}<p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ field.help_text }}</p>{% endif %}
             {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         </div>
         {% endfor %}
-        <button type="submit" class="btn-primary">
+        <button type="submit" class="btn-primary w-full sm:w-auto">
             {% if is_edit %}{% trans "Enregistrer" %}{% else %}{% trans "Ajouter l'événement" %}{% endif %}
         </button>
     </form>

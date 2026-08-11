@@ -21,7 +21,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Attachment, Conversation, Message
-from .serializers import ConversationSerializer, MessageSerializer
+from .serializers import ConversationSerializer, MessageSerializer, _reply_to_summary
 from .tasks import compress_image_attachment
 
 
@@ -170,7 +170,14 @@ class AttachmentUploadView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        message = Message.objects.create(conversation=conversation, sender=request.user, content="")
+        reply_to = None
+        reply_to_id = request.POST.get("reply_to")
+        if reply_to_id:
+            reply_to = conversation.messages.filter(id=reply_to_id).first()
+
+        message = Message.objects.create(
+            conversation=conversation, sender=request.user, content="", reply_to=reply_to
+        )
         attachment = Attachment.objects.create(
             message=message,
             file=uploaded_file,
@@ -187,6 +194,7 @@ class AttachmentUploadView(APIView):
             "content": "",
             "status": message.status,
             "created_at": message.created_at.isoformat(),
+            "reply_to": _reply_to_summary(reply_to),
             "attachment": {
                 "id": attachment.id,
                 "file_url": attachment.file.url,
@@ -203,6 +211,23 @@ class AttachmentUploadView(APIView):
         async_to_sync(channel_layer.group_send)(
             f"conversation_{conversation.id}",
             {"type": "chat.message", "payload": payload},
+        )
+
+        from apps.chat.consumers.admin_dashboard_consumer import ADMIN_DASHBOARD_GROUP
+
+        preview = "📎 " + (attachment.file_name or "Pièce jointe")
+        async_to_sync(channel_layer.group_send)(
+            ADMIN_DASHBOARD_GROUP,
+            {
+                "type": "conversation.updated",
+                "payload": {
+                    "conversation_id": conversation.id,
+                    "client_name": str(conversation.client),
+                    "preview": preview[:80],
+                    "updated_at": message.created_at.isoformat(),
+                    "is_from_client": not request.user.is_staff,
+                },
+            },
         )
 
         return Response(payload, status=status.HTTP_201_CREATED)

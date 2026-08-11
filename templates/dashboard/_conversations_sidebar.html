@@ -1,0 +1,88 @@
+{% load i18n %}
+<div class="flex flex-col h-full">
+    <div class="p-4 lg:p-5 shrink-0">
+        <h1 class="font-display text-xl font-bold tracking-tight mb-3">{% trans "Chats" %}</h1>
+        <div class="relative">
+            <svg class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-navy-900/30 dark:text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input type="text" id="chat-search" placeholder="{% trans 'Rechercher' %}" class="chats-search-input" style="padding-left:2.5rem;">
+        </div>
+    </div>
+    <div class="flex-1 min-h-0 overflow-y-auto thin-scroll px-2 lg:px-3 pb-4 space-y-1" id="chat-rows-container">
+        {% for item in conversations_data %}
+        <a href="{% url 'dashboard:conversation_detail' item.conversation.id %}" class="chat-list-row {% if item.conversation.id == active_conversation_id %}chat-list-row-active{% endif %}" data-conversation-id="{{ item.conversation.id }}" data-client-name="{{ item.conversation.client|stringformat:'s'|lower }}">
+            <span class="chat-list-avatar">{{ item.conversation.client|stringformat:"s"|first|upper }}</span>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2">
+                    <h3 class="font-semibold truncate text-sm chat-list-name">{{ item.conversation.client }}</h3>
+                    <span class="text-xs text-navy-900/40 dark:text-white/35 whitespace-nowrap chat-list-time">{{ item.conversation.updated_at|date:"H:i" }}</span>
+                </div>
+                <p class="text-sm text-navy-900/55 dark:text-white/50 truncate chat-list-preview">
+                    {% if item.last_message %}
+                        {% if item.last_message.content %}{{ item.last_message.content|truncatechars:50 }}{% else %}{% trans "[Pièce jointe]" %}{% endif %}
+                    {% else %}
+                        <em>{% trans "Aucun message" %}</em>
+                    {% endif %}
+                </p>
+            </div>
+            <span class="chat-unread-badge {% if not item.unread_count %}hidden{% endif %}">{{ item.unread_count|default:"" }}</span>
+        </a>
+        {% empty %}
+        <p class="text-center text-sm text-navy-900/40 dark:text-white/35 py-10">
+            {% trans "Aucune conversation pour le moment." %}
+        </p>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    (function () {
+        const search = document.getElementById("chat-search");
+        if (search) {
+            search.addEventListener("input", (event) => {
+                const query = event.target.value.trim().toLowerCase();
+                document.querySelectorAll("#chat-rows-container .chat-list-row").forEach((row) => {
+                    const name = row.dataset.clientName || "";
+                    row.style.display = name.includes(query) ? "flex" : "none";
+                });
+            });
+        }
+
+        // Fait remonter automatiquement une conversation en tete de liste
+        // et rafraichit son apercu des qu'un message arrive -- cote client
+        // ou cote admin -- sans recharger la page (comme WhatsApp Web).
+        const container = document.getElementById("chat-rows-container");
+        if (!container || window.__sportiAdminDashboardSocket) return;
+
+        function formatTime(iso) {
+            const d = new Date(iso);
+            return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+        }
+
+        function connect() {
+            const scheme = window.location.protocol === "https:" ? "wss" : "ws";
+            const socket = new WebSocket(`${scheme}://${window.location.host}/ws/admin/dashboard/`);
+            window.__sportiAdminDashboardSocket = socket;
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                const row = container.querySelector(`[data-conversation-id="${data.conversation_id}"]`);
+                if (!row) return;
+                const preview = row.querySelector(".chat-list-preview");
+                const time = row.querySelector(".chat-list-time");
+                if (preview) preview.textContent = data.preview;
+                if (time) time.textContent = formatTime(data.updated_at);
+                if (data.is_from_client && !row.classList.contains("chat-list-row-active")) {
+                    let badge = row.querySelector(".chat-unread-badge");
+                    const current = parseInt(badge.textContent || "0", 10) || 0;
+                    badge.textContent = String(current + 1);
+                    badge.classList.remove("hidden");
+                }
+                container.prepend(row);
+            };
+            socket.onclose = () => {
+                setTimeout(connect, 2000);
+            };
+        }
+        connect();
+    })();
+</script>

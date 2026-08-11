@@ -4,23 +4,24 @@
 {% block title %}{% if is_edit %}{% trans "Modifier l'équipe" %}{% else %}{% trans "Nouvelle équipe" %}{% endif %} — SPORTI{% endblock %}
 
 {% block dashboard_content %}
-<a href="{% url 'dashboard:teams_list' %}" class="btn-ghost !px-0 mb-4 inline-flex">&laquo; {% trans "Retour aux équipes" %}</a>
+{% url 'dashboard:teams_list' as back_url %}
+{% trans "Retour aux équipes" as back_label %}
+{% if is_edit %}{% trans "Modifier l'équipe" as form_title %}{% else %}{% trans "Nouvelle équipe" as form_title %}{% endif %}
+{% trans "Équipes réutilisables pour créer des événements sportifs." as form_subtitle %}
+{% include "dashboard/_form_header.html" with back_url=back_url back_label=back_label form_title=form_title form_subtitle=form_subtitle %}
 
-<h1 class="dashboard-page-title">
-    {% if is_edit %}{% trans "Modifier l'équipe" %}{% else %}{% trans "Nouvelle équipe" %}{% endif %}
-</h1>
-
-<div class="panel max-w-lg mt-6">
+<div class="glass-panel rounded-2xl p-4 lg:p-6 max-w-lg">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
         <div class="field-group">
             <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
             {{ field }}
+            {% if field.help_text %}<p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ field.help_text }}</p>{% endif %}
             {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         </div>
         {% endfor %}
-        <button type="submit" class="btn-primary">
+        <button type="submit" class="btn-primary w-full sm:w-auto">
             {% if is_edit %}{% trans "Enregistrer" %}{% else %}{% trans "Ajouter l'équipe" %}{% endif %}
         </button>
     </form>

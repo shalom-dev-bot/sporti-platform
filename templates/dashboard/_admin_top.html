@@ -1,0 +1,105 @@
+{% load i18n static %}
+<header class="hidden lg:flex items-center justify-between pl-8 pr-32 py-4 border-b border-navy-900/10 dark:border-white/10 shrink-0">
+    <a href="{% url 'dashboard:stats' %}" class="flex items-center gap-3 shrink-0">
+        <div class="w-9 h-9 hud-corners bg-navy-950 flex items-center justify-center overflow-hidden shrink-0">
+            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+        </div>
+        <span class="font-display font-bold tracking-wide">SPORTI {% trans "Admin" %}</span>
+    </a>
+
+    <nav class="flex items-center gap-1">
+        <a href="{% url 'dashboard:stats' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'stats' %}active{% endif %}">{% trans "Accueil" %}</a>
+        <a href="{% url 'dashboard:conversations_list' %}" class="desktop-nav-link {% if request.resolver_match.url_name in 'conversations_list conversation_detail' %}active{% endif %}">{% trans "Conversations" %}</a>
+        <a href="{% url 'dashboard:predictions_list' %}" class="desktop-nav-link {% if request.resolver_match.url_name in 'predictions_list prediction_create prediction_edit fixtures_search fixture_import' %}active{% endif %}">{% trans "Pronostics" %}</a>
+        <a href="{% url 'dashboard:users_list' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'users_list' %}active{% endif %}">{% trans "Utilisateurs" %}</a>
+        <a href="{% url 'dashboard:links_list' %}" class="desktop-nav-link {% if request.resolver_match.url_name in 'links_list link_create link_edit' %}active{% endif %}">{% trans "Liens" %}</a>
+        <a href="{% url 'dashboard:company_settings' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'company_settings' %}active{% endif %}">{% trans "Accueil client" %}</a>
+        <a href="{% url 'dashboard:teams_list' %}" class="desktop-nav-link {% if request.resolver_match.url_name in 'teams_list team_create team_edit' %}active{% endif %}">{% trans "Équipes" %}</a>
+        <a href="{% url 'dashboard:settings_hub' %}" class="desktop-nav-link {% if request.resolver_match.url_name in 'settings_hub events_list event_create event_edit change_password' %}active{% endif %}">{% trans "Paramètres" %}</a>
+    </nav>
+
+    <div class="flex items-center gap-2.5 shrink-0">
+        <span class="text-sm font-medium">{{ user.first_name|default:user.username }}</span>
+        <span class="w-9 h-9 shrink-0 rounded-full hud-corners overflow-hidden bg-navy-900/10 dark:bg-white/10 flex items-center justify-center">
+            {% if user.display_avatar_url %}
+                <img src="{{ user.display_avatar_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+            {% else %}
+                <span class="font-display font-bold text-xs text-amber-400">{{ user.username|slice:":2"|upper }}</span>
+            {% endif %}
+        </span>
+        <form method="post" action="{% url 'dashboard:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="text-xs text-navy-900/40 dark:text-white/40 hover:text-red-400" title="{% trans 'Déconnexion' %}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+        </form>
+    </div>
+</header>
+
+<!-- Barre mobile : menu + logo + notifications + avatar -->
+<header class="flex lg:hidden items-center justify-between px-4 pt-2 pb-1 shrink-0">
+    <a href="{% url 'dashboard:settings_hub' %}" class="sporti-chat-icon-btn" aria-label="{% trans 'Menu' %}">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+    </a>
+    <a href="{% url 'dashboard:stats' %}" class="flex items-center gap-1.5 min-w-0">
+        <div class="w-6 h-6 rounded-full overflow-hidden bg-navy-900 border border-accent-400/30 flex items-center justify-center shrink-0">
+            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+        </div>
+        <span class="font-display font-bold text-sm tracking-wide">SPORTI</span>
+    </a>
+    <div class="flex items-center gap-2 shrink-0">
+        <button type="button" class="relative w-9 h-9 rounded-full bg-navy-900/5 dark:bg-white/5 border border-navy-900/10 dark:border-white/10 flex items-center justify-center" aria-label="{% trans 'Notifications' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+            </svg>
+            {% if unread_conversations %}<span class="absolute top-1.5 right-2 w-1.5 h-1.5 rounded-full bg-accent-400"></span>{% endif %}
+        </button>
+        <a href="{% url 'accounts:profile' %}" class="w-9 h-9 shrink-0 rounded-full overflow-hidden border border-amber-400/50 shadow-glow-sm flex items-center justify-center bg-navy-900">
+            {% if user.display_avatar_url %}
+                <img src="{{ user.display_avatar_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+            {% else %}
+                <span class="font-display font-bold text-xs text-amber-400">{{ user.username|slice:":2"|upper }}</span>
+            {% endif %}
+        </a>
+    </div>
+</header>
+
+<script>
+    // Abonnement aux notifications push -- meme mecanique que cote client,
+    // mais il fallait le brancher ici aussi (inclus sur toute page admin)
+    // sinon l'admin n'est jamais abonne et ne recoit jamais de notif.
+    {% if user.is_authenticated %}
+    (function () {
+        if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+        const VAPID_PUBLIC_KEY = "BADV9JSLdUH2Le2D-bXyMeZbedSC8cfyiXc7aH4ieUmJne8aMU1xptDYjgmFqJ4Tb9ZY7rCzUAv1aUKvYCUcICo";
+        function urlBase64ToUint8Array(base64String) {
+            const padding = "=".repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+            const rawData = window.atob(base64);
+            return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+        }
+        function getCsrfToken() {
+            return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "";
+        }
+        navigator.serviceWorker.register("/service-worker.js").then((registration) => {
+            navigator.serviceWorker.ready.then(async (reg) => {
+                if (Notification.permission === "denied") return;
+                const permission = await Notification.requestPermission();
+                if (permission !== "granted") return;
+                const subscription = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+                });
+                await fetch("{% url 'accounts:push_subscribe' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCsrfToken(),
+                    },
+                    body: JSON.stringify(subscription),
+                });
+            });
+        }).catch(() => {});
+    })();
+    {% endif %}
+</script>

@@ -40,6 +40,27 @@ class AdminUsernameForm(forms.ModelForm):
         labels = {"username": "Nom d'utilisateur"}
 
 
+class AdminProfileForm(forms.ModelForm):
+    """Profil personnel de l'administrateur (Parametres generaux) --
+    distinct du profil de l'entreprise (nom/logo public)."""
+
+    class Meta:
+        model = User
+        fields = ["first_name", "email", "avatar"]
+        labels = {
+            "first_name": "Nom affiche",
+            "email": "E-mail",
+            "avatar": "Photo de profil",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if name == "avatar":
+                continue
+            field.widget.attrs.update({"class": "field-input"})
+
+
 class _StyledPredictionFormMixin:
     def _apply_styles(self):
         for field in self.fields.values():
@@ -105,9 +126,11 @@ class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
             "pick",
             "analysis",
             "odds",
+            "coupon_code",
             "confidence",
             "is_featured",
             "external_link",
+            "custom_bet_url",
             "result",
             "is_published",
         ]
@@ -116,9 +139,11 @@ class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
             "pick": "Pronostic",
             "analysis": "Analyse detaillee (optionnel)",
             "odds": "Cote (optionnel)",
+            "coupon_code": "Code du coupon (optionnel)",
             "confidence": "Confiance % (optionnel)",
             "is_featured": "Match phare (Top matchs)",
             "external_link": "Plateforme de paris recommandee (optionnel)",
+            "custom_bet_url": "Ou lien personnalise (optionnel)",
             "result": "Resultat",
             "is_published": "Visible par les clients",
         }
@@ -126,4 +151,40 @@ class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["external_link"].queryset = ExternalLink.objects.filter(category="platform")
+        self.fields["external_link"].required = False
+        self._apply_styles()
+
+
+class PredictionCoreForm(_StyledPredictionFormMixin, forms.ModelForm):
+    """Meme champs que PredictionForm, sans 'event' ni 'result' : utilise
+    sur l'ecran unifie 'Nouveau pronostic' ou l'evenement est cree dans
+    la meme soumission (event assigne et result mis a PENDING en vue)."""
+
+    class Meta:
+        model = Prediction
+        fields = [
+            "pick",
+            "odds",
+            "coupon_code",
+            "confidence",
+            "is_featured",
+            "external_link",
+            "custom_bet_url",
+            "is_published",
+        ]
+        labels = {
+            "pick": "Pronostic",
+            "odds": "Cote (optionnel)",
+            "coupon_code": "Code du coupon (optionnel)",
+            "confidence": "Confiance % (optionnel)",
+            "is_featured": "Match phare (Top matchs)",
+            "external_link": "Plateforme de paris recommandee (optionnel)",
+            "custom_bet_url": "Ou lien personnalise (optionnel)",
+            "is_published": "Visible par les clients",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["external_link"].queryset = ExternalLink.objects.filter(category="platform")
+        self.fields["external_link"].required = False
         self._apply_styles()

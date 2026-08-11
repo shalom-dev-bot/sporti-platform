@@ -4,66 +4,108 @@
 {% block title %}SPORTI{% endblock %}
 {% block content %}
 {% if user.is_authenticated %}
-<div class="chat-shell">
+<div class="relative min-h-screen lg:h-screen lg:overflow-hidden bg-[#f7f9fc] dark:bg-[#04060a]">
+    <div class="hidden dark:block absolute inset-0 overflow-hidden pointer-events-none">
+        <img src="{% static 'images/design/promo-ball.jpg' %}" alt="" class="w-full h-full object-cover object-right opacity-20 lg:opacity-30">
+        <div class="absolute inset-0 bg-gradient-to-r from-[#04060a] via-[#04060a]/90 to-[#04060a]/70 lg:via-[#04060a]/85 lg:to-[#04060a]/60"></div>
+    </div>
+    <div class="sporti-chat-shell relative">
     {% include "chat/_top_navbar.html" %}
-    <header class="chat-header">
-        <a href="{% url 'chat:home' %}" class="btn-icon !w-9 !h-9 shrink-0 lg:hidden" aria-label="{% trans 'Retour' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        </a>
-        <div id="company-logo-wrap" class="w-10 h-10 shrink-0 hud-corners bg-navy-950 flex items-center justify-center overflow-hidden">
-            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+
+    <header class="sporti-chat-header lg:hidden">
+        <div class="flex items-center gap-3 min-w-0">
+            <a href="{% url 'chat:home' %}" class="sporti-chat-icon-btn -ml-1.5 shrink-0" aria-label="{% trans 'Retour' %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </a>
+            <div id="company-logo-wrap" class="sporti-chat-avatar">
+                <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+            </div>
+            <div class="min-w-0">
+                <p id="company-name" class="text-sm font-semibold leading-tight truncate">SPORTI</p>
+                <p class="flex items-center gap-1.5 text-[11px] text-navy-900/50 dark:text-white/45 mt-0.5">
+                    <span id="admin-presence-dot" class="presence-dot {% if admin_online %}online{% endif %}"></span>
+                    <span id="admin-presence-label">{% if admin_online %}{% trans "En ligne" %}{% else %}{% trans "Hors ligne" %}{% endif %}</span>
+                </p>
+            </div>
         </div>
-        <div class="min-w-0 flex-1">
-            <p id="company-name" class="font-display font-semibold text-sm truncate">SPORTI</p>
-            <p class="flex items-center gap-1.5 text-xs text-navy-900/45 dark:text-white/40">
-                <span id="admin-presence-dot" class="presence-dot"></span>
-                <span id="admin-presence-label">{% trans "Hors ligne" %}</span>
-            </p>
+        <div class="flex items-center gap-1 shrink-0 relative">
+            <button type="button" class="sporti-chat-icon-btn" aria-label="{% trans 'Notifications' %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                </svg>
+            </button>
+            <button type="button" id="chat-menu-btn" class="sporti-chat-icon-btn" aria-label="{% trans 'Menu' %}">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+            <div id="chat-menu-dropdown" class="hidden absolute right-0 top-11 w-48 rounded-xl bg-white dark:bg-[#0b1330] border border-navy-900/10 dark:border-white/10 py-1.5 shadow-2xl z-20">
+                <a href="{% url 'accounts:profile' %}" class="block px-4 py-2.5 text-sm text-navy-900/80 dark:text-white/80 hover:bg-navy-900/5 dark:hover:bg-white/5">{% trans "Mon profil" %}</a>
+                <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-navy-900/80 dark:text-white/80 hover:bg-navy-900/5 dark:hover:bg-white/5">{% trans "Déconnexion" %}</button>
+                </form>
+            </div>
         </div>
-        <form method="post" action="{% url 'account_logout' %}" class="hidden lg:block">
-            {% csrf_token %}
-            <button type="submit" class="btn-ghost">{% trans "Déconnexion" %}</button>
-        </form>
     </header>
-    <div id="chat-thread" class="chat-thread flex flex-col"></div>
-    <div id="links-section" class="hidden px-3 sm:px-6 py-3 border-t border-navy-900/10 dark:border-white/10">
-        <div id="platforms-links" class="hidden mb-3">
-            <p class="text-xs text-navy-900/45 dark:text-white/40 mb-2">Plateformes recommandées</p>
-            <div id="platforms-list" class="flex flex-wrap gap-2"></div>
+
+    <div id="chat-thread" class="sporti-chat-thread lg:max-w-3xl lg:w-full lg:mx-auto"></div>
+
+    <div id="image-lightbox" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/90 p-4" style="display:none;">
+        <button type="button" id="image-lightbox-close" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white" aria-label="{% trans 'Fermer' %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <img id="image-lightbox-img" src="" alt="" class="max-w-full max-h-full rounded-lg object-contain">
+    </div>
+
+    <div id="reply-preview-wrap" class="lg:max-w-3xl lg:w-full lg:mx-auto">
+        <div id="reply-preview" class="hidden sporti-reply-preview">
+            <div class="sporti-reply-preview-bar"></div>
+            <div class="min-w-0 flex-1">
+                <p id="reply-preview-name" class="sporti-reply-preview-name"></p>
+                <p id="reply-preview-text" class="sporti-reply-preview-text"></p>
+            </div>
+            <button type="button" id="reply-preview-cancel" class="sporti-reply-preview-cancel" aria-label="{% trans 'Annuler la réponse' %}">✕</button>
+        </div>
+    </div>
+    <div class="sporti-composer-wrap lg:max-w-3xl lg:w-full lg:mx-auto lg:px-0" style="position: relative;">
+    <button type="button" id="attach-btn" class="sporti-composer-icon-btn" aria-label="{% trans 'Joindre un fichier' %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.58a4 4 0 0 1 5.66 5.66l-8.59 8.58a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+        </svg>
+    </button>
+    <button type="button" id="emoji-btn" class="sporti-composer-icon-btn" aria-label="{% trans 'Emoji' %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
+        </svg>
+    </button>
+    <form id="composer-form" class="flex-1 min-w-0">
+        <input type="file" id="attachment-input" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx">
+        <input id="message-input" type="text" autocomplete="off" class="sporti-composer-input w-full"
+               placeholder="{% trans 'Écrivez votre message…' %}">
+    </form>
+    <button type="button" id="mic-btn" class="sporti-mic-btn" aria-label="{% trans 'Message vocal' %}">
+        <svg id="mic-btn-icon-mic" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/>
+        </svg>
+        <svg id="mic-btn-icon-send" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+        </svg>
+    </button>
+    </div>
+
+    <div id="links-section" class="hidden px-4 pt-1 pb-0.5 lg:max-w-3xl lg:w-full lg:mx-auto">
+        <div id="platforms-links" class="hidden mb-1">
+            <p class="sporti-section-label !mb-0.5">{% trans "Plateformes recommandées" %}</p>
+            <div id="platforms-list" class="flex flex-wrap gap-1"></div>
         </div>
         <div id="social-links" class="hidden">
-            <div id="social-list" class="flex gap-2"></div>
+            <p class="sporti-section-label !mb-0.5">{% trans "Retrouvez-moi sur" %}</p>
+            <div id="social-list" class="flex gap-1.5"></div>
         </div>
     </div>
-    <div class="mobile-chat-composer-wrap" style="position: relative;">
-    <form id="composer-form" class="mobile-chat-composer">
-        <input type="file" id="attachment-input" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx">
-        <button type="button" id="attach-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Joindre un fichier' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.58a4 4 0 0 1 5.66 5.66l-8.59 8.58a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-            </svg>
-        </button>
-        <button type="button" id="emoji-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Emoji' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
-            </svg>
-        </button>
-        <textarea id="message-input" rows="1"
-                  placeholder="{% trans 'Écrivez votre message…' %}"></textarea>
-        <button type="button" id="mic-btn" class="chat-round-icon-btn" style="width:2.25rem;height:2.25rem;flex-shrink:0;" aria-label="{% trans 'Message vocal' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                <path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/>
-            </svg>
-        </button>
-        <button type="submit" class="mobile-send-btn" aria-label="{% trans 'Envoyer' %}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
-            </svg>
-        </button>
-    </form>
-    </div>
+
     {% include "chat/_bottom_nav.html" %}
+    </div>
 </div>
 {% else %}
 <div class="max-w-2xl mx-auto px-4 py-14 animate-fade-in-up">
@@ -100,6 +142,37 @@
             return "";
         }
     }
+    (function () {
+        const menuBtn = document.getElementById("chat-menu-btn");
+        const menuDropdown = document.getElementById("chat-menu-dropdown");
+        if (!menuBtn || !menuDropdown) return;
+        menuBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            menuDropdown.classList.toggle("hidden");
+        });
+        document.addEventListener("click", () => menuDropdown.classList.add("hidden"));
+    })();
+    const SPORTI_PLATFORM_PALETTE = ["#1f4fff", "#1f7a3e", "#5b21b6", "#b45309", "#0f766e"];
+    const SPORTI_PLATFORM_COLORS = {
+        "1xbet": "#1f4fff", "linebet": "#1f7a3e", "winwin": "#5b21b6",
+        "melbet": "#0f766e", "1win": "#b45309", "megaparis": "#475569",
+    };
+    function platformColor(label, index) {
+        const key = (label || "").toLowerCase().replace(/\s+/g, "");
+        if (SPORTI_PLATFORM_COLORS[key]) return SPORTI_PLATFORM_COLORS[key];
+        return SPORTI_PLATFORM_PALETTE[index % SPORTI_PLATFORM_PALETTE.length];
+    }
+    const SPORTI_SOCIAL_COLORS = {
+        whatsapp: "#25D366", telegram: "#29A9EA", facebook: "#1877F2",
+        instagram: "#C13584", other: "#2b3450",
+    };
+    const SPORTI_SOCIAL_ICONS = {
+        whatsapp: '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.87 9.87 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2Zm0 18.06h-.01a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.11.82.83-3.03-.2-.31a8.16 8.16 0 0 1-1.26-4.35c0-4.52 3.68-8.2 8.23-8.2 2.2 0 4.26.86 5.82 2.41a8.15 8.15 0 0 1 2.41 5.8c0 4.53-3.69 8.2-8.23 8.2Z"/></svg>',
+        telegram: '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M21.9 4.3 18.6 20c-.24.9-.85 1.12-1.72.7l-4.76-3.5-2.3 2.2c-.25.25-.47.47-.96.47l.34-4.86 8.85-8c.38-.35-.08-.54-.6-.2L6.6 12.86l-4.75-1.48c-1.03-.32-1.05-1.03.22-1.53L20.6 3.3c.86-.31 1.6.2 1.3 1Z"/></svg>',
+        facebook: '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 21v-7.6h2.56l.38-2.97h-2.94V8.55c0-.86.24-1.44 1.47-1.44h1.57V4.46c-.27-.04-1.2-.12-2.28-.12-2.26 0-3.8 1.38-3.8 3.9v2.18H7.99v2.97h2.47V21h3.04Z"/></svg>',
+        instagram: '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>',
+        other: '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+    };
     function renderLinks(links) {
         if (!links || !links.length) return;
         const platforms = links.filter((l) => l.category === "platform" && l.is_active);
@@ -113,30 +186,19 @@
         let hasAny = false;
         if (platforms.length && platformsList) {
             platformsList.innerHTML = "";
-            platforms.forEach((link) => {
+            platforms.forEach((link, index) => {
                 const a = document.createElement("a");
                 a.href = link.url;
                 a.target = "_blank";
                 a.rel = "noopener noreferrer";
-                a.className = "inline-flex items-center gap-2 border border-navy-900/15 dark:border-white/15 px-3 py-1.5 text-xs hover:border-accent-500 transition-colors";
-                a.innerHTML = "<img src=\"" + faviconUrl(link.url) + "\" class=\"w-5 h-5 rounded-full\" alt=\"\" onerror=\"this.style.visibility='hidden'\">" + "<span class=\"text-accent-600 font-medium\">" + (link.label || link.platform_label) + "</span>";
+                a.className = "sporti-platform-badge";
+                a.style.backgroundColor = platformColor(link.label || link.platform_label, index);
+                a.textContent = (link.label || link.platform_label || "").toUpperCase();
                 if (link.promo_code) {
                     const code = document.createElement("span");
-                    code.className = "text-navy-900/50 dark:text-white/45";
+                    code.className = "text-white/70 font-normal";
                     code.textContent = link.promo_code;
                     a.appendChild(code);
-                    const copyBtn = document.createElement("button");
-                    copyBtn.type = "button";
-                    copyBtn.className = "text-navy-900/40 dark:text-white/35 hover:text-accent-600";
-                    copyBtn.textContent = "\ud83d\udccb";
-                    copyBtn.addEventListener("click", (event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        navigator.clipboard.writeText(link.promo_code).catch(() => {});
-                        copyBtn.textContent = "\u2705";
-                        setTimeout(() => { copyBtn.textContent = "\ud83d\udccb"; }, 1200);
-                    });
-                    a.appendChild(copyBtn);
                 }
                 platformsList.appendChild(a);
             });
@@ -150,9 +212,12 @@
                 a.href = link.url;
                 a.target = "_blank";
                 a.rel = "noopener noreferrer";
-                a.className = "btn-icon";
+                a.className = "sporti-social-btn";
                 a.title = link.label || link.platform_label;
-                a.innerHTML = "<img src=\"" + faviconUrl(link.url) + "\" class=\"w-5 h-5 rounded-full\" alt=\"\">";
+                a.style.backgroundColor = SPORTI_SOCIAL_COLORS[link.platform] || SPORTI_SOCIAL_COLORS.other;
+                a.style.borderColor = "transparent";
+                a.style.color = "#fff";
+                a.innerHTML = SPORTI_SOCIAL_ICONS[link.platform] || SPORTI_SOCIAL_ICONS.other;
                 socialList.appendChild(a);
             });
             socialWrap.classList.remove("hidden");
@@ -197,6 +262,11 @@
         let typingTimeout = null;
         let typingBubble = null;
         let socket = null;
+        const messagesById = {};
+        let replyingTo = null;
+        const replyPreview = document.getElementById("reply-preview");
+        const replyPreviewName = document.getElementById("reply-preview-name");
+        const replyPreviewText = document.getElementById("reply-preview-text");
         function ticksFor(status) {
             if (status === "read") {
                 return '<span class="status-tick text-white/90">✓✓</span>';
@@ -214,42 +284,153 @@
 
         function sendTextMessage(text) {
             if (!socket || socket.readyState !== WebSocket.OPEN) return;
-            socket.send(JSON.stringify({ message: text }));
+            socket.send(JSON.stringify({ message: text, reply_to: replyingTo ? replyingTo.id : null }));
         }
 
+        function replySummaryText(msg) {
+            if (msg.content) return msg.content;
+            if (msg.attachment || (msg.attachments && msg.attachments.length)) return "{% trans '📎 Pièce jointe' %}";
+            return "";
+        }
+        function startReply(id) {
+            const msg = messagesById[id];
+            if (!msg) return;
+            replyingTo = { id, sender_name: msg.is_staff ? (document.getElementById("company-name")?.textContent || "SPORTI") : "{% trans 'Vous' %}", content: replySummaryText(msg) };
+            replyPreviewName.textContent = replyingTo.sender_name;
+            replyPreviewText.textContent = replyingTo.content || "{% trans 'Message' %}";
+            replyPreview.classList.remove("hidden");
+            replyPreview.classList.add("flex");
+            input.focus();
+        }
+        function cancelReply() {
+            replyingTo = null;
+            replyPreview.classList.add("hidden");
+            replyPreview.classList.remove("flex");
+        }
+        document.getElementById("reply-preview-cancel").addEventListener("click", cancelReply);
+
+        function scrollToMessage(id) {
+            const bubble = thread.querySelector(`[data-message-id="${id}"]`);
+            if (!bubble) return;
+            bubble.scrollIntoView({ behavior: "smooth", block: "center" });
+            bubble.classList.add("sporti-bubble-flash");
+            setTimeout(() => bubble.classList.remove("sporti-bubble-flash"), 1000);
+        }
+
+        function attachReplyGesture(row, bubble, messageId) {
+            const replyBtn = document.createElement("button");
+            replyBtn.type = "button";
+            replyBtn.className = "sporti-reply-btn";
+            replyBtn.setAttribute("aria-label", "{% trans 'Répondre' %}");
+            replyBtn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17 4 12l5-5"/><path d="M4 12h11a4 4 0 0 1 4 4v1"/></svg>';
+            replyBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                startReply(messageId);
+            });
+            bubble.appendChild(replyBtn);
+
+            let startX = 0;
+            let deltaX = 0;
+            let dragging = false;
+            const threshold = 56;
+            row.addEventListener("touchstart", (e) => {
+                startX = e.touches[0].clientX;
+                dragging = true;
+            }, { passive: true });
+            row.addEventListener("touchmove", (e) => {
+                if (!dragging) return;
+                deltaX = e.touches[0].clientX - startX;
+                if (deltaX < 0) deltaX = 0;
+                if (deltaX > 80) deltaX = 80;
+                if (deltaX > 8) {
+                    bubble.style.transform = `translateX(${deltaX}px)`;
+                    bubble.style.transition = "none";
+                }
+            }, { passive: true });
+            row.addEventListener("touchend", () => {
+                dragging = false;
+                bubble.style.transition = "transform 0.2s ease";
+                bubble.style.transform = "translateX(0)";
+                if (deltaX > threshold) startReply(messageId);
+                deltaX = 0;
+            });
+        }
+
+        function avatarSrc() {
+            const img = document.querySelector("#company-logo-wrap img");
+            return img ? img.src : "{% static 'images/sporti-logo.png' %}";
+        }
+        function makeAvatarEl() {
+            const wrap = document.createElement("div");
+            wrap.className = "w-9 h-9 rounded-full overflow-hidden border border-navy-900/10 dark:border-white/10 shrink-0";
+            wrap.innerHTML = `<img src="${avatarSrc()}" class="w-full h-full object-cover" alt="">`;
+            return wrap;
+        }
+        let lastRenderedDateKey = null;
+        function formatMessageTime(iso) {
+            if (!iso) return "";
+            return new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+        }
+        function formatDateSeparator(iso) {
+            const date = new Date(iso);
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+            const sameDay = (a, b) => a.toDateString() === b.toDateString();
+            if (sameDay(date, today)) return "{% trans "Aujourd'hui" %}";
+            if (sameDay(date, yesterday)) return "{% trans "Hier" %}";
+            const formatted = new Intl.DateTimeFormat("{{ LANGUAGE_CODE }}", { day: "numeric", month: "long", year: "numeric" }).format(date);
+            return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+        }
+        function insertDateSeparatorIfNeeded(iso) {
+            if (!iso) return;
+            const dateKey = new Date(iso).toDateString();
+            if (dateKey === lastRenderedDateKey) return;
+            lastRenderedDateKey = dateKey;
+            const sep = document.createElement("div");
+            sep.className = "sporti-date-sep";
+            sep.textContent = formatDateSeparator(iso);
+            thread.appendChild(sep);
+        }
         function renderWelcomeBubble() {
+            // Message d'accueil configure par l'admin : rendu comme de vrais
+            // messages (texte puis vocal, dans cet ordre) tout au debut de la
+            // conversation -- pour chaque client, a chaque visite, comme si
+            // l'admin venait de les ecrire. Pas de bouton "fermer" : ca doit
+            // toujours rester la, exactement comme un vrai historique.
             const welcome = window.__sportiWelcome;
             if (!welcome) return;
-            const div = document.createElement("div");
-            div.className = "bubble-admin";
-            let hasContent = false;
             if (welcome.is_text_enabled && welcome.text) {
-                const p = document.createElement("p");
-                p.textContent = welcome.text;
-                div.appendChild(p);
-                hasContent = true;
+                const bubble = document.createElement("div");
+                bubble.className = "sporti-bubble-admin";
+                bubble.innerHTML = `<span>${escapeHtml(welcome.text)}</span>`;
+                thread.appendChild(bubble);
             }
             if (welcome.is_audio_enabled && welcome.audio_file) {
-                div.appendChild(createVoicePlayer(welcome.audio_file));
-                hasContent = true;
+                const bubble = document.createElement("div");
+                bubble.className = "sporti-bubble-admin";
+                bubble.appendChild(createVoicePlayer(welcome.audio_file));
+                thread.appendChild(bubble);
             }
-            if (welcome.is_video_enabled && welcome.video_file) {
-                const video = document.createElement("video");
-                video.controls = true;
-                video.className = "mt-3 w-full";
-                video.src = welcome.video_file;
-                div.appendChild(video);
-                hasContent = true;
-            }
-            if (!hasContent) return;
-            thread.appendChild(div);
         }
         function renderMessage(msg) {
+            insertDateSeparatorIfNeeded(msg.created_at);
+            messagesById[msg.id] = msg;
             const isMine = msg.sender_id === CURRENT_USER_ID || (msg.sender && msg.sender === CURRENT_USER_ID);
-            const div = document.createElement("div");
-            div.className = isMine ? "bubble-client" : "bubble-admin";
-            div.dataset.messageId = msg.id;
+            const bubble = document.createElement("div");
+            bubble.className = isMine ? "sporti-bubble-client" : "sporti-bubble-admin";
+            bubble.dataset.messageId = msg.id;
             let inner = "";
+            if (msg.reply_to) {
+                const quoteText = msg.reply_to.content || (msg.reply_to.has_attachment ? "{% trans '📎 Pièce jointe' %}" : "");
+                inner += `<div class="sporti-quote-block" data-quote-target="${msg.reply_to.id}">
+                    <span class="sporti-quote-bar"></span>
+                    <span class="min-w-0">
+                        <span class="block sporti-quote-name">${escapeHtml(msg.reply_to.sender_name)}</span>
+                        <span class="block sporti-quote-text">${escapeHtml(quoteText)}</span>
+                    </span>
+                </div>`;
+            }
             if (msg.content) {
                 inner += `<span>${escapeHtml(msg.content)}</span>`;
             }
@@ -257,9 +438,9 @@
             if (msg.attachment) {
                 const att = msg.attachment;
                 if (att.file_type && att.file_type.startsWith("image/")) {
-                    inner += `<img src="${att.file_url}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="${att.file_name}">`;
+                    inner += `<img src="${att.file_url}" class="sporti-msg-image mt-2 max-h-28 max-w-[170px] rounded-lg cursor-pointer" alt="${att.file_name}">`;
                 } else if (att.file_type && att.file_type.startsWith("video/")) {
-                    inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="${att.file_url}"></video>`;
+                    inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-lg" src="${att.file_url}"></video>`;
                 } else if (att.file_type && att.file_type.startsWith("audio/")) {
                     audioAttachment = att.file_url;
                 } else {
@@ -268,9 +449,9 @@
             } else if (msg.attachments && msg.attachments.length) {
                 msg.attachments.forEach((att) => {
                     if (att.file_type && att.file_type.startsWith("image/")) {
-                        inner += `<img src="${att.file}" class="mt-2 max-h-56 max-w-full rounded-sm" alt="${att.file_name}">`;
+                        inner += `<img src="${att.file}" class="sporti-msg-image mt-2 max-h-28 max-w-[170px] rounded-lg cursor-pointer" alt="${att.file_name}">`;
                     } else if (att.file_type && att.file_type.startsWith("video/")) {
-                        inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-sm" src="${att.file}"></video>`;
+                        inner += `<video controls class="mt-2 max-h-72 max-w-full rounded-lg" src="${att.file}"></video>`;
                     } else if (att.file_type && att.file_type.startsWith("audio/")) {
                         audioAttachment = att.file;
                     } else {
@@ -278,22 +459,41 @@
                     }
                 });
             }
-            if (isMine) {
-                inner += ticksFor(msg.status);
-            }
-            div.innerHTML = inner;
+            const timeClass = isMine ? "text-white/60" : "text-navy-900/40 dark:text-white/40";
+            inner += `<div class="text-[10px] ${timeClass} mt-1 text-right">${formatMessageTime(msg.created_at)}`;
+            if (isMine) inner += ticksFor(msg.status);
+            inner += "</div>";
+            bubble.innerHTML = inner;
             if (audioAttachment) {
-                div.appendChild(createVoicePlayer(audioAttachment));
+                bubble.insertBefore(createVoicePlayer(audioAttachment), bubble.lastElementChild);
             }
 
             const reactionsRow = document.createElement("div");
             reactionsRow.className = "reactions-row";
             const initialEmojis = (msg.reactions || []).map((r) => r.emoji);
             renderReactionBadges(reactionsRow, initialEmojis);
-            div.appendChild(reactionsRow);
-            attachReactionUI(div, msg.id, sendReaction);
+            bubble.appendChild(reactionsRow);
+            attachReactionUI(bubble, msg.id, sendReaction);
 
-            thread.appendChild(div);
+            const quoteBlock = bubble.querySelector(".sporti-quote-block");
+            if (quoteBlock) {
+                quoteBlock.addEventListener("click", () => scrollToMessage(quoteBlock.dataset.quoteTarget));
+            }
+
+            let row;
+            if (isMine) {
+                row = document.createElement("div");
+                row.className = "flex justify-end sporti-bubble-wrap";
+                row.appendChild(bubble);
+                thread.appendChild(row);
+            } else {
+                row = document.createElement("div");
+                row.className = "sporti-bubble-row";
+                row.appendChild(makeAvatarEl());
+                row.appendChild(bubble);
+                thread.appendChild(row);
+            }
+            attachReplyGesture(row, bubble, msg.id);
         }
         function escapeHtml(str) {
             const div = document.createElement("div");
@@ -303,10 +503,33 @@
         function scrollToBottom() {
             thread.scrollTop = thread.scrollHeight;
         }
+        // Lightbox : clic sur une image de message -> affichage en grand,
+        // comme sur WhatsApp. Delegation sur le thread car les images sont
+        // ajoutees dynamiquement.
+        const lightbox = document.getElementById("image-lightbox");
+        const lightboxImg = document.getElementById("image-lightbox-img");
+        function openLightbox(src) {
+            lightboxImg.src = src;
+            lightbox.style.display = "flex";
+            lightbox.classList.remove("hidden");
+        }
+        function closeLightbox() {
+            lightbox.style.display = "none";
+            lightbox.classList.add("hidden");
+            lightboxImg.src = "";
+        }
+        thread.addEventListener("click", (event) => {
+            const img = event.target.closest(".sporti-msg-image");
+            if (img) openLightbox(img.src);
+        });
+        document.getElementById("image-lightbox-close").addEventListener("click", closeLightbox);
+        lightbox.addEventListener("click", (event) => {
+            if (event.target === lightbox) closeLightbox();
+        });
         function updateTicks(messageIds, status) {
             messageIds.forEach((id) => {
                 const bubble = thread.querySelector(`[data-message-id="${id}"]`);
-                if (bubble && bubble.classList.contains("bubble-client")) {
+                if (bubble && bubble.classList.contains("sporti-bubble-client")) {
                     const tick = bubble.querySelector(".status-tick");
                     if (tick) tick.outerHTML = ticksFor(status);
                 }
@@ -323,9 +546,13 @@
         }
         function showTyping() {
             if (typingBubble) return;
+            const bubble = document.createElement("div");
+            bubble.className = "sporti-bubble-admin typing-dots";
+            bubble.innerHTML = "<span></span><span></span><span></span>";
             typingBubble = document.createElement("div");
-            typingBubble.className = "bubble-admin typing-dots";
-            typingBubble.innerHTML = "<span></span><span></span><span></span>";
+            typingBubble.className = "sporti-bubble-row";
+            typingBubble.appendChild(makeAvatarEl());
+            typingBubble.appendChild(bubble);
             thread.appendChild(typingBubble);
             scrollToBottom();
         }
@@ -384,19 +611,29 @@
                 })
                 .catch((err) => console.error("Erreur chargement conversation :", err));
         }
-        form.addEventListener("submit", (event) => {
-            event.preventDefault();
+        function submitCurrentText() {
             const text = input.value.trim();
             if (!text || !socket || socket.readyState !== WebSocket.OPEN) return;
             sendTextMessage(text);
             input.value = "";
-            input.style.height = "auto";
             sendTyping(false);
+            updateMicSendIcon();
+            cancelReply();
+        }
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            submitCurrentText();
         });
+        function updateMicSendIcon() {
+            const hasText = input.value.trim().length > 0;
+            const micIcon = document.getElementById("mic-btn-icon-mic");
+            const sendIcon = document.getElementById("mic-btn-icon-send");
+            micIcon.classList.toggle("hidden", hasText);
+            sendIcon.classList.toggle("hidden", !hasText);
+        }
         input.addEventListener("input", () => {
-            input.style.height = "auto";
-            input.style.height = Math.min(input.scrollHeight, 128) + "px";
             sendTyping(true);
+            updateMicSendIcon();
         });
         function sendTyping(isTyping) {
             if (!socket || socket.readyState !== WebSocket.OPEN) return;
@@ -432,6 +669,7 @@
             }
             const formData = new FormData();
             formData.append("file", file);
+            if (replyingTo) formData.append("reply_to", replyingTo.id);
             const uploadUrl = ATTACHMENT_URL_TEMPLATE.replace("999999", conversationId);
             fetch(uploadUrl, {
                 method: "POST",
@@ -449,6 +687,7 @@
                         renderMessage(data);
                         scrollToBottom();
                     }
+                    cancelReply();
                 })
                 .catch((err) => {
                     console.error("Erreur envoi piece jointe :", err);
@@ -459,10 +698,36 @@
         let mediaRecorder = null;
         let recordedChunks = [];
         const micBtn = document.getElementById("mic-btn");
+        // Certains systemes (surtout Linux) ont un peripherique "par defaut"
+        // mal configure (ex: le moniteur des haut-parleurs au lieu du vrai
+        // micro), ce qui fait echouer getUserMedia({audio:true}) avec
+        // NotFoundError meme quand un vrai micro est branche et autorise.
+        // Repli : si ca echoue ainsi, on cible explicitement le premier
+        // micro trouve par son deviceId plutot que de compter sur le defaut.
+        async function getMicStream() {
+            try {
+                return await navigator.mediaDevices.getUserMedia({ audio: true });
+            } catch (err) {
+                if (err.name !== "NotFoundError" && err.name !== "OverconstrainedError") throw err;
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const mic = devices.find((d) => d.kind === "audioinput");
+                if (!mic) throw err;
+                return await navigator.mediaDevices.getUserMedia({
+                    audio: { deviceId: { exact: mic.deviceId } },
+                });
+            }
+        }
+        function extensionForMimeType(mimeType) {
+            if (mimeType.includes("mp4") || mimeType.includes("m4a")) return "m4a";
+            if (mimeType.includes("ogg")) return "ogg";
+            if (mimeType.includes("wav")) return "wav";
+            return "webm";
+        }
         function uploadVoiceMessage(blob) {
             if (!conversationId) return;
             const formData = new FormData();
-            formData.append("file", blob, "voice-message.webm");
+            formData.append("file", blob, `voice-message.${extensionForMimeType(blob.type || "audio/webm")}`);
+            if (replyingTo) formData.append("reply_to", replyingTo.id);
             const uploadUrl = ATTACHMENT_URL_TEMPLATE.replace("999999", conversationId);
             fetch(uploadUrl, {
                 method: "POST",
@@ -473,7 +738,7 @@
                     const data = await res.json().catch(() => ({}));
                     if (!res.ok) {
                         console.error("Erreur serveur upload vocal:", data);
-                        alert(data.detail || "Echec de l'envoi du vocal.");
+                        alert(data.detail || "{% trans "Échec de l'envoi du vocal." %}");
                         return;
                     }
                     if (!thread.querySelector(`[data-message-id="${data.id}"]`)) {
@@ -481,29 +746,34 @@
                         renderMessage(data);
                         scrollToBottom();
                     }
+                    cancelReply();
                 })
                 .catch((err) => {
                     console.error("Erreur reseau upload vocal:", err);
-                    alert("Echec de l'envoi du vocal, verifiez votre connexion.");
+                    alert("{% trans "Échec de l'envoi du vocal, vérifiez votre connexion." %}");
                 });
         }
         if (micBtn) {
             micBtn.addEventListener("click", async () => {
+                if (input.value.trim().length > 0) {
+                    submitCurrentText();
+                    return;
+                }
                 if (mediaRecorder && mediaRecorder.state === "recording") {
                     mediaRecorder.stop();
                     return;
                 }
                 if (!conversationId) {
-                    alert("Un instant, la conversation se charge encore...");
+                    alert("{% trans "Un instant, la conversation se charge encore…" %}");
                     return;
                 }
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    alert("Le microphone necessite une connexion securisee (HTTPS) ou localhost. Verifiez l'URL utilisee.");
+                    alert(`{% trans "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous êtes actuellement sur" %} "${window.location.protocol}//${window.location.hostname}" -- {% trans "si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi que vous fassiez." %}`);
                     console.error("navigator.mediaDevices indisponible -- contexte non securise (ni https, ni localhost) ?");
                     return;
                 }
                 try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const stream = await getMicStream();
                     recordedChunks = [];
                     mediaRecorder = new MediaRecorder(stream);
                     mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
@@ -519,7 +789,7 @@
                     micBtn.style.color = "#ffffff";
                 } catch (err) {
                     console.error("Erreur microphone :", err);
-                    alert("Microphone inaccessible : " + err.name + ". Verifiez les autorisations du navigateur.");
+                    alert("{% trans "Microphone inaccessible :" %} " + err.name + ". {% trans "Vérifiez les autorisations du navigateur." %}");
                 }
             });
         }

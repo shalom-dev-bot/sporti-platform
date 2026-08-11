@@ -85,6 +85,15 @@ class Prediction(models.Model):
     pick = models.CharField(max_length=200, verbose_name="Pronostic (ex: 'Equipe A gagne')")
     analysis = models.TextField(blank=True, verbose_name="Analyse detaillee")
     odds = models.CharField(max_length=20, blank=True, verbose_name="Cote")
+    coupon_code = models.CharField(
+        max_length=40,
+        blank=True,
+        verbose_name="Code du coupon",
+        help_text=(
+            "Code que le client entre sur la plateforme de paris apres avoir "
+            "clique sur le lien (optionnel)."
+        ),
+    )
     external_link = models.ForeignKey(
         "company.ExternalLink",
         on_delete=models.SET_NULL,
@@ -92,6 +101,11 @@ class Prediction(models.Model):
         null=True,
         related_name="predictions",
         verbose_name="Plateforme de paris recommandee",
+    )
+    custom_bet_url = models.URLField(
+        blank=True,
+        verbose_name="Lien personnalise (optionnel)",
+        help_text="Utilise seulement si aucune plateforme de la liste n'est choisie ci-dessus.",
     )
     result = models.CharField(max_length=10, choices=Result.choices, default=Result.PENDING)
     confidence = models.PositiveSmallIntegerField(

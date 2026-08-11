@@ -2,15 +2,15 @@
 # Script de build execute avant chaque deploiement (Railway, ou Render).
 set -o errexit
 
-python -m pip install -r requirements/prod.txt
+python3 -m pip install -r requirements/prod.txt
 
 npm ci
 npm run build-css
 
-python manage.py collectstatic --noinput
-python manage.py migrate --noinput
+python3 manage.py collectstatic --noinput
+python3 manage.py migrate --noinput
 
-python manage.py shell -c "
+python3 manage.py shell -c "
 from django.contrib.sites.models import Site
 import os
 site, _ = Site.objects.get_or_create(id=1)
@@ -20,7 +20,7 @@ site.save()
 print('Site', site.domain, 'pret')
 "
 
-python manage.py shell -c "
+python3 manage.py shell -c "
 from django.contrib.auth import get_user_model
 import os
 User = get_user_model()

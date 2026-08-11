@@ -2,7 +2,7 @@
 # Script de build execute avant chaque deploiement (Railway, ou Render).
 set -o errexit
 
-pip install -r requirements/prod.txt
+python -m pip install -r requirements/prod.txt
 
 npm ci
 npm run build-css

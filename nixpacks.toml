@@ -1,0 +1,6 @@
+# Le projet contient a la fois du Python (Django) et du Node (build Tailwind CSS).
+# Nixpacks detecte automatiquement un seul langage par defaut -- on force ici
+# l'installation des deux environnements avant que build.sh (qui utilise pip
+# ET npm) ne soit execute.
+[phases.setup]
+nixPkgs = ["python312", "nodejs_20"]

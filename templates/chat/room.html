@@ -91,6 +91,15 @@
             <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
         </svg>
     </button>
+    <div id="voice-record-bar" class="hidden absolute inset-0 items-center gap-2 px-3 z-10 sporti-composer-wrap" style="border-top:none;">
+        <button type="button" id="voice-cancel-btn" class="sporti-composer-icon-btn shrink-0" aria-label="{% trans 'Annuler' %}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 animate-pulse"></span>
+        <span id="voice-timer" class="text-xs tabular-nums shrink-0 text-navy-900/70 dark:text-white/70">0:00</span>
+        <canvas id="voice-waveform" class="flex-1 h-8 min-w-0"></canvas>
+        <span class="hidden sm:inline text-[10px] text-navy-900/40 dark:text-white/40 shrink-0">{% trans "Relâcher pour envoyer" %}</span>
+    </div>
     </div>
 
     <div id="links-section" class="hidden px-4 pt-1 pb-0.5 lg:max-w-3xl lg:w-full lg:mx-auto">
@@ -280,6 +289,12 @@
         function sendReaction(messageId, emoji) {
             if (!socket || socket.readyState !== WebSocket.OPEN) return;
             socket.send(JSON.stringify({ type: "reaction", message_id: messageId, emoji }));
+        }
+
+        function deleteMessage(messageId) {
+            if (!socket || socket.readyState !== WebSocket.OPEN) return;
+            if (!confirm("{% trans 'Supprimer ce message ?' %}")) return;
+            socket.send(JSON.stringify({ type: "delete_message", message_id: messageId }));
         }
 
         function sendTextMessage(text) {
@@ -473,7 +488,7 @@
             const initialEmojis = (msg.reactions || []).map((r) => r.emoji);
             renderReactionBadges(reactionsRow, initialEmojis);
             bubble.appendChild(reactionsRow);
-            attachReactionUI(bubble, msg.id, sendReaction);
+            attachReactionUI(bubble, msg.id, sendReaction, isMine, deleteMessage, "{% trans 'Supprimer' %}");
 
             const quoteBlock = bubble.querySelector(".sporti-quote-block");
             if (quoteBlock) {
@@ -562,7 +577,9 @@
                 typingBubble = null;
             }
         }
+        let socketReconnecting = false;
         function connectSocket() {
+            socketReconnecting = false;
             const protocol = window.location.protocol === "https:" ? "wss" : "ws";
             socket = new WebSocket(`${protocol}://${window.location.host}/ws/chat/`);
             socket.onmessage = (event) => {
@@ -587,6 +604,11 @@
                     if (row) renderReactionBadges(row, data.emojis);
                     return;
                 }
+                if (data.type === "message_deleted") {
+                    const bubbleRow = thread.querySelector(`[data-message-id="${data.message_id}"]`)?.closest(".sporti-bubble-row") || thread.querySelector(`[data-message-id="${data.message_id}"]`);
+                    if (bubbleRow) bubbleRow.remove();
+                    return;
+                }
                 hideTyping();
                 if (!thread.querySelector(`[data-message-id="${data.id}"]`)) {
                     renderMessage(data);
@@ -594,9 +616,35 @@
                 }
             };
             socket.onclose = () => {
-                setTimeout(connectSocket, 2000);
+                scheduleReconnect();
+            };
+            socket.onerror = () => {
+                socket.close();
             };
         }
+        function scheduleReconnect() {
+            if (socketReconnecting) return;
+            socketReconnecting = true;
+            setTimeout(connectSocket, 2000);
+        }
+        // Sur mobile, l'appli passee en arriere-plan (changement d'appli,
+        // verrouillage ecran) coupe la connexion WebSocket sans toujours
+        // declencher onclose proprement -- au retour au premier plan, on
+        // verifie l'etat reel du socket et on reconnecte si besoin.
+        function ensureSocketConnected() {
+            if (!socket || socket.readyState === WebSocket.CLOSED || socket.readyState === WebSocket.CLOSING) {
+                connectSocket();
+            }
+        }
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible" && conversationId) ensureSocketConnected();
+        });
+        window.addEventListener("pageshow", () => {
+            if (conversationId) ensureSocketConnected();
+        });
+        window.addEventListener("online", () => {
+            if (conversationId) ensureSocketConnected();
+        });
         function loadHistory() {
             Promise.all([
                 fetch("{% url 'chat:api_my_conversation' %}").then((res) => res.json()),
@@ -697,7 +745,19 @@
 
         let mediaRecorder = null;
         let recordedChunks = [];
+        let micStream = null;
+        let recordAudioContext = null;
+        let recordAnalyser = null;
+        let waveformAnimationId = null;
+        let recordingStartTime = null;
+        let recordingTimerInterval = null;
+        let recordingCancelled = false;
+        let isRecording = false;
         const micBtn = document.getElementById("mic-btn");
+        const voiceRecordBar = document.getElementById("voice-record-bar");
+        const voiceCancelBtn = document.getElementById("voice-cancel-btn");
+        const voiceTimerEl = document.getElementById("voice-timer");
+        const voiceWaveformCanvas = document.getElementById("voice-waveform");
         // Certains systemes (surtout Linux) ont un peripherique "par defaut"
         // mal configure (ex: le moniteur des haut-parleurs au lieu du vrai
         // micro), ce qui fait echouer getUserMedia({audio:true}) avec
@@ -753,44 +813,126 @@
                     alert("{% trans "Échec de l'envoi du vocal, vérifiez votre connexion." %}");
                 });
         }
+        function formatRecordTimer(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = totalSeconds % 60;
+            return `${m}:${String(s).padStart(2, "0")}`;
+        }
+        function startRecordingTimer() {
+            recordingStartTime = Date.now();
+            voiceTimerEl.textContent = "0:00";
+            recordingTimerInterval = setInterval(() => {
+                voiceTimerEl.textContent = formatRecordTimer(Math.floor((Date.now() - recordingStartTime) / 1000));
+            }, 200);
+        }
+        function stopRecordingTimer() {
+            clearInterval(recordingTimerInterval);
+            recordingTimerInterval = null;
+        }
+        function drawWaveform() {
+            if (!recordAnalyser || !voiceWaveformCanvas) return;
+            const ctx = voiceWaveformCanvas.getContext("2d");
+            const bufferLength = recordAnalyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            const barCount = 40;
+            const step = Math.max(1, Math.floor(bufferLength / barCount));
+            (function render() {
+                waveformAnimationId = requestAnimationFrame(render);
+                recordAnalyser.getByteTimeDomainData(dataArray);
+                const width = voiceWaveformCanvas.clientWidth;
+                const height = voiceWaveformCanvas.clientHeight;
+                voiceWaveformCanvas.width = width;
+                voiceWaveformCanvas.height = height;
+                ctx.clearRect(0, 0, width, height);
+                const isDark = document.documentElement.classList.contains("dark");
+                ctx.fillStyle = isDark ? "rgba(91,141,239,0.9)" : "rgba(45,108,223,0.9)";
+                const barWidth = width / barCount;
+                for (let i = 0; i < barCount; i++) {
+                    const value = dataArray[i * step] / 128.0 - 1.0;
+                    const barHeight = Math.max(2, Math.min(height, Math.abs(value) * height * 3));
+                    const x = i * barWidth;
+                    const y = (height - barHeight) / 2;
+                    ctx.fillRect(x, y, Math.max(1.5, barWidth - 2), barHeight);
+                }
+            })();
+        }
+        async function startRecording() {
+            if (isRecording) return;
+            if (!conversationId) {
+                alert("{% trans "Un instant, la conversation se charge encore…" %}");
+                return;
+            }
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert(`{% trans "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous êtes actuellement sur" %} "${window.location.protocol}//${window.location.hostname}" -- {% trans "si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi que vous fassiez." %}`);
+                console.error("navigator.mediaDevices indisponible -- contexte non securise (ni https, ni localhost) ?");
+                return;
+            }
+            try {
+                micStream = await getMicStream();
+            } catch (err) {
+                console.error("Erreur microphone :", err);
+                alert("{% trans "Microphone inaccessible :" %} " + err.name + ". {% trans "Vérifiez les autorisations du navigateur." %}");
+                return;
+            }
+            isRecording = true;
+            recordingCancelled = false;
+            recordedChunks = [];
+            recordAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = recordAudioContext.createMediaStreamSource(micStream);
+            recordAnalyser = recordAudioContext.createAnalyser();
+            recordAnalyser.fftSize = 256;
+            source.connect(recordAnalyser);
+            mediaRecorder = new MediaRecorder(micStream);
+            mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+            mediaRecorder.onstop = () => {
+                micStream.getTracks().forEach((t) => t.stop());
+                if (recordAudioContext) { recordAudioContext.close(); recordAudioContext = null; }
+                if (waveformAnimationId) { cancelAnimationFrame(waveformAnimationId); waveformAnimationId = null; }
+                stopRecordingTimer();
+                voiceRecordBar.classList.add("hidden");
+                voiceRecordBar.classList.remove("flex");
+                isRecording = false;
+                const elapsedMs = Date.now() - recordingStartTime;
+                if (!recordingCancelled && elapsedMs >= 500) {
+                    const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+                    uploadVoiceMessage(blob);
+                }
+                mediaRecorder = null;
+            };
+            mediaRecorder.start();
+            voiceRecordBar.classList.remove("hidden");
+            voiceRecordBar.classList.add("flex");
+            startRecordingTimer();
+            drawWaveform();
+            if (navigator.vibrate) navigator.vibrate(15);
+        }
+        function stopRecording(cancelled) {
+            if (!isRecording || !mediaRecorder) return;
+            recordingCancelled = cancelled;
+            if (mediaRecorder.state === "recording") mediaRecorder.stop();
+        }
         if (micBtn) {
-            micBtn.addEventListener("click", async () => {
-                if (input.value.trim().length > 0) {
-                    submitCurrentText();
-                    return;
-                }
-                if (mediaRecorder && mediaRecorder.state === "recording") {
-                    mediaRecorder.stop();
-                    return;
-                }
-                if (!conversationId) {
-                    alert("{% trans "Un instant, la conversation se charge encore…" %}");
-                    return;
-                }
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    alert(`{% trans "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous êtes actuellement sur" %} "${window.location.protocol}//${window.location.hostname}" -- {% trans "si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi que vous fassiez." %}`);
-                    console.error("navigator.mediaDevices indisponible -- contexte non securise (ni https, ni localhost) ?");
-                    return;
-                }
-                try {
-                    const stream = await getMicStream();
-                    recordedChunks = [];
-                    mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
-                    mediaRecorder.onstop = () => {
-                        stream.getTracks().forEach((t) => t.stop());
-                        micBtn.style.backgroundColor = "";
-                        micBtn.style.color = "";
-                        const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || "audio/webm" });
-                        uploadVoiceMessage(blob);
-                    };
-                    mediaRecorder.start();
-                    micBtn.style.backgroundColor = "#ef4444";
-                    micBtn.style.color = "#ffffff";
-                } catch (err) {
-                    console.error("Erreur microphone :", err);
-                    alert("{% trans "Microphone inaccessible :" %} " + err.name + ". {% trans "Vérifiez les autorisations du navigateur." %}");
-                }
+            // Appui maintenu (souris ou tactile) façon WhatsApp : on
+            // enregistre tant que le doigt/bouton reste enfonce, on envoie
+            // au relachement. Un tap simple quand il y a du texte envoie
+            // ce texte (comportement inchange).
+            micBtn.addEventListener("click", () => {
+                if (input.value.trim().length > 0) submitCurrentText();
+            });
+            micBtn.addEventListener("pointerdown", (event) => {
+                if (input.value.trim().length > 0) return;
+                event.preventDefault();
+                startRecording();
+            });
+            const stopIfRecording = () => { if (isRecording) stopRecording(false); };
+            window.addEventListener("pointerup", stopIfRecording);
+            window.addEventListener("pointercancel", stopIfRecording);
+        }
+        if (voiceCancelBtn) {
+            voiceCancelBtn.addEventListener("pointerdown", (event) => event.stopPropagation());
+            voiceCancelBtn.addEventListener("click", (event) => {
+                event.stopPropagation();
+                stopRecording(true);
             });
         }
         loadHistory();

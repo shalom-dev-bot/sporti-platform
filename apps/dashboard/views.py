@@ -22,7 +22,12 @@ from django.utils.translation import gettext as _
 
 from apps.accounts.models import User
 from apps.chat.models import Conversation, Message
-from apps.company.forms import CompanyProfileForm, ExternalLinkForm, WelcomeMessageForm
+from apps.company.forms import (
+    CompanyProfileForm,
+    ExternalLinkForm,
+    WelcomeAudioForm,
+    WelcomeTextForm,
+)
 from apps.company.models import CompanyProfile, ExternalLink, WelcomeMessage
 from apps.predictions import api_football
 from apps.predictions.models import Event, Prediction, Team
@@ -349,9 +354,13 @@ def company_settings(request):
         request.FILES if form_type == "profile" else None,
         instance=profile,
     )
-    welcome_form = WelcomeMessageForm(
-        request.POST if form_type == "welcome" else None,
-        request.FILES if form_type == "welcome" else None,
+    welcome_text_form = WelcomeTextForm(
+        request.POST if form_type == "welcome_text" else None,
+        instance=welcome,
+    )
+    welcome_audio_form = WelcomeAudioForm(
+        request.POST if form_type == "welcome_audio" else None,
+        request.FILES if form_type == "welcome_audio" else None,
         instance=welcome,
     )
 
@@ -363,8 +372,12 @@ def company_settings(request):
         profile_form.save()
         messages.success(request, _("Profil de l'entreprise mis a jour."))
         return redirect("dashboard:company_settings")
-    if form_type == "welcome" and welcome_form.is_valid():
-        welcome_obj = welcome_form.save(commit=False)
+    if form_type == "welcome_text" and welcome_text_form.is_valid():
+        welcome_text_form.save()
+        messages.success(request, _("Message d'accueil mis a jour."))
+        return redirect("dashboard:company_settings")
+    if form_type == "welcome_audio" and welcome_audio_form.is_valid():
+        welcome_obj = welcome_audio_form.save(commit=False)
         # Un fichier vient d'etre televerse -> on l'active automatiquement,
         # pour eviter qu'il reste invisible faute d'avoir coche la case.
         if request.FILES.get("audio_file"):
@@ -379,7 +392,8 @@ def company_settings(request):
         {
             "admin_profile_form": admin_profile_form,
             "profile_form": profile_form,
-            "welcome_form": welcome_form,
+            "welcome_text_form": welcome_text_form,
+            "welcome_audio_form": welcome_audio_form,
             "profile": profile,
         },
     )

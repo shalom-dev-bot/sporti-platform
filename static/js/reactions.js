@@ -61,7 +61,7 @@ document.addEventListener("click", closeAllReactionPickers);
  * Attache le picker de reaction a une bulle de message.
  * sendReactionFn(messageId, emoji) doit envoyer la reaction via le socket.
  */
-function attachReactionUI(div, messageId, sendReactionFn) {
+function attachReactionUI(div, messageId, sendReactionFn, isOwnMessage, onDeleteFn, deleteLabel) {
     div.classList.add("group", "relative");
 
     const picker = document.createElement("div");
@@ -72,6 +72,20 @@ function attachReactionUI(div, messageId, sendReactionFn) {
             picker.classList.add("hidden");
         })
     );
+
+    if (isOwnMessage && onDeleteFn) {
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "mt-1 w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors";
+        deleteBtn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span></span>';
+        deleteBtn.querySelector("span").textContent = deleteLabel || "Supprimer";
+        deleteBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            picker.classList.add("hidden");
+            onDeleteFn(messageId);
+        });
+        picker.appendChild(deleteBtn);
+    }
 
     const reactBtn = document.createElement("button");
     reactBtn.type = "button";

@@ -104,6 +104,11 @@
             {{ prediction_form.external_link }}
         </div>
         <div class="field-group">
+            <label for="{{ prediction_form.custom_platform_name.id_for_label }}" class="field-label">{{ prediction_form.custom_platform_name.label }}</label>
+            {{ prediction_form.custom_platform_name }}
+            <p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ prediction_form.custom_platform_name.help_text }}</p>
+        </div>
+        <div class="field-group">
             <label for="{{ prediction_form.custom_bet_url.id_for_label }}" class="field-label">{{ prediction_form.custom_bet_url.label }}</label>
             {{ prediction_form.custom_bet_url }}
             <p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ prediction_form.custom_bet_url.help_text }}</p>

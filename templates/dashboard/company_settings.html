@@ -92,18 +92,18 @@
         <p class="text-[11px] text-navy-900/45 dark:text-white/40 -mt-1 mb-3">{% trans "Affiché par défaut dans le chat." %}</p>
         <form method="post" class="mt-2">
             {% csrf_token %}
-            <input type="hidden" name="form_type" value="welcome">
+            <input type="hidden" name="form_type" value="welcome_text">
             <div class="field-group">
-                <label for="{{ welcome_form.text_fr.id_for_label }}" class="field-label">{% trans "Français" %}</label>
-                {{ welcome_form.text_fr }}
+                <label for="{{ welcome_text_form.text_fr.id_for_label }}" class="field-label">{% trans "Français" %}</label>
+                {{ welcome_text_form.text_fr }}
             </div>
             <div class="field-group">
-                <label for="{{ welcome_form.text_en.id_for_label }}" class="field-label">{% trans "Anglais" %}</label>
-                {{ welcome_form.text_en }}
+                <label for="{{ welcome_text_form.text_en.id_for_label }}" class="field-label">{% trans "Anglais" %}</label>
+                {{ welcome_text_form.text_en }}
             </div>
             <label class="toggle-row !border-0 !py-0 mb-4 cursor-pointer">
-                <span class="text-sm text-navy-900/70 dark:text-white/70">{{ welcome_form.is_text_enabled.label }}</span>
-                {{ welcome_form.is_text_enabled }}
+                <span class="text-sm text-navy-900/70 dark:text-white/70">{{ welcome_text_form.is_text_enabled.label }}</span>
+                {{ welcome_text_form.is_text_enabled }}
             </label>
             <button type="submit" class="btn-primary w-full sm:w-auto">{% trans "Enregistrer" %}</button>
         </form>
@@ -115,8 +115,8 @@
         <p class="text-[11px] text-navy-900/45 dark:text-white/40 -mt-1 mb-3">{% trans "Message vocal lu par défaut dans le chat." %}</p>
         <form method="post" enctype="multipart/form-data" class="mt-2">
             {% csrf_token %}
-            <input type="hidden" name="form_type" value="welcome">
-            {% if welcome_form.audio_file.value %}
+            <input type="hidden" name="form_type" value="welcome_audio">
+            {% if welcome_audio_form.audio_file.value %}
                 <div id="audio-preview" class="mb-3"></div>
                 <p class="text-[10px] text-navy-900/40 dark:text-white/35 -mt-2 mb-3">{% trans "Vocal actuel -- en enregistrer ou en importer un nouveau le remplacera." %}</p>
             {% endif %}
@@ -141,19 +141,19 @@
             </div>
 
             <p class="text-center text-[10px] text-navy-900/30 dark:text-white/25 my-2">{% trans "— ou —" %}</p>
-            <label for="{{ welcome_form.audio_file.id_for_label }}" class="inline-flex items-center gap-1.5 text-xs text-navy-900/55 dark:text-white/50 hover:text-navy-900/80 dark:hover:text-white/80 cursor-pointer mb-4">
+            <label for="{{ welcome_audio_form.audio_file.id_for_label }}" class="inline-flex items-center gap-1.5 text-xs text-navy-900/55 dark:text-white/50 hover:text-navy-900/80 dark:hover:text-white/80 cursor-pointer mb-4">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 {% trans "Importer un fichier audio" %}
             </label>
-            {{ welcome_form.audio_file }}
+            {{ welcome_audio_form.audio_file }}
 
             <label class="toggle-row !border-0 !py-0 mb-4 cursor-pointer">
-                <span class="text-sm text-navy-900/70 dark:text-white/70">{{ welcome_form.is_audio_enabled.label }}</span>
-                {{ welcome_form.is_audio_enabled }}
+                <span class="text-sm text-navy-900/70 dark:text-white/70">{{ welcome_audio_form.is_audio_enabled.label }}</span>
+                {{ welcome_audio_form.is_audio_enabled }}
             </label>
             <button type="submit" class="btn-primary w-full sm:w-auto">{% trans "Enregistrer" %}</button>
         </form>
-        <style>#{{ welcome_form.audio_file.id_for_label }} { display: none; }</style>
+        <style>#{{ welcome_audio_form.audio_file.id_for_label }} { display: none; }</style>
     </div>
 
 </div>
@@ -171,10 +171,10 @@
 
 {% block extra_scripts %}
 <script src="{% static 'js/voice-player.js' %}"></script>
-{% if welcome_form.audio_file.value %}
+{% if welcome_audio_form.audio_file.value %}
 <script>
     document.getElementById("audio-preview").appendChild(
-        createVoicePlayer("{{ welcome_form.audio_file.value.url }}")
+        createVoicePlayer("{{ welcome_audio_form.audio_file.value.url }}")
     );
 </script>
 {% endif %}
@@ -186,7 +186,7 @@
         const previewWrap = document.getElementById("new-recording-preview");
         const actionsRow = document.getElementById("record-actions-row");
         const discardBtn = document.getElementById("record-discard-btn");
-        const fileInput = document.getElementById("{{ welcome_form.audio_file.id_for_label }}");
+        const fileInput = document.getElementById("{{ welcome_audio_form.audio_file.id_for_label }}");
         if (!recordBtn || !fileInput) return;
 
         let mediaRecorder = null;

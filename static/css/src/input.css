@@ -402,13 +402,8 @@
     background: linear-gradient(135deg, #1f46dd, #375dff);
   }
 
-  .voice-track {
-    @apply relative flex-1 h-1.5 rounded-full bg-navy-900/10 dark:bg-white/15 cursor-pointer;
-  }
-
-  .voice-progress {
-    @apply absolute inset-y-0 left-0 w-0 rounded-full;
-    background: linear-gradient(90deg, #1f46dd, #375dff);
+  .voice-waveform-canvas {
+    @apply flex-1 h-8 min-w-0 cursor-pointer;
   }
 
   .voice-time {
@@ -968,6 +963,9 @@
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 249, 252, 0.98));
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(12px);
+}
+.sporti-composer-wrap.hidden {
+  display: none;
 }
 .dark .sporti-composer-wrap {
   background: linear-gradient(180deg, rgba(9, 13, 26, 0.85), rgba(6, 10, 22, 0.97));

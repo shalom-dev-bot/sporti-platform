@@ -14,6 +14,18 @@ from apps.predictions.models import Event, Prediction, Team
 User = get_user_model()
 
 
+def _get_or_create_platform_link(name, url):
+    """Cree (ou reutilise, insensible a la casse) une plateforme de paris
+    recommandee a la volee depuis le formulaire de pronostic, pour eviter
+    a l'admin de devoir passer par la page 'Liens' au prealable."""
+    link = ExternalLink.objects.filter(category="platform", label__iexact=name).first()
+    if link is not None:
+        return link
+    return ExternalLink.objects.create(
+        category="platform", platform="other", label=name, url=url or ""
+    )
+
+
 class AdminPasswordChangeForm(PasswordChangeForm):
     """Mot de passe admin : 6 caracteres minimum, aucune autre regle
     (pas de verification de similarite, de mot de passe courant, etc.)."""
@@ -119,6 +131,15 @@ class EventForm(_StyledPredictionFormMixin, forms.ModelForm):
 
 
 class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
+    custom_platform_name = forms.CharField(
+        max_length=100,
+        required=False,
+        label="Ou saisir le nom d'une nouvelle plateforme",
+        help_text=(
+            "Cree (ou reutilise) une plateforme recommandee a la volee, " "sans quitter cet ecran."
+        ),
+    )
+
     class Meta:
         model = Prediction
         fields = [
@@ -154,11 +175,31 @@ class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
         self.fields["external_link"].required = False
         self._apply_styles()
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        platform_name = self.cleaned_data.get("custom_platform_name", "").strip()
+        if platform_name and not instance.external_link_id:
+            instance.external_link = _get_or_create_platform_link(
+                platform_name, self.cleaned_data.get("custom_bet_url")
+            )
+        if commit:
+            instance.save()
+        return instance
+
 
 class PredictionCoreForm(_StyledPredictionFormMixin, forms.ModelForm):
     """Meme champs que PredictionForm, sans 'event' ni 'result' : utilise
     sur l'ecran unifie 'Nouveau pronostic' ou l'evenement est cree dans
     la meme soumission (event assigne et result mis a PENDING en vue)."""
+
+    custom_platform_name = forms.CharField(
+        max_length=100,
+        required=False,
+        label="Ou saisir le nom d'une nouvelle plateforme",
+        help_text=(
+            "Cree (ou reutilise) une plateforme recommandee a la volee, " "sans quitter cet ecran."
+        ),
+    )
 
     class Meta:
         model = Prediction
@@ -188,3 +229,14 @@ class PredictionCoreForm(_StyledPredictionFormMixin, forms.ModelForm):
         self.fields["external_link"].queryset = ExternalLink.objects.filter(category="platform")
         self.fields["external_link"].required = False
         self._apply_styles()
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        platform_name = self.cleaned_data.get("custom_platform_name", "").strip()
+        if platform_name and not instance.external_link_id:
+            instance.external_link = _get_or_create_platform_link(
+                platform_name, self.cleaned_data.get("custom_bet_url")
+            )
+        if commit:
+            instance.save()
+        return instance

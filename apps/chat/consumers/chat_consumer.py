@@ -106,6 +106,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         if message_type == "reaction":
             await self._handle_reaction(content)
             return
+        if message_type == "delete_message":
+            await self._handle_delete_message(content)
+            return
 
         text = (content.get("message") or "").strip()
         if not text:
@@ -180,8 +183,32 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             },
         )
 
+    async def _handle_delete_message(self, content):
+        """Supprime un message -- uniquement son propre auteur peut le
+        faire (comme WhatsApp), diffuse aux deux parties pour que la
+        bulle disparaisse immediatement partout."""
+        user = self.scope["user"]
+        message_id = content.get("message_id")
+        if not message_id:
+            return
+
+        deleted = await self._delete_own_message(self.conversation, message_id, user)
+        if not deleted:
+            return
+
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                "type": "message.deleted",
+                "payload": {"message_id": message_id},
+            },
+        )
+
     async def chat_message(self, event):
         await self.send_json(event["payload"])
+
+    async def message_deleted(self, event):
+        await self.send_json({"type": "message_deleted", **event["payload"]})
 
     async def presence_update(self, event):
         if event.get("origin_channel") == self.channel_name:
@@ -299,6 +326,16 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         else:
             MessageReaction.objects.create(message=message, user=user, emoji=emoji)
         return list(message.reactions.values_list("emoji", flat=True))
+
+    @sync_to_async
+    def _delete_own_message(self, conversation, message_id, user):
+        message = conversation.messages.filter(id=message_id, sender=user).first()
+        if message is None:
+            return False
+        for attachment in message.attachments.all():
+            attachment.file.delete(save=False)
+        message.delete()
+        return True
 
     @sync_to_async
     def _save_message(self, conversation, sender, text, initial_status, reply_to_id=None):

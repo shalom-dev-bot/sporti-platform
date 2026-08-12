@@ -61,26 +61,36 @@ class CompanyProfileForm(_StyledFormMixin, forms.ModelForm):
         self._apply_styles()
 
 
-class WelcomeMessageForm(_StyledFormMixin, forms.ModelForm):
+class WelcomeTextForm(_StyledFormMixin, forms.ModelForm):
+    """Formulaire separe du vocal : partager un seul WelcomeMessageForm pour
+    les deux <form> HTML distinctes faisait echouer la sauvegarde du vocal,
+    car text_fr (obligatoire) n'est jamais soumis par le formulaire vocal."""
+
     class Meta:
         model = WelcomeMessage
-        fields = [
-            "text_fr",
-            "text_en",
-            "is_text_enabled",
-            "audio_file",
-            "is_audio_enabled",
-        ]
+        fields = ["text_fr", "text_en", "is_text_enabled"]
         labels = {
             "text_fr": "Message (français)",
             "text_en": "Message (anglais)",
             "is_text_enabled": "Afficher le message texte",
-            "audio_file": "Fichier audio",
-            "is_audio_enabled": "Afficher le message vocal",
         }
         widgets = {
             "text_fr": forms.Textarea(attrs={"rows": 2}),
             "text_en": forms.Textarea(attrs={"rows": 2}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._apply_styles()
+
+
+class WelcomeAudioForm(_StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = WelcomeMessage
+        fields = ["audio_file", "is_audio_enabled"]
+        labels = {
+            "audio_file": "Fichier audio",
+            "is_audio_enabled": "Afficher le message vocal",
         }
 
     def __init__(self, *args, **kwargs):

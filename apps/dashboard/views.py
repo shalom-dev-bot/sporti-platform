@@ -322,6 +322,7 @@ def conversation_detail(request, conversation_id):
         .prefetch_related("reactions", "reply_to__attachments")
         .order_by("created_at")
     )
+    welcome, _welcome_created = WelcomeMessage.objects.get_or_create(pk=1)
     return render(
         request,
         "dashboard/conversation.html",
@@ -330,6 +331,8 @@ def conversation_detail(request, conversation_id):
             "chat_messages": chat_messages,
             "conversations_data": _conversations_sidebar_data(),
             "active_conversation_id": conversation.id,
+            "welcome": welcome,
+            "welcome_text": welcome.get_text(get_language()),
         },
     )
 

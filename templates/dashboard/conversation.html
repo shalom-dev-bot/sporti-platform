@@ -28,6 +28,16 @@
     </div>
 
     <div id="chat-thread" class="sporti-chat-thread">
+        {% if welcome.is_text_enabled and welcome_text %}
+        <div class="sporti-bubble-client">
+            <span>{{ welcome_text }}</span>
+        </div>
+        {% endif %}
+        {% if welcome.is_audio_enabled and welcome.audio_file %}
+        <div class="sporti-bubble-client">
+            <div class="attachment-voice-placeholder" data-audio-url="{{ welcome.audio_file.url }}"></div>
+        </div>
+        {% endif %}
         {% for message in chat_messages %}
         <div class="{% if message.sender.is_staff %}sporti-bubble-client{% else %}sporti-bubble-admin{% endif %} group relative" data-message-id="{{ message.id }}">
             {% if message.reply_to %}
@@ -217,6 +227,15 @@
             renderReactionBadges(row, initial);
         }
         attachReactionUI(bubble, messageId, sendReaction, bubble.classList.contains("sporti-bubble-client"), deleteMessage, "{% trans 'Supprimer' %}");
+    });
+
+    // Les messages vocaux deja existants au chargement (historique
+    // rendu cote serveur) n'avaient jusqu'ici qu'un placeholder vide --
+    // seuls les NOUVEAUX messages (via websocket) generaient un vrai
+    // lecteur. On convertit ici aussi les placeholders de l'historique.
+    thread.querySelectorAll(".attachment-voice-placeholder[data-audio-url]").forEach((placeholder) => {
+        const player = createVoicePlayer(placeholder.dataset.audioUrl);
+        placeholder.replaceWith(player);
     });
 
     function scrollToBottom() {

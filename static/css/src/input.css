@@ -392,11 +392,12 @@
   /* --- Lecteur vocal (style WhatsApp) --- */
 
   .voice-player {
-    @apply flex items-center gap-3 mt-2 px-1;
+    @apply flex flex-row items-center gap-2.5 mt-2 px-1 w-full;
+    flex-wrap: nowrap;
   }
 
   .voice-play-btn {
-    @apply w-9 h-9 shrink-0 rounded-full text-white
+    @apply w-11 h-11 shrink-0 rounded-full text-white
            flex items-center justify-center transition-transform duration-150
            hover:scale-105 active:scale-95;
     background: linear-gradient(135deg, #1f46dd, #375dff);

@@ -5,8 +5,8 @@
  * chat, dashboard).
  */
 
-const SPORTI_ICON_PLAY = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
-const SPORTI_ICON_PAUSE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+const SPORTI_ICON_PLAY = '<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+const SPORTI_ICON_PAUSE = '<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
 const SPORTI_WAVEFORM_BARS = 40;
 
 function sportiFormatTime(seconds) {
@@ -30,26 +30,39 @@ function sportiFallbackPeaks(barCount) {
 // Bug connu (Chrome/Android, WebM enregistre via MediaRecorder) : la duree
 // annoncee par l'element <audio> reste Infinity ou NaN tant qu'on n'a pas
 // force une lecture complete du conteneur. Solution standard : avancer la
-// tete de lecture tres loin, attendre que le navigateur recalcule la vraie
-// duree (evenement timeupdate/durationchange), puis revenir a zero.
-function sportiFixDuration(audio) {
+// tete de lecture tres loin et attendre que le navigateur recalcule la
+// vraie duree (evenement timeupdate/durationchange).
+//
+// Important : on fait ce "seek" sur une sonde <audio> jetable, JAMAIS sur
+// l'element reellement utilise pour la lecture -- le manipuler pendant
+// que l'utilisateur tape sur "lire" pouvait bloquer play() (course entre
+// notre seek automatique et son clic), d'ou le bouton qui ne repondait
+// plus une fois sur un vrai telephone.
+function sportiProbeDuration(src) {
     return new Promise((resolve) => {
-        if (isFinite(audio.duration) && audio.duration > 0) {
-            resolve(audio.duration);
-            return;
-        }
-        const onTimeUpdate = () => {
-            audio.removeEventListener("timeupdate", onTimeUpdate);
-            audio.currentTime = 0;
-            resolve(isFinite(audio.duration) ? audio.duration : 0);
+        const probe = new Audio();
+        probe.preload = "metadata";
+        probe.src = src;
+        const finish = (duration) => {
+            probe.pause();
+            probe.removeAttribute("src");
+            probe.load();
+            resolve(duration);
         };
-        audio.addEventListener("timeupdate", onTimeUpdate);
-        audio.currentTime = 1e101;
-        // Filet de securite : si l'evenement ne se declenche jamais.
-        setTimeout(() => {
-            audio.removeEventListener("timeupdate", onTimeUpdate);
-            resolve(isFinite(audio.duration) ? audio.duration : 0);
-        }, 2000);
+        probe.addEventListener("error", () => finish(0));
+        probe.addEventListener("loadedmetadata", () => {
+            if (isFinite(probe.duration) && probe.duration > 0) {
+                finish(probe.duration);
+                return;
+            }
+            const onTimeUpdate = () => {
+                probe.removeEventListener("timeupdate", onTimeUpdate);
+                finish(isFinite(probe.duration) ? probe.duration : 0);
+            };
+            probe.addEventListener("timeupdate", onTimeUpdate);
+            probe.currentTime = 1e101;
+            setTimeout(() => finish(isFinite(probe.duration) ? probe.duration : 0), 2000);
+        });
     });
 }
 
@@ -147,6 +160,15 @@ function createVoicePlayer(src, options) {
 
     const audio = new Audio(src);
     audio.preload = "metadata";
+    // Duree fiable, obtenue via la sonde jetable -- ne jamais se fier
+    // uniquement a audio.duration, qui peut rester Infinity/NaN sur cet
+    // element pour les fichiers webm issus de MediaRecorder.
+    let knownDuration = 0;
+    sportiProbeDuration(src).then((duration) => {
+        knownDuration = duration;
+        time.textContent = sportiFormatTime(knownDuration);
+        redraw();
+    });
 
     let peaks = sportiFallbackPeaks(SPORTI_WAVEFORM_BARS);
     sportiComputePeaks(src, SPORTI_WAVEFORM_BARS).then((realPeaks) => {
@@ -154,8 +176,12 @@ function createVoicePlayer(src, options) {
         redraw();
     });
 
+    function effectiveDuration() {
+        return knownDuration || (isFinite(audio.duration) ? audio.duration : 0);
+    }
     function currentRatio() {
-        return audio.duration ? audio.currentTime / audio.duration : 0;
+        const duration = effectiveDuration();
+        return duration ? audio.currentTime / duration : 0;
     }
     function redraw() {
         sportiDrawWaveform(canvas, peaks, currentRatio(), invert);
@@ -180,26 +206,22 @@ function createVoicePlayer(src, options) {
     });
     audio.addEventListener("ended", () => {
         btn.innerHTML = SPORTI_ICON_PLAY;
-        time.textContent = sportiFormatTime(audio.duration);
+        time.textContent = sportiFormatTime(effectiveDuration());
         redraw();
     });
     audio.addEventListener("timeupdate", () => {
-        if (audio.duration) {
-            time.textContent = sportiFormatTime(audio.duration - audio.currentTime);
+        const duration = effectiveDuration();
+        if (duration) {
+            time.textContent = sportiFormatTime(duration - audio.currentTime);
         }
         redraw();
-    });
-    audio.addEventListener("loadedmetadata", () => {
-        sportiFixDuration(audio).then((duration) => {
-            time.textContent = sportiFormatTime(duration);
-            redraw();
-        });
     });
 
     canvas.addEventListener("click", (event) => {
         const rect = canvas.getBoundingClientRect();
         const ratio = Math.min(Math.max((event.clientX - rect.left) / rect.width, 0), 1);
-        if (audio.duration) audio.currentTime = ratio * audio.duration;
+        const duration = effectiveDuration();
+        if (duration) audio.currentTime = ratio * duration;
         redraw();
     });
 

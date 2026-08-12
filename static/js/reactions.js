@@ -89,7 +89,11 @@ function attachReactionUI(div, messageId, sendReactionFn, isOwnMessage, onDelete
 
     const reactBtn = document.createElement("button");
     reactBtn.type = "button";
-    reactBtn.className = "absolute -top-3 right-1 text-xs bg-white dark:bg-navy-850 border border-navy-900/10 dark:border-white/10 rounded-full w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center";
+    // "reaction-hover-btn" (voir input.css) : visible seulement au survol sur
+    // un vrai pointeur (souris). Sur tactile, group-hover reste "colle" apres
+    // un tap (pas de mouseout sur mobile) -- on la cache donc entierement au
+    // tactile, ou seul l'appui long (plus bas) ouvre le picker, comme WhatsApp.
+    reactBtn.className = "reaction-hover-btn absolute -top-3 right-1 text-xs bg-white dark:bg-navy-850 border border-navy-900/10 dark:border-white/10 rounded-full w-6 h-6 flex items-center justify-center";
     reactBtn.textContent = "🙂";
     reactBtn.addEventListener("click", (event) => {
         event.stopPropagation();

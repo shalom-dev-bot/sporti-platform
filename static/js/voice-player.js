@@ -88,6 +88,13 @@ function createVoicePlayer(src) {
 
     const canvas = document.createElement("canvas");
     canvas.className = "voice-waveform-canvas";
+    // Filet de securite : un <canvas> sans dimensions definies retombe sur
+    // sa taille par defaut (300x150), ce qui gonflerait toute la bulle tant
+    // que le CSS externe n'a pas fini de charger/appliquer la classe.
+    canvas.style.width = "100%";
+    canvas.style.height = "32px";
+    canvas.width = 260;
+    canvas.height = 32;
 
     const time = document.createElement("span");
     time.className = "voice-time";

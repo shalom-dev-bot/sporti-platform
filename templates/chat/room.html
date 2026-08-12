@@ -924,6 +924,7 @@
                 event.preventDefault();
                 startRecording();
             });
+            micBtn.addEventListener("contextmenu", (event) => event.preventDefault());
             const stopIfRecording = () => { if (isRecording) stopRecording(false); };
             window.addEventListener("pointerup", stopIfRecording);
             window.addEventListener("pointercancel", stopIfRecording);

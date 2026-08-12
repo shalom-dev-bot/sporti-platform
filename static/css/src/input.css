@@ -873,6 +873,20 @@
   padding: 0.75rem 1rem;
 }
 
+.reaction-hover-btn {
+  display: none;
+  opacity: 0;
+}
+@media (hover: hover) {
+  .reaction-hover-btn {
+    display: flex;
+    transition: opacity 0.15s ease;
+  }
+  .group:hover .reaction-hover-btn {
+    opacity: 1;
+  }
+}
+
 .reactions-row {
   position: absolute;
   bottom: -0.65rem;
@@ -1033,6 +1047,12 @@
   color: #fff;
   box-shadow: 0 0 16px rgba(55, 92, 255, 0.45);
   transition: transform 0.15s ease;
+  /* Sans ca, le navigateur peut interpreter l'appui maintenu comme un
+     debut de scroll/menu contextuel et annuler notre pointerdown avant
+     qu'il ne declenche l'enregistrement -- essentiel sur mobile reel. */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .sporti-mic-btn:active {
   transform: scale(0.94);

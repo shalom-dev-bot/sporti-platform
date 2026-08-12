@@ -400,6 +400,19 @@
            flex items-center justify-center transition-transform duration-150
            hover:scale-105 active:scale-95;
     background: linear-gradient(135deg, #1f46dd, #375dff);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  }
+  /* Sur un fond deja bleu (bulle de son propre message), le bouton et le
+     temps bleu-sur-bleu deviennent invisibles -- on inverse : cercle
+     clair + icone bleue + texte blanc, comme le fait WhatsApp. */
+  .voice-player-invert .voice-play-btn {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1f46dd;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: none;
+  }
+  .voice-player-invert .voice-time {
+    @apply text-white/85;
   }
 
   .voice-waveform-canvas {

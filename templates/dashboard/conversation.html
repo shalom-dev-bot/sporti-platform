@@ -107,7 +107,9 @@
             <span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 animate-pulse"></span>
             <span id="voice-timer" class="text-xs tabular-nums shrink-0 text-navy-900/70 dark:text-white/70">0:00</span>
             <canvas id="voice-waveform" class="flex-1 h-8 min-w-0"></canvas>
-            <span class="hidden sm:inline text-[10px] text-navy-900/40 dark:text-white/40 shrink-0">{% trans "Relâcher pour envoyer" %}</span>
+            <button type="button" id="voice-send-btn" class="sporti-mic-btn shrink-0" aria-label="{% trans 'Envoyer' %}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+            </button>
         </div>
     </div>
 
@@ -234,7 +236,8 @@
     // seuls les NOUVEAUX messages (via websocket) generaient un vrai
     // lecteur. On convertit ici aussi les placeholders de l'historique.
     thread.querySelectorAll(".attachment-voice-placeholder[data-audio-url]").forEach((placeholder) => {
-        const player = createVoicePlayer(placeholder.dataset.audioUrl);
+        const isOwn = !!placeholder.closest(".sporti-bubble-client");
+        const player = createVoicePlayer(placeholder.dataset.audioUrl, { invert: isOwn });
         placeholder.replaceWith(player);
     });
 
@@ -339,7 +342,7 @@
         if (data.is_staff) inner += `<span class="status-tick text-white/70">✓</span>`;
         div.innerHTML = inner;
         if (audioAttachment) {
-            div.appendChild(createVoicePlayer(audioAttachment));
+            div.appendChild(createVoicePlayer(audioAttachment, { invert: data.is_staff }));
         }
 
         const reactionsRow = document.createElement("div");
@@ -461,6 +464,7 @@
     const micBtn = document.getElementById("mic-btn");
     const voiceRecordBar = document.getElementById("voice-record-bar");
     const voiceCancelBtn = document.getElementById("voice-cancel-btn");
+    const voiceSendBtn = document.getElementById("voice-send-btn");
     const voiceTimerEl = document.getElementById("voice-timer");
     const voiceWaveformCanvas = document.getElementById("voice-waveform");
     // Certains systemes (surtout Linux) ont un peripherique "par defaut"
@@ -603,21 +607,26 @@
         if (mediaRecorder.state === "recording") mediaRecorder.stop();
     }
     if (micBtn) {
+        // Un tap demarre l'enregistrement (reste actif meme si on relache),
+        // un tap sur "envoyer" l'arrete et l'envoie, un tap sur la corbeille
+        // l'annule -- plus fiable qu'un appui maintenu sur mobile, et le
+        // bouton d'envoi reste toujours visible.
         micBtn.addEventListener("click", () => {
-            if (input.value.trim().length > 0) submitCurrentText();
-        });
-        micBtn.addEventListener("pointerdown", (event) => {
-            if (input.value.trim().length > 0) return;
-            event.preventDefault();
+            if (input.value.trim().length > 0) {
+                submitCurrentText();
+                return;
+            }
             startRecording();
         });
         micBtn.addEventListener("contextmenu", (event) => event.preventDefault());
-        const stopIfRecording = () => { if (isRecording) stopRecording(false); };
-        window.addEventListener("pointerup", stopIfRecording);
-        window.addEventListener("pointercancel", stopIfRecording);
+    }
+    if (voiceSendBtn) {
+        voiceSendBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            stopRecording(false);
+        });
     }
     if (voiceCancelBtn) {
-        voiceCancelBtn.addEventListener("pointerdown", (event) => event.stopPropagation());
         voiceCancelBtn.addEventListener("click", (event) => {
             event.stopPropagation();
             stopRecording(true);

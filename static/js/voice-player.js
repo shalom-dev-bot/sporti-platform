@@ -27,6 +27,32 @@ function sportiFallbackPeaks(barCount) {
     return peaks;
 }
 
+// Bug connu (Chrome/Android, WebM enregistre via MediaRecorder) : la duree
+// annoncee par l'element <audio> reste Infinity ou NaN tant qu'on n'a pas
+// force une lecture complete du conteneur. Solution standard : avancer la
+// tete de lecture tres loin, attendre que le navigateur recalcule la vraie
+// duree (evenement timeupdate/durationchange), puis revenir a zero.
+function sportiFixDuration(audio) {
+    return new Promise((resolve) => {
+        if (isFinite(audio.duration) && audio.duration > 0) {
+            resolve(audio.duration);
+            return;
+        }
+        const onTimeUpdate = () => {
+            audio.removeEventListener("timeupdate", onTimeUpdate);
+            audio.currentTime = 0;
+            resolve(isFinite(audio.duration) ? audio.duration : 0);
+        };
+        audio.addEventListener("timeupdate", onTimeUpdate);
+        audio.currentTime = 1e101;
+        // Filet de securite : si l'evenement ne se declenche jamais.
+        setTimeout(() => {
+            audio.removeEventListener("timeupdate", onTimeUpdate);
+            resolve(isFinite(audio.duration) ? audio.duration : 0);
+        }, 2000);
+    });
+}
+
 async function sportiComputePeaks(src, barCount) {
     try {
         const res = await fetch(src);
@@ -53,7 +79,12 @@ async function sportiComputePeaks(src, barCount) {
     }
 }
 
-function sportiDrawWaveform(canvas, peaks, progressRatio) {
+// "invert" = le lecteur est place sur un fond bleu plein (bulle de son
+// propre message) : il faut alors des barres claires (blanches), jamais
+// bleues, sous peine de se fondre dans le fond -- exactement le bug
+// remonte ("on ne voit rien"). Sans invert (bulle recue, theme clair ou
+// sombre), on garde la palette bleu/neutre habituelle.
+function sportiDrawWaveform(canvas, peaks, progressRatio, invert) {
     const ctx = canvas.getContext("2d");
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
@@ -62,24 +93,38 @@ function sportiDrawWaveform(canvas, peaks, progressRatio) {
     canvas.height = height;
     ctx.clearRect(0, 0, width, height);
     const barCount = peaks.length;
-    const gap = 2;
-    const barWidth = Math.max(1.5, width / barCount - gap);
+    const gap = 3;
+    const barWidth = Math.max(2, width / barCount - gap);
     const isDark = document.documentElement.classList.contains("dark");
-    const playedColor = isDark ? "#5b8def" : "#2d6cdf";
-    const unplayedColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(11,15,25,0.18)";
+    let playedColor;
+    let unplayedColor;
+    if (invert) {
+        playedColor = "rgba(255,255,255,0.95)";
+        unplayedColor = "rgba(255,255,255,0.35)";
+    } else {
+        playedColor = isDark ? "#5b8def" : "#2d6cdf";
+        unplayedColor = isDark ? "rgba(255,255,255,0.22)" : "rgba(11,15,25,0.2)";
+    }
     const progressX = width * progressRatio;
     for (let i = 0; i < barCount; i++) {
         const x = i * (barWidth + gap);
-        const barHeight = Math.max(2, peaks[i] * height);
+        const barHeight = Math.max(3, peaks[i] * height);
         const y = (height - barHeight) / 2;
         ctx.fillStyle = x < progressX ? playedColor : unplayedColor;
-        ctx.fillRect(x, y, barWidth, barHeight);
+        if (ctx.roundRect) {
+            ctx.beginPath();
+            ctx.roundRect(x, y, barWidth, barHeight, barWidth / 2);
+            ctx.fill();
+        } else {
+            ctx.fillRect(x, y, barWidth, barHeight);
+        }
     }
 }
 
-function createVoicePlayer(src) {
+function createVoicePlayer(src, options) {
+    const invert = !!(options && options.invert);
     const wrap = document.createElement("div");
-    wrap.className = "voice-player";
+    wrap.className = invert ? "voice-player voice-player-invert" : "voice-player";
 
     const btn = document.createElement("button");
     btn.type = "button";
@@ -113,7 +158,7 @@ function createVoicePlayer(src) {
         return audio.duration ? audio.currentTime / audio.duration : 0;
     }
     function redraw() {
-        sportiDrawWaveform(canvas, peaks, currentRatio());
+        sportiDrawWaveform(canvas, peaks, currentRatio(), invert);
     }
 
     btn.addEventListener("click", () => {
@@ -145,8 +190,10 @@ function createVoicePlayer(src) {
         redraw();
     });
     audio.addEventListener("loadedmetadata", () => {
-        time.textContent = sportiFormatTime(audio.duration);
-        redraw();
+        sportiFixDuration(audio).then((duration) => {
+            time.textContent = sportiFormatTime(duration);
+            redraw();
+        });
     });
 
     canvas.addEventListener("click", (event) => {

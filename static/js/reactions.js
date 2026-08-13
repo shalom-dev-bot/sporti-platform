@@ -19,11 +19,19 @@ const SPORTI_EMOJI_SET = [
 
 function buildEmojiGrid(onSelect) {
     const grid = document.createElement("div");
-    grid.className = "grid grid-cols-8 gap-1 max-h-52 w-64 overflow-y-auto";
+    grid.className = "grid grid-cols-7 gap-0.5 max-h-52 overflow-y-auto thin-scroll";
+    // Filet de securite : force la grille en ligne/colonnes via inline style,
+    // independamment du chargement/purge du CSS externe (meme logique que
+    // pour le canvas de l'onde vocale) -- garantit un vrai quadrillage
+    // horizontal plutot qu'une colonne verticale si la classe utilitaire
+    // grid-cols-7 ne s'applique pas pour une raison ou une autre.
+    grid.style.display = "grid";
+    grid.style.gridTemplateColumns = "repeat(7, minmax(0, 1fr))";
+    grid.style.width = "17.5rem";
     SPORTI_EMOJI_SET.forEach((emoji) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "text-lg leading-none p-1 hover:scale-125 transition-transform";
+        btn.className = "text-xl leading-none p-1.5 hover:scale-125 transition-transform flex items-center justify-center";
         btn.textContent = emoji;
         btn.addEventListener("click", (event) => {
             event.stopPropagation();

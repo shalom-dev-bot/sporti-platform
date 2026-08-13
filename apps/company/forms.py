@@ -55,6 +55,9 @@ class CompanyProfileForm(_StyledFormMixin, forms.ModelForm):
             "contact_email": "E-mail de contact",
             "contact_phone": "Téléphone de contact",
         }
+        # ClearableFileInput affiche "Currently: <fichier> Clear" en texte
+        # brut des qu'un logo existe deja -- l'UI custom gere deja ca.
+        widgets = {"logo": forms.FileInput}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -92,6 +95,9 @@ class WelcomeAudioForm(_StyledFormMixin, forms.ModelForm):
             "audio_file": "Fichier audio",
             "is_audio_enabled": "Afficher le message vocal",
         }
+        # ClearableFileInput affiche "Currently: <fichier> Clear" en texte
+        # brut des qu'un vocal existe deja -- l'UI custom gere deja ca.
+        widgets = {"audio_file": forms.FileInput}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

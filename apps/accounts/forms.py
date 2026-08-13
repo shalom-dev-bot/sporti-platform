@@ -105,6 +105,11 @@ class ProfileForm(forms.ModelForm):
             "last_name": _("Nom de famille"),
             "phone_number": _("Telephone"),
         }
+        # ClearableFileInput (widget par defaut pour un ImageField) affiche
+        # "Currently: <fichier> Clear" en texte brut des qu'un avatar existe
+        # deja -- notre UI custom (cercle + label superpose) gere deja le
+        # "changer la photo", ce texte moche n'est jamais voulu.
+        widgets = {"avatar": forms.FileInput}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

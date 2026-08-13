@@ -64,6 +64,10 @@ class AdminProfileForm(forms.ModelForm):
             "email": "E-mail",
             "avatar": "Photo de profil",
         }
+        # ClearableFileInput affiche "Currently: <fichier> Clear" en texte
+        # brut des qu'un avatar existe deja -- notre UI (cercle + label
+        # superpose) gere deja le changement de photo, ce texte est indesirable.
+        widgets = {"avatar": forms.FileInput}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

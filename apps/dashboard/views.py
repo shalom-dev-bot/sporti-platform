@@ -815,36 +815,38 @@ def fixture_import(request, api_fixture_id):
         messages.info(request, _("Ce match a deja ete importe."))
         return redirect("dashboard:event_edit", event_id=existing_event.id)
 
-    date_str = request.POST.get("date_str", timezone.localdate().isoformat())
-    league_id = request.POST.get("league_id") or None
-
-    try:
-        fixtures, _quota = api_football.search_fixtures(date_str, league_id=league_id)
-    except api_football.ApiFootballError as exc:
-        messages.error(request, _("Import impossible : %(error)s") % {"error": exc})
-        return redirect("dashboard:fixtures_search")
-
-    fixture = next((f for f in fixtures if str(f["api_id"]) == str(api_fixture_id)), None)
-    if not fixture:
-        messages.error(request, _("Ce match n'est plus disponible dans les resultats."))
+    # Les donnees du match viennent des champs caches du formulaire (deja
+    # recuperees par la recherche qui a affiche ce bouton "Importer") --
+    # on evite ainsi un deuxieme appel a l'API-Football rien que pour
+    # retrouver un match qu'on a deja sous les yeux.
+    home_id = request.POST.get("home_id")
+    away_id = request.POST.get("away_id")
+    if not home_id or not away_id:
+        messages.error(request, _("Donnees du match manquantes, relancez la recherche."))
         return redirect("dashboard:fixtures_search")
 
     home_team, _home_created = Team.objects.get_or_create(
-        api_football_id=fixture["home_id"],
-        defaults={"name": fixture["home_name"], "logo_url": fixture["home_logo"]},
+        api_football_id=home_id,
+        defaults={
+            "name": request.POST.get("home_name", ""),
+            "logo_url": request.POST.get("home_logo", ""),
+        },
     )
     away_team, _away_created = Team.objects.get_or_create(
-        api_football_id=fixture["away_id"],
-        defaults={"name": fixture["away_name"], "logo_url": fixture["away_logo"]},
+        api_football_id=away_id,
+        defaults={
+            "name": request.POST.get("away_name", ""),
+            "logo_url": request.POST.get("away_logo", ""),
+        },
     )
 
     event = Event.objects.create(
         home_team=home_team,
         away_team=away_team,
-        competition=fixture["competition"],
+        competition=request.POST.get("competition", ""),
         sport="Football",
-        kickoff_at=fixture["kickoff_at"],
-        api_football_id=fixture["api_id"],
+        kickoff_at=request.POST.get("kickoff_at"),
+        api_football_id=api_fixture_id,
     )
     messages.success(request, _("Match importe. Ajoute maintenant ton pronostic."))
     return redirect(f"{reverse('dashboard:prediction_create')}?event={event.id}")

@@ -130,8 +130,14 @@
                 {% else %}
                     <form method="post" action="{% url 'dashboard:fixture_import' fixture.api_id %}" class="shrink-0">
                         {% csrf_token %}
-                        <input type="hidden" name="date_str" value="{{ date_str }}">
-                        <input type="hidden" name="league_id" value="{{ league_id }}">
+                        <input type="hidden" name="home_id" value="{{ fixture.home_id }}">
+                        <input type="hidden" name="home_name" value="{{ fixture.home_name }}">
+                        <input type="hidden" name="home_logo" value="{{ fixture.home_logo }}">
+                        <input type="hidden" name="away_id" value="{{ fixture.away_id }}">
+                        <input type="hidden" name="away_name" value="{{ fixture.away_name }}">
+                        <input type="hidden" name="away_logo" value="{{ fixture.away_logo }}">
+                        <input type="hidden" name="competition" value="{{ fixture.competition }}">
+                        <input type="hidden" name="kickoff_at" value="{{ fixture.kickoff_at }}">
                         <button type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-[11px] font-semibold">
                             {% trans "Importer" %}
                         </button>

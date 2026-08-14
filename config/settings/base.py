@@ -90,6 +90,10 @@ REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 API_FOOTBALL_KEY = env("API_FOOTBALL_KEY", default="")
 API_FOOTBALL_BASE_URL = "https://v3.football.api-sports.io"
 
+# --- football-data.org (alternative gratuite, saison en cours incluse
+# contrairement au plan gratuit d'API-Football) ---
+FOOTBALL_DATA_API_KEY = env("FOOTBALL_DATA_API_KEY", default="")
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",

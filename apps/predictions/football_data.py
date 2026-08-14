@@ -67,53 +67,72 @@ def search_fixtures(date_str, league_id=None, season=None):
     Renvoie une liste de dicts normalises (meme forme que api_football),
     triee par heure de coup d'envoi.
 
-    Leve ApiFootballError si la cle est absente ou si l'appel echoue.
+    Important (plan gratuit) : l'endpoint "toutes competitions"
+    (/v4/matches sans filtre) renvoie systematiquement une liste vide pour
+    une seule journee -- il faut interroger chaque competition
+    individuellement. Si aucun league_id n'est fourni, on boucle donc sur
+    POPULAR_LEAGUES et on fusionne les resultats (une requete par
+    competition, largement sous la limite de 10/minute du plan gratuit).
+
+    Leve ApiFootballError si la cle est absente ou si l'appel echoue pour
+    TOUTES les competitions ; une erreur isolee sur une seule competition
+    (ex: quota atteint en cours de boucle) est ignoree pour ne pas faire
+    echouer toute la recherche.
     """
-    params = {"dateFrom": date_str, "dateTo": date_str}
-    if league_id:
-        url = f"{FOOTBALL_DATA_BASE_URL}/competitions/{league_id}/matches"
-    else:
-        url = f"{FOOTBALL_DATA_BASE_URL}/matches"
-
-    try:
-        response = requests.get(url, headers=_headers(), params=params, timeout=10)
-    except requests.RequestException as exc:
-        raise ApiFootballError(f"Impossible de contacter football-data.org : {exc}") from exc
-
-    payload = response.json()
-    if response.status_code != 200:
-        message = payload.get("message", f"code {response.status_code}")
-        raise ApiFootballError(f"Erreur football-data.org : {message}")
+    league_codes = [league_id] if league_id else [code for code, _label in POPULAR_LEAGUES]
 
     fixtures = []
-    for match in payload.get("matches", []):
-        home = match.get("homeTeam") or {}
-        away = match.get("awayTeam") or {}
-        competition = match.get("competition") or {}
-
-        if not (match.get("id") and home.get("id") and away.get("id")):
+    last_error = None
+    remaining = None
+    for code in league_codes:
+        try:
+            response = requests.get(
+                f"{FOOTBALL_DATA_BASE_URL}/competitions/{code}/matches",
+                headers=_headers(),
+                params={"dateFrom": date_str, "dateTo": date_str},
+                timeout=10,
+            )
+        except requests.RequestException as exc:
+            last_error = f"Impossible de contacter football-data.org : {exc}"
             continue
 
-        fixtures.append(
-            {
-                "api_id": match["id"],
-                "kickoff_at": match.get("utcDate"),
-                "status_short": _STATUS_MAP.get(match.get("status", ""), ""),
-                "competition": competition.get("name", ""),
-                "home_id": home["id"],
-                "home_name": home.get("name") or home.get("shortName") or "",
-                "home_logo": home.get("crest", ""),
-                "away_id": away["id"],
-                "away_name": away.get("name") or away.get("shortName") or "",
-                "away_logo": away.get("crest", ""),
-            }
-        )
+        remaining_header = response.headers.get("X-Requests-Available-Minute")
+        if remaining_header is not None:
+            remaining = int(remaining_header)
+
+        payload = response.json()
+        if response.status_code != 200:
+            last_error = payload.get("message", f"code {response.status_code}")
+            continue
+
+        for match in payload.get("matches", []):
+            home = match.get("homeTeam") or {}
+            away = match.get("awayTeam") or {}
+            competition = match.get("competition") or {}
+
+            if not (match.get("id") and home.get("id") and away.get("id")):
+                continue
+
+            fixtures.append(
+                {
+                    "api_id": match["id"],
+                    "kickoff_at": match.get("utcDate"),
+                    "status_short": _STATUS_MAP.get(match.get("status", ""), ""),
+                    "competition": competition.get("name", ""),
+                    "home_id": home["id"],
+                    "home_name": home.get("name") or home.get("shortName") or "",
+                    "home_logo": home.get("crest", ""),
+                    "away_id": away["id"],
+                    "away_name": away.get("name") or away.get("shortName") or "",
+                    "away_logo": away.get("crest", ""),
+                }
+            )
+
+    if not fixtures and last_error:
+        raise ApiFootballError(f"Erreur football-data.org : {last_error}")
 
     fixtures.sort(key=lambda f: f["kickoff_at"] or "")
 
-    quota = None
-    remaining_header = response.headers.get("X-Requests-Available-Minute")
-    if remaining_header is not None:
-        quota = {"limit": 10, "remaining": int(remaining_header)}
+    quota = {"limit": 10, "remaining": remaining} if remaining is not None else None
 
     return fixtures, quota

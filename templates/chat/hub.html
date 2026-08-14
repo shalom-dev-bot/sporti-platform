@@ -41,31 +41,31 @@
 
         <!-- Bandeau nouveautes -->
         <a href="{% url 'predictions:list' %}{% if new_today_count %}?filtre=aujourdhui{% endif %}"
-           class="shrink-0 block relative h-16 lg:h-24 rounded-[16px] lg:rounded-[20px] overflow-hidden mb-1.5 lg:mb-3 border border-accent-500/15 shadow-[0_18px_38px_rgba(0,0,0,0.38)] hover:border-accent-500/30 transition-colors">
+           class="shrink-0 block relative h-24 lg:h-28 rounded-[16px] lg:rounded-[20px] overflow-hidden mb-1.5 lg:mb-3 border border-accent-500/15 shadow-[0_18px_38px_rgba(0,0,0,0.38)] hover:border-accent-500/30 transition-colors">
             <img src="{% static 'images/design/hub-banner.jpg' %}" alt="" class="absolute inset-0 w-full h-full object-cover">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_75%_52%,rgba(66,130,255,.35),transparent_18%),linear-gradient(90deg,rgba(7,10,19,.95)_0%,rgba(7,10,19,.78)_46%,rgba(7,10,19,.25)_100%)]"></div>
-            <div class="relative z-10 px-3 py-1.5 lg:px-4 lg:py-3 max-w-[78%] h-full flex flex-col justify-center">
+            <div class="relative z-10 px-3.5 py-2 lg:px-4 lg:py-3 max-w-[80%] h-full flex flex-col justify-center">
                 {% if new_today_count %}
-                <span class="inline-flex items-center gap-1 w-fit px-1.5 py-0.5 rounded-full bg-navy-900/90 border border-accent-400/25 text-[8px] lg:text-[10px] font-semibold text-white">
-                    <svg class="w-2 h-2 lg:w-3 lg:h-3 text-orange-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-3 2 1 3 3.5 3 6a8 8 0 0 1-16 0c0-4 3-6 4-8 1-1.5 1.5-3 1.5-4C10 1 11 1.5 12 2Z"/></svg>
+                <span class="inline-flex items-center gap-1 w-fit px-1.5 py-0.5 rounded-full bg-navy-900/90 border border-accent-400/25 text-[9px] lg:text-[10px] font-semibold text-white">
+                    <svg class="w-2.5 h-2.5 lg:w-3 lg:h-3 text-orange-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-3 2 1 3 3.5 3 6a8 8 0 0 1-16 0c0-4 3-6 4-8 1-1.5 1.5-3 1.5-4C10 1 11 1.5 12 2Z"/></svg>
                     {% trans "NOUVEAU" %}
                 </span>
-                <p class="mt-1 lg:mt-2 text-xs lg:text-lg font-semibold leading-tight text-white">
+                <p class="mt-1 lg:mt-2 text-sm lg:text-lg font-semibold leading-tight text-white">
                     {{ new_today_count }} {% trans "nouveaux" %}
                     <span class="text-accent-400">{% trans "pronostics Premium" %}</span>
                 </p>
-                <p class="mt-0.5 hidden lg:block text-xs text-white/85">{% trans "sont disponibles aujourd'hui." %}</p>
+                <p class="mt-0.5 block text-[11px] lg:text-xs text-white/85">{% trans "sont disponibles aujourd'hui." %}</p>
                 {% else %}
-                <span class="inline-flex items-center gap-1 w-fit px-1.5 py-0.5 rounded-full bg-navy-900/90 border border-accent-400/25 text-[8px] lg:text-[10px] font-semibold text-white">
-                    <svg class="w-2 h-2 lg:w-3 lg:h-3 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                <span class="inline-flex items-center gap-1 w-fit px-1.5 py-0.5 rounded-full bg-navy-900/90 border border-accent-400/25 text-[9px] lg:text-[10px] font-semibold text-white">
+                    <svg class="w-2.5 h-2.5 lg:w-3 lg:h-3 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                     {% trans "PRONOSTICS" %}
                 </span>
-                <p class="mt-1 lg:mt-2 text-xs lg:text-lg font-semibold leading-tight text-white">
+                <p class="mt-1 lg:mt-2 text-sm lg:text-lg font-semibold leading-tight text-white">
                     <span class="text-accent-400">{% trans "Pronostics Premium" %}</span>
                 </p>
-                <p class="mt-0.5 hidden lg:block text-xs text-white/85">{% trans "Analyses professionnelles, chaque jour." %}</p>
+                <p class="mt-0.5 block text-[11px] lg:text-xs text-white/85">{% trans "Analyses professionnelles, chaque jour." %}</p>
                 {% endif %}
-                <span class="mt-1 lg:mt-2.5 inline-flex items-center gap-1.5 h-5 lg:h-7 px-2 lg:px-3 w-fit rounded-[7px] bg-[#1f2c78] hover:bg-[#25359a] transition text-[9px] lg:text-[10px] font-semibold shadow-glow-sm text-white">
+                <span class="mt-1.5 lg:mt-2.5 inline-flex items-center gap-1.5 h-6 lg:h-7 px-2.5 lg:px-3 w-fit rounded-[7px] bg-[#1f2c78] hover:bg-[#25359a] transition text-[10px] lg:text-[10px] font-semibold shadow-glow-sm text-white">
                     {% trans "Voir maintenant" %} &rarr;
                 </span>
             </div>
@@ -74,7 +74,7 @@
         <!-- Deux cartes principales -->
         <div class="shrink-0 grid grid-cols-2 gap-1.5 lg:gap-3 mb-1.5 lg:mb-3">
             <a href="{% url 'chat:room' %}" class="relative flex flex-col rounded-[14px] lg:rounded-[18px] glass-panel px-2 lg:px-3 pt-2 lg:pt-3 pb-2 lg:pb-3 hover:border-accent-500/30 transition-colors">
-                <div class="absolute top-2 left-2 lg:top-3 lg:left-3 w-5 h-5 lg:w-8 lg:h-8 rounded-full bg-[#1736c9] flex items-center justify-center shadow-glow-sm">
+                <div class="absolute top-2 left-2 lg:top-3 lg:left-3 w-5 h-5 lg:w-8 lg:h-8 rounded-full bg-[#1736c9] text-white flex items-center justify-center shadow-glow-sm">
                     <svg class="w-2.5 h-2.5 lg:w-3.5 lg:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
                     </svg>
@@ -89,23 +89,23 @@
                     </div>
                 </div>
                 <div class="flex justify-center mt-1">
-                    <span class="inline-flex items-center gap-1 px-1.5 lg:px-2 py-0.5 rounded-full text-[7px] lg:text-[9px] {% if admin_online %}bg-emerald-500/15 border border-emerald-500/20 text-emerald-400{% else %}bg-navy-900/5 dark:bg-white/5 border border-navy-900/10 dark:border-white/10 text-navy-900/45 dark:text-white/45{% endif %}">
+                    <span class="inline-flex items-center gap-1 px-1.5 lg:px-2 py-0.5 rounded-full text-[9px] lg:text-[9px] {% if admin_online %}bg-emerald-500/15 border border-emerald-500/20 text-emerald-400{% else %}bg-navy-900/5 dark:bg-white/5 border border-navy-900/10 dark:border-white/10 text-navy-900/45 dark:text-white/45{% endif %}">
                         <span class="w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full {% if admin_online %}bg-emerald-400{% else %}bg-white/40{% endif %}"></span>
                         {% if admin_online %}{% trans "En ligne" %}{% else %}{% trans "Hors ligne" %}{% endif %}
                     </span>
                 </div>
-                <h2 class="mt-1 text-[10px] lg:text-sm font-semibold text-center leading-tight">{% trans "Parler avec" %} {{ company.name }}</h2>
+                <h2 class="mt-1 text-xs lg:text-sm font-semibold text-center leading-tight">{% trans "Parler avec" %} {{ company.name }}</h2>
                 <p class="mt-1 lg:mt-1.5 hidden lg:block text-[11px] text-navy-900/55 dark:text-white/65 text-center leading-relaxed">
                     {% trans "Réponses en quelques minutes. Posez vos questions et obtenez des conseils personnalisés." %}
                 </p>
                 <div class="flex-1"></div>
-                <span class="mt-1 lg:mt-2.5 h-5 lg:h-8 rounded-[7px] bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-[8px] lg:text-xs font-semibold flex items-center justify-center gap-1 shrink-0">
+                <span class="mt-1 lg:mt-2.5 h-5 lg:h-8 rounded-[7px] bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-[9px] lg:text-xs font-semibold flex items-center justify-center gap-1 shrink-0">
                     {% trans "Commencer la discussion" %} &rarr;
                 </span>
             </a>
 
             <a href="{% url 'predictions:list' %}" class="relative flex flex-col rounded-[14px] lg:rounded-[18px] glass-panel px-2 lg:px-3 pt-2 lg:pt-3 pb-2 lg:pb-3 hover:border-accent-500/30 transition-colors">
-                <div class="absolute top-2 left-2 lg:top-3 lg:left-3 w-5 h-5 lg:w-8 lg:h-8 rounded-full bg-[#1736c9] flex items-center justify-center shadow-glow-sm">
+                <div class="absolute top-2 left-2 lg:top-3 lg:left-3 w-5 h-5 lg:w-8 lg:h-8 rounded-full bg-[#1736c9] text-white flex items-center justify-center shadow-glow-sm">
                     <svg class="w-2.5 h-2.5 lg:w-3.5 lg:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/><path d="M4 22h16"/>
                     </svg>
@@ -113,24 +113,24 @@
                 <div class="flex justify-center">
                     <img src="{% static 'images/design/trophy-graphic.png' %}" alt="" class="w-7 h-7 lg:w-12 lg:h-12 object-contain drop-shadow-[0_0_16px_rgba(55,92,255,0.5)] shrink-0">
                 </div>
-                <h2 class="mt-1 text-[10px] lg:text-sm font-semibold text-center leading-tight">{% trans "Voir les pronostics" %}</h2>
+                <h2 class="mt-1 text-xs lg:text-sm font-semibold text-center leading-tight">{% trans "Voir les pronostics" %}</h2>
                 <p class="mt-1 flex justify-center">
-                    <span class="px-1.5 lg:px-2 py-0.5 rounded-full bg-accent-500/10 border border-accent-400/20 text-[7px] lg:text-[9px] text-accent-300">
+                    <span class="px-1.5 lg:px-2 py-0.5 rounded-full bg-accent-500/10 border border-accent-400/20 text-[9px] lg:text-[9px] text-accent-300">
                         {{ new_today_count }} {% trans "aujourd'hui" %}
                     </span>
                 </p>
                 <div class="mt-1 lg:mt-2 grid grid-cols-2 gap-1 lg:gap-1.5">
                     <div class="rounded-[7px] bg-navy-900/5 dark:bg-black/20 border border-navy-900/5 dark:border-white/5 py-0.5 lg:py-1.5 text-center">
-                        <div class="text-[6px] lg:text-[9px] text-navy-900/50 dark:text-white/55">{% trans "Réussite" %}</div>
+                        <div class="text-[9px] lg:text-[9px] text-navy-900/50 dark:text-white/55">{% trans "Réussite" %}</div>
                         <div class="text-[10px] lg:text-sm font-semibold text-emerald-400">{{ success_rate }}%</div>
                     </div>
                     <div class="rounded-[7px] bg-navy-900/5 dark:bg-black/20 border border-navy-900/5 dark:border-white/5 py-0.5 lg:py-1.5 text-center">
-                        <div class="text-[6px] lg:text-[9px] text-navy-900/50 dark:text-white/55">{% trans "Gagnants" %}</div>
+                        <div class="text-[9px] lg:text-[9px] text-navy-900/50 dark:text-white/55">{% trans "Gagnants" %}</div>
                         <div class="text-[10px] lg:text-sm font-semibold">{{ won_predictions }}/{{ total_predictions }}</div>
                     </div>
                 </div>
                 <div class="flex-1"></div>
-                <span class="mt-1 lg:mt-2.5 h-5 lg:h-8 rounded-[7px] bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-[8px] lg:text-xs font-semibold flex items-center justify-center gap-1 shrink-0">
+                <span class="mt-1 lg:mt-2.5 h-5 lg:h-8 rounded-[7px] bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-[9px] lg:text-xs font-semibold flex items-center justify-center gap-1 shrink-0">
                     {% trans "Accéder aux pronostics" %} &rarr;
                 </span>
             </a>
@@ -145,23 +145,23 @@
         <div class="grid grid-cols-4 gap-1 lg:gap-2.5">
             <div class="glass-panel rounded-lg lg:rounded-2xl py-1 lg:py-2 text-center">
                 <svg class="w-2.5 h-2.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                <div class="mt-0.5 lg:mt-1.5 text-[10px] lg:text-lg font-semibold">{{ new_today_count }}</div>
-                <div class="text-[6px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Pronostics" %} <br class="hidden lg:block">{% trans "aujourd'hui" %}</div>
+                <div class="mt-0.5 lg:mt-1.5 text-xs lg:text-lg font-semibold">{{ new_today_count }}</div>
+                <div class="text-[9px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Pronostics" %} <br class="hidden lg:block">{% trans "aujourd'hui" %}</div>
             </div>
             <div class="glass-panel rounded-lg lg:rounded-2xl py-1 lg:py-2 text-center">
                 <svg class="w-2.5 h-2.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <div class="mt-0.5 lg:mt-1.5 text-[10px] lg:text-lg font-semibold">{{ active_clients_count }}+</div>
-                <div class="text-[6px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Membres" %} <br class="hidden lg:block">{% trans "actifs" %}</div>
+                <div class="mt-0.5 lg:mt-1.5 text-xs lg:text-lg font-semibold">{{ active_clients_count }}+</div>
+                <div class="text-[9px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Membres" %} <br class="hidden lg:block">{% trans "actifs" %}</div>
             </div>
             <div class="glass-panel rounded-lg lg:rounded-2xl py-1 lg:py-2 text-center">
                 <svg class="w-2.5 h-2.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-                <div class="mt-0.5 lg:mt-1.5 text-[10px] lg:text-lg font-semibold">{{ success_rate }}%</div>
-                <div class="text-[6px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Taux de" %} <br class="hidden lg:block">{% trans "réussite" %}</div>
+                <div class="mt-0.5 lg:mt-1.5 text-xs lg:text-lg font-semibold">{{ success_rate }}%</div>
+                <div class="text-[9px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Taux de" %} <br class="hidden lg:block">{% trans "réussite" %}</div>
             </div>
             <div class="glass-panel rounded-lg lg:rounded-2xl py-1 lg:py-2 text-center">
                 <svg class="w-2.5 h-2.5 lg:w-4 lg:h-4 mx-auto text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7z"/></svg>
-                <div class="mt-0.5 lg:mt-1.5 text-[10px] lg:text-lg font-semibold text-amber-400">{% trans "Premium" %}</div>
-                <div class="text-[6px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Abonnement" %} <br class="hidden lg:block">{% trans "actif" %}</div>
+                <div class="mt-0.5 lg:mt-1.5 text-xs lg:text-lg font-semibold text-amber-400">{% trans "Premium" %}</div>
+                <div class="text-[9px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Abonnement" %} <br class="hidden lg:block">{% trans "actif" %}</div>
             </div>
         </div>
         </div>
@@ -174,34 +174,34 @@
         <div class="grid grid-cols-4 gap-1 lg:gap-2">
             <div class="glass-panel rounded-lg lg:rounded-2xl p-1 lg:p-3 text-center">
                 <svg class="w-2.5 h-2.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
-                <p class="mt-0.5 lg:mt-2 text-[7px] lg:text-[11px] font-semibold leading-tight">{% trans "Analyses professionnelles" %}</p>
+                <p class="mt-0.5 lg:mt-2 text-[9px] lg:text-[11px] font-semibold leading-tight">{% trans "Analyses professionnelles" %}</p>
                 <p class="mt-1.5 hidden lg:block text-[10px] text-navy-900/50 dark:text-white/55 leading-tight">{% trans "Nos experts analysent chaque match en détail." %}</p>
             </div>
             <div class="glass-panel rounded-lg lg:rounded-2xl p-1 lg:p-3 text-center">
                 <svg class="w-2.5 h-2.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <p class="mt-0.5 lg:mt-2 text-[7px] lg:text-[11px] font-semibold leading-tight">{% trans "Mises à jour quotidiennes" %}</p>
+                <p class="mt-0.5 lg:mt-2 text-[9px] lg:text-[11px] font-semibold leading-tight">{% trans "Mises à jour quotidiennes" %}</p>
                 <p class="mt-1.5 hidden lg:block text-[10px] text-navy-900/50 dark:text-white/55 leading-tight">{% trans "Pronostics frais et analyses chaque jour." %}</p>
             </div>
             <div class="glass-panel rounded-lg lg:rounded-2xl p-1 lg:p-3 text-center">
                 <svg class="w-2.5 h-2.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                <p class="mt-0.5 lg:mt-2 text-[7px] lg:text-[11px] font-semibold leading-tight">{% trans "Support rapide" %}</p>
+                <p class="mt-0.5 lg:mt-2 text-[9px] lg:text-[11px] font-semibold leading-tight">{% trans "Support rapide" %}</p>
                 <p class="mt-1.5 hidden lg:block text-[10px] text-navy-900/50 dark:text-white/55 leading-tight">{% trans "Notre équipe est là pour vous aider 24/7." %}</p>
             </div>
             <div class="glass-panel rounded-lg lg:rounded-2xl p-1 lg:p-3 text-center">
                 <svg class="w-2.5 h-2.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <p class="mt-0.5 lg:mt-2 text-[7px] lg:text-[11px] font-semibold leading-tight">{% trans "Paiements sécurisés" %}</p>
+                <p class="mt-0.5 lg:mt-2 text-[9px] lg:text-[11px] font-semibold leading-tight">{% trans "Paiements sécurisés" %}</p>
                 <p class="mt-1.5 hidden lg:block text-[10px] text-navy-900/50 dark:text-white/55 leading-tight">{% trans "Transactions 100% sécurisées." %}</p>
             </div>
         </div>
         </div>
 
         <!-- Citation -->
-        <div class="flex-1 min-h-12 lg:min-h-20 mt-1.5 lg:mt-3 relative rounded-[12px] lg:rounded-[16px] overflow-hidden glass-panel">
+        <div class="flex-1 min-h-12 max-h-16 lg:min-h-20 lg:max-h-24 mt-1.5 lg:mt-3 relative rounded-[12px] lg:rounded-[16px] overflow-hidden glass-panel">
             <img src="{% static 'images/design/promo-ball.jpg' %}" alt="" class="absolute inset-0 w-full h-full object-cover object-right opacity-60">
             <div class="absolute inset-0 bg-gradient-to-r from-[#07111f] via-[#07111f]/80 to-transparent"></div>
             <div class="relative z-10 h-full flex flex-col justify-center px-2.5 lg:px-5 py-1 max-w-[75%]">
                 <div class="text-sm lg:text-xl text-accent-400 leading-none">&#10077;</div>
-                <p class="mt-0.5 text-[9px] lg:text-sm text-white/90 leading-tight">{% trans "La discipline bat toujours la chance." %}</p>
+                <p class="mt-0.5 text-[11px] lg:text-sm text-white/90 leading-tight">{% trans "La discipline bat toujours la chance." %}</p>
                 <p class="hidden lg:block mt-0.5 text-xs text-white/60 leading-tight">{% trans "Restez concentré, restez gagnant." %}</p>
             </div>
         </div>

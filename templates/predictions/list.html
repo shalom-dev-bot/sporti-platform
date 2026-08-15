@@ -162,7 +162,7 @@
                     <div class="flex items-center justify-between gap-2">
                         {% if prediction.odds %}
                         <span class="shrink-0 flex flex-col items-center px-2.5 py-1 rounded-[8px] bg-navy-900/5 dark:bg-black/25 border border-navy-900/10 dark:border-white/10">
-                            <span class="text-[8px] text-navy-900/50 dark:text-white/45 leading-none">{% trans "Cote" %}</span>
+                            <span class="text-[10px] text-navy-900/50 dark:text-white/45 leading-none">{% trans "Cote" %}</span>
                             <span class="text-xs font-semibold leading-tight">{{ prediction.odds }}</span>
                         </span>
                         {% else %}
@@ -172,7 +172,7 @@
                         {% if prediction.external_link %}
                         <a href="{{ prediction.external_link.url }}" target="_blank" rel="noopener noreferrer"
                            class="shrink-0 inline-flex flex-col items-center justify-center px-3.5 py-1.5 rounded-[10px] bg-white leading-none">
-                            <span class="text-[7px] font-semibold tracking-wide text-navy-900/50">{% trans "PARIEZ AVEC" %}</span>
+                            <span class="text-[9px] font-semibold tracking-wide text-navy-900/50">{% trans "PARIEZ AVEC" %}</span>
                             <span class="mt-0.5 text-xs font-extrabold text-navy-950 flex items-center gap-1">
                                 {{ prediction.external_link.label|default:prediction.external_link.get_platform_display }} &rarr;
                             </span>
@@ -180,7 +180,7 @@
                         {% elif prediction.custom_bet_url %}
                         <a href="{{ prediction.custom_bet_url }}" target="_blank" rel="noopener noreferrer"
                            class="shrink-0 inline-flex flex-col items-center justify-center px-3.5 py-1.5 rounded-[10px] bg-white leading-none">
-                            <span class="text-[7px] font-semibold tracking-wide text-navy-900/50">{% trans "PARIEZ" %}</span>
+                            <span class="text-[9px] font-semibold tracking-wide text-navy-900/50">{% trans "PARIEZ" %}</span>
                             <span class="mt-0.5 text-xs font-extrabold text-navy-950 flex items-center gap-1">
                                 {% trans "Voir l'offre" %} &rarr;
                             </span>
@@ -211,22 +211,22 @@
             <div class="glass-panel rounded-xl lg:rounded-2xl py-2 lg:py-3 text-center">
                 <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 mx-auto text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                 <div class="mt-1 lg:mt-1.5 text-sm lg:text-lg font-semibold">{{ success_rate }}%</div>
-                <div class="text-[7px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Taux de" %} <br class="hidden lg:block">{% trans "réussite" %}</div>
+                <div class="text-[9px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Taux de" %} <br class="hidden lg:block">{% trans "réussite" %}</div>
             </div>
             <div class="glass-panel rounded-xl lg:rounded-2xl py-2 lg:py-3 text-center">
                 <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
                 <div class="mt-1 lg:mt-1.5 text-sm lg:text-lg font-semibold">{{ new_today_count }}</div>
-                <div class="text-[7px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Pronostics" %} <br class="hidden lg:block">{% trans "aujourd'hui" %}</div>
+                <div class="text-[9px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Pronostics" %} <br class="hidden lg:block">{% trans "aujourd'hui" %}</div>
             </div>
             <div class="glass-panel rounded-xl lg:rounded-2xl py-2 lg:py-3 text-center">
                 <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 <div class="mt-1 lg:mt-1.5 text-sm lg:text-lg font-semibold">{{ active_clients_count }}+</div>
-                <div class="text-[7px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Membres" %} <br class="hidden lg:block">{% trans "actifs" %}</div>
+                <div class="text-[9px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Membres" %} <br class="hidden lg:block">{% trans "actifs" %}</div>
             </div>
             <div class="glass-panel rounded-xl lg:rounded-2xl py-2 lg:py-3 text-center">
                 <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 mx-auto text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 <div class="mt-1 lg:mt-1.5 text-sm lg:text-lg font-semibold">100%</div>
-                <div class="text-[7px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Paiements" %} <br class="hidden lg:block">{% trans "sécurisés" %}</div>
+                <div class="text-[9px] lg:text-[10px] text-navy-900/55 dark:text-white/60 leading-tight">{% trans "Paiements" %} <br class="hidden lg:block">{% trans "sécurisés" %}</div>
             </div>
         </div>
 

@@ -423,6 +423,24 @@
   .voice-time {
     @apply text-xs tabular-nums text-navy-900/45 dark:text-white/40 shrink-0 w-9 text-right;
   }
+
+  .voice-avatar-wrap {
+    @apply relative shrink-0 w-8 h-8;
+  }
+  .voice-avatar {
+    @apply w-8 h-8 rounded-full object-cover border border-white/20;
+  }
+  .voice-avatar-fallback {
+    @apply bg-navy-900/20 dark:bg-white/10;
+  }
+  .voice-avatar-mic-badge {
+    @apply absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-white;
+    background: linear-gradient(135deg, #1f46dd, #375dff);
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+  }
+  .voice-player-invert .voice-avatar-mic-badge {
+    border-color: rgba(31, 70, 221, 0.9);
+  }
 }
 
 

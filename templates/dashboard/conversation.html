@@ -188,6 +188,7 @@
     fetch("{% url 'company:api_config' %}").then((res) => res.json()).then((data) => renderLinks(data.external_links || [])).catch(() => {});
 
     const conversationId = {{ conversation.id }};
+    const ADMIN_AVATAR_URL = {% if user.display_avatar_url %}"{{ user.display_avatar_url }}"{% else %}null{% endif %};
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     let socket;
     const thread = document.getElementById("chat-thread");
@@ -237,7 +238,10 @@
     // lecteur. On convertit ici aussi les placeholders de l'historique.
     thread.querySelectorAll(".attachment-voice-placeholder[data-audio-url]").forEach((placeholder) => {
         const isOwn = !!placeholder.closest(".sporti-bubble-client");
-        const player = createVoicePlayer(placeholder.dataset.audioUrl, { invert: isOwn });
+        const player = createVoicePlayer(placeholder.dataset.audioUrl, {
+            invert: isOwn,
+            avatarUrl: isOwn ? ADMIN_AVATAR_URL : null,
+        });
         placeholder.replaceWith(player);
     });
 
@@ -342,7 +346,10 @@
         if (data.is_staff) inner += `<span class="status-tick text-white/70">✓</span>`;
         div.innerHTML = inner;
         if (audioAttachment) {
-            div.appendChild(createVoicePlayer(audioAttachment, { invert: data.is_staff }));
+            div.appendChild(createVoicePlayer(audioAttachment, {
+                invert: data.is_staff,
+                avatarUrl: data.is_staff ? ADMIN_AVATAR_URL : null,
+            }));
         }
 
         const reactionsRow = document.createElement("div");

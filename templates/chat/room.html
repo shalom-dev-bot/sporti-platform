@@ -142,6 +142,7 @@
 <script>
     const CURRENT_USER_ID = {{ user.id|default:"null" }};
     const IS_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
+    const MY_AVATAR_URL = {% if user.display_avatar_url %}"{{ user.display_avatar_url }}"{% else %}null{% endif %};
     function getCsrfToken() {
         return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "";
     }
@@ -426,7 +427,7 @@
             if (welcome.is_audio_enabled && welcome.audio_file) {
                 const bubble = document.createElement("div");
                 bubble.className = "sporti-bubble-admin";
-                bubble.appendChild(createVoicePlayer(welcome.audio_file));
+                bubble.appendChild(createVoicePlayer(welcome.audio_file, { avatarUrl: avatarSrc() }));
                 thread.appendChild(bubble);
             }
         }
@@ -482,7 +483,13 @@
             inner += "</div>";
             bubble.innerHTML = inner;
             if (audioAttachment) {
-                bubble.insertBefore(createVoicePlayer(audioAttachment, { invert: isMine }), bubble.lastElementChild);
+                bubble.insertBefore(
+                    createVoicePlayer(audioAttachment, {
+                        invert: isMine,
+                        avatarUrl: isMine ? MY_AVATAR_URL : avatarSrc(),
+                    }),
+                    bubble.lastElementChild
+                );
             }
 
             const reactionsRow = document.createElement("div");

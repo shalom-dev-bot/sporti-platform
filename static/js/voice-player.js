@@ -7,6 +7,7 @@
 
 const SPORTI_ICON_PLAY = '<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
 const SPORTI_ICON_PAUSE = '<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+const SPORTI_ICON_MIC_BADGE = '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/></svg>';
 const SPORTI_WAVEFORM_BARS = 40;
 
 function sportiFormatTime(seconds) {
@@ -27,46 +28,13 @@ function sportiFallbackPeaks(barCount) {
     return peaks;
 }
 
-// Bug connu (Chrome/Android, WebM enregistre via MediaRecorder) : la duree
-// annoncee par l'element <audio> reste Infinity ou NaN tant qu'on n'a pas
-// force une lecture complete du conteneur. Solution standard : avancer la
-// tete de lecture tres loin et attendre que le navigateur recalcule la
-// vraie duree (evenement timeupdate/durationchange).
-//
-// Important : on fait ce "seek" sur une sonde <audio> jetable, JAMAIS sur
-// l'element reellement utilise pour la lecture -- le manipuler pendant
-// que l'utilisateur tape sur "lire" pouvait bloquer play() (course entre
-// notre seek automatique et son clic), d'ou le bouton qui ne repondait
-// plus une fois sur un vrai telephone.
-function sportiProbeDuration(src) {
-    return new Promise((resolve) => {
-        const probe = new Audio();
-        probe.preload = "metadata";
-        probe.src = src;
-        const finish = (duration) => {
-            probe.pause();
-            probe.removeAttribute("src");
-            probe.load();
-            resolve(duration);
-        };
-        probe.addEventListener("error", () => finish(0));
-        probe.addEventListener("loadedmetadata", () => {
-            if (isFinite(probe.duration) && probe.duration > 0) {
-                finish(probe.duration);
-                return;
-            }
-            const onTimeUpdate = () => {
-                probe.removeEventListener("timeupdate", onTimeUpdate);
-                finish(isFinite(probe.duration) ? probe.duration : 0);
-            };
-            probe.addEventListener("timeupdate", onTimeUpdate);
-            probe.currentTime = 1e101;
-            setTimeout(() => finish(isFinite(probe.duration) ? probe.duration : 0), 2000);
-        });
-    });
-}
-
-async function sportiComputePeaks(src, barCount) {
+// Une seule passe fetch + decodeAudioData sert a la fois a calculer
+// l'onde sonore ET la duree exacte (audioBuffer.duration, fiable et
+// instantane -- pas besoin du bidouillage "seek vers une position enorme
+// puis attendre timeupdate" qui demandait un aller-retour reseau
+// SUPPLEMENTAIRE et pouvait prendre plusieurs secondes sur un reseau
+// mobile, donnant l'impression que la duree restait bloquee a 0:00).
+async function sportiAnalyzeAudio(src, barCount) {
     try {
         const res = await fetch(src);
         const arrayBuffer = await res.arrayBuffer();
@@ -85,10 +53,11 @@ async function sportiComputePeaks(src, barCount) {
             }
             peaks.push(Math.max(0.08, Math.min(1, max)));
         }
+        const duration = audioBuffer.duration;
         ctx.close();
-        return peaks;
+        return { peaks, duration: isFinite(duration) ? duration : 0 };
     } catch (err) {
-        return sportiFallbackPeaks(barCount);
+        return { peaks: sportiFallbackPeaks(barCount), duration: 0 };
     }
 }
 
@@ -160,19 +129,18 @@ function createVoicePlayer(src, options) {
 
     const audio = new Audio(src);
     audio.preload = "metadata";
-    // Duree fiable, obtenue via la sonde jetable -- ne jamais se fier
-    // uniquement a audio.duration, qui peut rester Infinity/NaN sur cet
-    // element pour les fichiers webm issus de MediaRecorder.
+    // Duree fiable : ne jamais se fier a audio.duration seul, qui peut
+    // rester Infinity/NaN pour les fichiers webm issus de MediaRecorder.
+    // sportiAnalyzeAudio() la calcule en meme temps que l'onde sonore,
+    // en une seule passe (voir commentaire de la fonction).
     let knownDuration = 0;
-    sportiProbeDuration(src).then((duration) => {
-        knownDuration = duration;
-        time.textContent = sportiFormatTime(knownDuration);
-        redraw();
-    });
-
     let peaks = sportiFallbackPeaks(SPORTI_WAVEFORM_BARS);
-    sportiComputePeaks(src, SPORTI_WAVEFORM_BARS).then((realPeaks) => {
-        peaks = realPeaks;
+    sportiAnalyzeAudio(src, SPORTI_WAVEFORM_BARS).then((result) => {
+        peaks = result.peaks;
+        if (result.duration) {
+            knownDuration = result.duration;
+            time.textContent = sportiFormatTime(knownDuration);
+        }
         redraw();
     });
 
@@ -231,5 +199,27 @@ function createVoicePlayer(src, options) {
     wrap.appendChild(btn);
     wrap.appendChild(canvas);
     wrap.appendChild(time);
+
+    // Petite photo (ou pastille avec icone) de l'expediteur a droite de
+    // la bulle, avec un badge micro -- comme WhatsApp.
+    const avatarWrap = document.createElement("div");
+    avatarWrap.className = "voice-avatar-wrap";
+    if (options && options.avatarUrl) {
+        const img = document.createElement("img");
+        img.src = options.avatarUrl;
+        img.alt = "";
+        img.className = "voice-avatar";
+        avatarWrap.appendChild(img);
+    } else {
+        const fallback = document.createElement("div");
+        fallback.className = "voice-avatar voice-avatar-fallback";
+        avatarWrap.appendChild(fallback);
+    }
+    const micBadge = document.createElement("span");
+    micBadge.className = "voice-avatar-mic-badge";
+    micBadge.innerHTML = SPORTI_ICON_MIC_BADGE;
+    avatarWrap.appendChild(micBadge);
+    wrap.appendChild(avatarWrap);
+
     return wrap;
 }

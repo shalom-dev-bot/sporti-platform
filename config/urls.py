@@ -2,9 +2,9 @@
 
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve as serve_static
 
 from apps.chat import views as chat_views
 
@@ -24,5 +24,13 @@ urlpatterns += i18n_patterns(
     path("", include("apps.chat.urls")),
 )
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Django's own `static()` helper is a no-op unless DEBUG=True, ce qui
+# laissait /media/ totalement non servi en production (STORAGE_BACKEND
+# "local" tant que S3 n'est pas configure) -- avatars, images et vocaux
+# echouaient tous silencieusement (404), meme fraichement envoyes.
+# Acceptable pour ce volume de demo ; a retirer si/quand STORAGE_BACKEND
+# passe sur "s3".
+urlpatterns += [
+    re_path(r"^media/(?P<path>.*)$", serve_static, {"document_root": settings.MEDIA_ROOT}),
+]

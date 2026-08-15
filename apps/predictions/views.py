@@ -75,6 +75,17 @@ def predictions_list(request):
         event__kickoff_at__gte=now - LIVE_MATCH_WINDOW,
     ).count()
 
+    # "Forme recente" : les N derniers pronostics reellement resolus
+    # (gagne/perdu), du plus ancien au plus recent -- jamais de donnees
+    # fictives, juste ce qui existe vraiment en base. S'affiche vide tant
+    # qu'aucun match n'a ete tranche par l'admin.
+    recent_form = list(
+        published.exclude(result=Prediction.Result.PENDING)
+        .select_related("event__home_team", "event__away_team")
+        .order_by("-event__kickoff_at")[:10]
+    )
+    recent_form.reverse()
+
     profile, _ = CompanyProfile.objects.get_or_create(pk=1)
 
     return render(
@@ -88,6 +99,7 @@ def predictions_list(request):
             "success_rate": success_rate,
             "new_today_count": new_today_count,
             "active_clients_count": User.objects.filter(is_staff=False, is_active=True).count(),
+            "recent_form": recent_form,
             "company": profile,
         },
     )

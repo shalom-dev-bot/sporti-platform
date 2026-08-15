@@ -230,6 +230,28 @@
             </div>
         </div>
 
+        {% if recent_form %}
+        <!-- Forme recente : historique reel gagne/perdu, jamais invente -->
+        <div class="glass-panel rounded-[16px] p-3.5 lg:p-4 mb-4">
+            <p class="flex items-center gap-1.5 text-xs lg:text-sm font-semibold mb-2.5">
+                <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                {% trans "Forme récente" %}
+                <span class="text-navy-900/40 dark:text-white/35 font-normal">({{ success_rate }}% {% trans "de réussite" %})</span>
+            </p>
+            <div class="flex items-center gap-1.5 flex-wrap">
+                {% for p in recent_form %}
+                <span class="group relative w-7 h-7 lg:w-8 lg:h-8 rounded-full flex items-center justify-center shrink-0 {% if p.result == 'won' %}bg-emerald-500/15 text-emerald-400{% else %}bg-red-500/15 text-red-400{% endif %}" title="{{ p.event.home_team }} vs {{ p.event.away_team }}">
+                    {% if p.result == 'won' %}
+                    <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    {% else %}
+                    <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    {% endif %}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Bandeau contact -->
         <a href="{% url 'chat:room' %}" class="flex items-center justify-between gap-3 glass-panel rounded-[16px] p-3.5 lg:p-4">
             <span class="flex items-center gap-2.5 min-w-0">

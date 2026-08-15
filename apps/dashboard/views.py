@@ -402,12 +402,41 @@ def company_settings(request):
     )
 
 
+# Meme palette que platformColor() cote client (templates/chat/room.html) --
+# les plateformes de paris (1xbet, melbet...) ne sont pas un choix fixe du
+# modele (juste "autre" + un label libre), donc la couleur se determine sur
+# le texte du label, pas sur un champ dedie.
+_PLATFORM_BRAND_COLORS = {
+    "1xbet": "#1f4fff",
+    "linebet": "#1f7a3e",
+    "winwin": "#5b21b6",
+    "melbet": "#0f766e",
+    "1win": "#b45309",
+    "megaparis": "#475569",
+}
+_SOCIAL_BRAND_COLORS = {
+    "whatsapp": "#25D366",
+    "telegram": "#29A9EA",
+    "facebook": "#1877F2",
+    "instagram": "#C13584",
+}
+
+
+def _link_badge_color(link):
+    if link.category == "platform":
+        key = (link.label or "").lower().replace(" ", "")
+        return _PLATFORM_BRAND_COLORS.get(key, "#5b8def")
+    return _SOCIAL_BRAND_COLORS.get(link.platform, "#94a3b8")
+
+
 @login_required(login_url="/gestion/connexion/")
 @user_passes_test(_is_staff, login_url="/gestion/connexion/")
 def links_list(request):
     """CRUD des liens externes (WhatsApp, Telegram, etc.) affiches sur la
     page d'accueil publique."""
-    links = ExternalLink.objects.all().order_by("order", "id")
+    links = list(ExternalLink.objects.all().order_by("order", "id"))
+    for link in links:
+        link.badge_color = _link_badge_color(link)
     return render(request, "dashboard/links_list.html", {"links": links})
 
 

@@ -22,20 +22,7 @@
         {% for link in links %}
         <div class="glass-panel rounded-2xl p-3 flex items-center gap-3">
             <span class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                  style="background-color:
-                    {% if link.platform == 'whatsapp' %}rgba(37,211,102,0.18)
-                    {% elif link.platform == 'telegram' %}rgba(41,169,234,0.18)
-                    {% elif link.platform == 'facebook' %}rgba(24,119,242,0.18)
-                    {% elif link.platform == 'instagram' %}rgba(193,53,132,0.18)
-                    {% elif link.category == 'platform' %}rgba(31,70,221,0.18)
-                    {% else %}rgba(255,255,255,0.08){% endif %};
-                  color:
-                    {% if link.platform == 'whatsapp' %}#25D366
-                    {% elif link.platform == 'telegram' %}#29A9EA
-                    {% elif link.platform == 'facebook' %}#1877F2
-                    {% elif link.platform == 'instagram' %}#C13584
-                    {% elif link.category == 'platform' %}#5b8def
-                    {% else %}rgba(255,255,255,0.6){% endif %};">
+                  style="background-color:{{ link.badge_color }}26; color:{{ link.badge_color }};">
                 {% if link.platform == 'whatsapp' %}
                     <svg class="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.5-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5C10 9 9.5 7.8 9.3 7.3c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z"/></svg>
                 {% elif link.platform == 'telegram' %}

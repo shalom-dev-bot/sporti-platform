@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-13 21:18+0100\n"
+"POT-Creation-Date: 2026-08-15 10:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgid "Votre nom ou pseudo"
 msgstr "Your name or username"
 
 #: apps/accounts/forms.py:56 apps/accounts/forms.py:69
-#: apps/accounts/forms.py:124
+#: apps/accounts/forms.py:129
 msgid "Ce nom existe deja, choisissez-en un autre."
 msgstr "This name is already taken, please choose another."
 
@@ -93,68 +93,63 @@ msgstr "Company profile updated."
 msgid "Message d'accueil mis a jour."
 msgstr "Welcome message updated."
 
-#: apps/dashboard/views.py:421
+#: apps/dashboard/views.py:450
 msgid "Lien ajoute."
 msgstr "Link added."
 
-#: apps/dashboard/views.py:436
+#: apps/dashboard/views.py:465
 msgid "Lien mis a jour."
 msgstr "Link updated."
 
-#: apps/dashboard/views.py:451
+#: apps/dashboard/views.py:480
 msgid "Lien supprime."
 msgstr "Link deleted."
 
-#: apps/dashboard/views.py:473
+#: apps/dashboard/views.py:502
 msgid "Equipe ajoutee."
 msgstr "Team added."
 
-#: apps/dashboard/views.py:488
+#: apps/dashboard/views.py:517
 msgid "Equipe mise a jour."
 msgstr "Team updated."
 
-#: apps/dashboard/views.py:503
+#: apps/dashboard/views.py:532
 msgid "Equipe supprimee."
 msgstr "Team deleted."
 
-#: apps/dashboard/views.py:525
+#: apps/dashboard/views.py:554
 msgid "Evenement ajoute."
 msgstr "Event added."
 
-#: apps/dashboard/views.py:540
+#: apps/dashboard/views.py:569
 msgid "Evenement mis a jour."
 msgstr "Event updated."
 
-#: apps/dashboard/views.py:555
+#: apps/dashboard/views.py:584
 msgid "Evenement supprime."
 msgstr "Event deleted."
 
-#: apps/dashboard/views.py:650
+#: apps/dashboard/views.py:679
 msgid "Pronostic ajoute."
 msgstr "Prediction added."
 
-#: apps/dashboard/views.py:696
+#: apps/dashboard/views.py:725
 msgid "Pronostic mis a jour."
 msgstr "Prediction updated."
 
-#: apps/dashboard/views.py:713
+#: apps/dashboard/views.py:742
 msgid "Pronostic supprime."
 msgstr "Prediction deleted."
 
-#: apps/dashboard/views.py:815
+#: apps/dashboard/views.py:844
 msgid "Ce match a deja ete importe."
 msgstr "This match has already been imported."
 
-#: apps/dashboard/views.py:824
-#, python-format
-msgid "Import impossible : %(error)s"
-msgstr "Import failed: %(error)s"
+#: apps/dashboard/views.py:854
+msgid "Donnees du match manquantes, relancez la recherche."
+msgstr "Missing match data, redo the search."
 
-#: apps/dashboard/views.py:829
-msgid "Ce match n'est plus disponible dans les resultats."
-msgstr "This match is no longer available in the results."
-
-#: apps/dashboard/views.py:849
+#: apps/dashboard/views.py:880
 msgid "Match importe. Ajoute maintenant ton pronostic."
 msgstr "Match imported. Now add your prediction."
 
@@ -345,7 +340,7 @@ msgstr "Back"
 #: templates/dashboard/company_settings.html:157
 #: templates/dashboard/event_form.html:34
 #: templates/dashboard/link_form.html:31
-#: templates/dashboard/prediction_form.html:42
+#: templates/dashboard/prediction_form.html:81
 #: templates/dashboard/team_form.html:25
 msgid "Enregistrer"
 msgstr "Save"
@@ -482,14 +477,14 @@ msgid "Voir maintenant"
 msgstr "View now"
 
 #: templates/chat/hub.html:94 templates/chat/room.html:27
-#: templates/chat/room.html:558 templates/dashboard/conversation.html:274
+#: templates/chat/room.html:565 templates/dashboard/conversation.html:278
 #: templates/dashboard/home.html:21
 msgid "En ligne"
 msgstr "Online"
 
 #: templates/chat/hub.html:94 templates/chat/room.html:27
-#: templates/chat/room.html:561 templates/dashboard/conversation.html:25
-#: templates/dashboard/conversation.html:274 templates/offline/offline.html:4
+#: templates/chat/room.html:568 templates/dashboard/conversation.html:25
+#: templates/dashboard/conversation.html:278 templates/offline/offline.html:4
 msgid "Hors ligne"
 msgstr "Offline"
 
@@ -652,69 +647,68 @@ msgstr "Recommended platforms"
 msgid "Retrouvez-moi sur"
 msgstr "Find me on"
 
-#: templates/chat/room.html:298 templates/dashboard/conversation.html:205
-#| msgid "Supprimer ce lien ?"
+#: templates/chat/room.html:299 templates/dashboard/conversation.html:206
 msgid "Supprimer ce message ?"
 msgstr "Delete this message?"
 
-#: templates/chat/room.html:309 templates/chat/room.html:442
+#: templates/chat/room.html:310 templates/chat/room.html:443
 #: templates/dashboard/conversation.html:48
-#: templates/dashboard/conversation.html:320
+#: templates/dashboard/conversation.html:324
 msgid "📎 Pièce jointe"
 msgstr "📎 Attachment"
 
-#: templates/chat/room.html:315
+#: templates/chat/room.html:316
 msgid "Vous"
 msgstr "You"
 
-#: templates/chat/room.html:317
+#: templates/chat/room.html:318
 msgid "Message"
 msgstr "Message"
 
-#: templates/chat/room.html:341
+#: templates/chat/room.html:342
 msgid "Répondre"
 msgstr "Reply"
 
-#: templates/chat/room.html:397 templates/dashboard/fixtures_search.html:22
+#: templates/chat/room.html:398 templates/dashboard/fixtures_search.html:22
 #: templates/predictions/list.html:77
 msgid "Aujourd'hui"
 msgstr "Today"
 
-#: templates/chat/room.html:398
+#: templates/chat/room.html:399
 msgid "Hier"
 msgstr "Yesterday"
 
-#: templates/chat/room.html:493 templates/dashboard/conversation.html:231
-#: templates/dashboard/conversation.html:351
+#: templates/chat/room.html:500 templates/dashboard/conversation.html:232
+#: templates/dashboard/conversation.html:358
 #: templates/dashboard/events_list.html:30
-#: templates/dashboard/links_list.html:66
+#: templates/dashboard/links_list.html:53
 #: templates/dashboard/predictions_list.html:127
 #: templates/dashboard/teams_list.html:32
 msgid "Supprimer"
 msgstr "Delete"
 
-#: templates/chat/room.html:707 templates/chat/room.html:717
-#: templates/chat/room.html:865
+#: templates/chat/room.html:714 templates/chat/room.html:724
+#: templates/chat/room.html:872
 msgid "Un instant, la conversation se charge encore…"
 msgstr "One moment, the conversation is still loading…"
 
-#: templates/chat/room.html:732 templates/dashboard/conversation.html:447
+#: templates/chat/room.html:739 templates/dashboard/conversation.html:454
 msgid "Échec de l'envoi du fichier."
 msgstr "Failed to send the file."
 
-#: templates/chat/room.html:744 templates/dashboard/conversation.html:450
+#: templates/chat/room.html:751 templates/dashboard/conversation.html:457
 msgid "Échec de l'envoi du fichier, vérifiez votre connexion."
 msgstr "Failed to send the file, check your connection."
 
-#: templates/chat/room.html:804 templates/dashboard/conversation.html:507
+#: templates/chat/room.html:811 templates/dashboard/conversation.html:514
 msgid "Échec de l'envoi du vocal."
 msgstr "Failed to send the voice message."
 
-#: templates/chat/room.html:816 templates/dashboard/conversation.html:512
+#: templates/chat/room.html:823 templates/dashboard/conversation.html:519
 msgid "Échec de l'envoi du vocal, vérifiez votre connexion."
 msgstr "Failed to send the voice message, check your connection."
 
-#: templates/chat/room.html:869 templates/dashboard/conversation.html:561
+#: templates/chat/room.html:876 templates/dashboard/conversation.html:568
 msgid ""
 "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous "
 "êtes actuellement sur"
@@ -722,7 +716,7 @@ msgstr ""
 "The microphone requires a secure connection (HTTPS) or localhost. You are "
 "currently on"
 
-#: templates/chat/room.html:869 templates/dashboard/conversation.html:561
+#: templates/chat/room.html:876 templates/dashboard/conversation.html:568
 msgid ""
 "si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi "
 "que vous fassiez."
@@ -730,12 +724,12 @@ msgstr ""
 "if this is not https:// or localhost, the browser blocks the microphone no "
 "matter what you do."
 
-#: templates/chat/room.html:877 templates/dashboard/company_settings.html:285
-#: templates/dashboard/conversation.html:569
+#: templates/chat/room.html:884 templates/dashboard/company_settings.html:285
+#: templates/dashboard/conversation.html:576
 msgid "Microphone inaccessible :"
 msgstr "Microphone unavailable:"
 
-#: templates/chat/room.html:877 templates/dashboard/conversation.html:569
+#: templates/chat/room.html:884 templates/dashboard/conversation.html:576
 msgid "Vérifiez les autorisations du navigateur."
 msgstr "Check your browser permissions."
 
@@ -773,7 +767,7 @@ msgstr "Teams"
 #: templates/dashboard/_admin_top.html:18
 #: templates/dashboard/_bottom_nav.html:21
 #: templates/dashboard/settings_hub.html:3
-#: templates/dashboard/settings_hub.html:11
+#: templates/dashboard/settings_hub.html:10
 msgid "Paramètres"
 msgstr "Settings"
 
@@ -904,7 +898,6 @@ msgid "Recommencer"
 msgstr "Start over"
 
 #: templates/dashboard/company_settings.html:142
-#| msgid "Enregistrer directement un message vocal"
 msgid "Envoyer ce message vocal"
 msgstr "Send this voice message"
 
@@ -991,7 +984,7 @@ msgid "Ajouter un événement"
 msgstr "Add an event"
 
 #: templates/dashboard/events_list.html:25
-#: templates/dashboard/links_list.html:61
+#: templates/dashboard/links_list.html:48
 #: templates/dashboard/predictions_list.html:117
 #: templates/dashboard/teams_list.html:27
 msgid "Modifier"
@@ -1091,6 +1084,7 @@ msgstr ""
 "the server."
 
 #: templates/dashboard/fixtures_search.html:96
+#: templates/dashboard/prediction_form.html:44
 msgid "Résultat"
 msgstr "Result"
 
@@ -1108,11 +1102,11 @@ msgstr "VS"
 msgid "Déjà importé"
 msgstr "Already imported"
 
-#: templates/dashboard/fixtures_search.html:136
+#: templates/dashboard/fixtures_search.html:142
 msgid "Importer"
 msgstr "Import"
 
-#: templates/dashboard/fixtures_search.html:148
+#: templates/dashboard/fixtures_search.html:154
 msgid "Aucun match trouvé pour cette date/compétition."
 msgstr "No matches found for this date/competition."
 
@@ -1206,7 +1200,7 @@ msgid "Liens rapides"
 msgstr "Quick links"
 
 #: templates/dashboard/links_list.html:15
-#: templates/dashboard/links_list.html:81
+#: templates/dashboard/links_list.html:68
 msgid "Ajouter un lien"
 msgstr "Add a link"
 
@@ -1216,15 +1210,15 @@ msgid ""
 "chat."
 msgstr "These links will be visible to users in the chat's links section."
 
-#: templates/dashboard/links_list.html:56
+#: templates/dashboard/links_list.html:43
 msgid "Masqué"
 msgstr "Hidden"
 
-#: templates/dashboard/links_list.html:64
+#: templates/dashboard/links_list.html:51
 msgid "Supprimer ce lien ?"
 msgstr "Delete this link?"
 
-#: templates/dashboard/links_list.html:74
+#: templates/dashboard/links_list.html:61
 msgid "Aucun lien pour le moment."
 msgstr "No links yet."
 
@@ -1284,6 +1278,7 @@ msgid "✓ Champs pré-remplis, modifiez-les si besoin avant d'enregistrer."
 msgstr "✓ Fields pre-filled, edit them if needed before saving."
 
 #: templates/dashboard/prediction_create_form.html:82
+#: templates/dashboard/prediction_form.html:55
 #: templates/predictions/list.html:158
 msgid "Pronostic"
 msgstr "Prediction"
@@ -1309,6 +1304,7 @@ msgid "Lien de pari"
 msgstr "Betting link"
 
 #: templates/dashboard/prediction_create_form.html:124
+#: templates/dashboard/prediction_form.html:69
 msgid "Options"
 msgstr "Options"
 
@@ -1370,7 +1366,26 @@ msgstr "Create an event"
 msgid "importer un match réel"
 msgstr "import a real match"
 
-#: templates/dashboard/prediction_form.html:42
+#: templates/dashboard/prediction_form.html:29
+#| msgid "Match nul"
+msgid "Match"
+msgstr "Match"
+
+#: templates/dashboard/prediction_form.html:46
+msgid "En attente"
+msgstr "Pending"
+
+#: templates/dashboard/prediction_form.html:47
+#: templates/predictions/list.html:128
+msgid "Gagné"
+msgstr "Won"
+
+#: templates/dashboard/prediction_form.html:48
+#: templates/predictions/list.html:130
+msgid "Perdu"
+msgstr "Lost"
+
+#: templates/dashboard/prediction_form.html:81
 msgid "Ajouter le pronostic"
 msgstr "Add prediction"
 
@@ -1416,7 +1431,7 @@ msgstr "No prediction matches this search."
 msgid "Aucun pronostic pour le moment."
 msgstr "No predictions yet."
 
-#: templates/dashboard/settings_hub.html:12
+#: templates/dashboard/settings_hub.html:11
 msgid "Gérez votre plateforme et votre compte."
 msgstr "Manage your platform and your account."
 
@@ -1544,14 +1559,6 @@ msgstr "TOP MATCH"
 msgid "LIVE"
 msgstr "LIVE"
 
-#: templates/predictions/list.html:128
-msgid "Gagné"
-msgstr "Won"
-
-#: templates/predictions/list.html:130
-msgid "Perdu"
-msgstr "Lost"
-
 #: templates/predictions/list.html:132
 msgid "confiance"
 msgstr "confidence"
@@ -1597,14 +1604,23 @@ msgid "sécurisés"
 msgstr "secure"
 
 #: templates/predictions/list.html:238
+msgid "Forme récente"
+msgstr "Recent form"
+
+#: templates/predictions/list.html:239
+#| msgid "réussite"
+msgid "de réussite"
+msgstr "success rate"
+
+#: templates/predictions/list.html:260
 msgid "Une question sur un pronostic ?"
 msgstr "A question about a prediction?"
 
-#: templates/predictions/list.html:239
+#: templates/predictions/list.html:261
 msgid "Discute directement avec l'équipe SPORTI."
 msgstr "Chat directly with the SPORTI team."
 
-#: templates/predictions/list.html:243
+#: templates/predictions/list.html:265
 msgid "Discuter"
 msgstr "Chat"
 
@@ -1622,14 +1638,18 @@ msgstr "You are about to sign in using a third-party Google account."
 msgid "Continuer"
 msgstr "Continue"
 
+#, python-format
+#~ msgid "Import impossible : %(error)s"
+#~ msgstr "Import failed: %(error)s"
+
+#~ msgid "Ce match n'est plus disponible dans les resultats."
+#~ msgstr "This match is no longer available in the results."
+
 #~ msgid "Pret a etre enregistre ci-dessous"
 #~ msgstr "Ready to be recorded below"
 
 #~ msgid "Actifs"
 #~ msgstr "Active"
-
-#~ msgid "En attente"
-#~ msgstr "Pending"
 
 #~ msgid "Content de vous revoir"
 #~ msgstr "Welcome back"

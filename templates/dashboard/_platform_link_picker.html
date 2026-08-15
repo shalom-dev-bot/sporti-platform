@@ -1,0 +1,98 @@
+{% load i18n %}
+<div class="glass-panel rounded-2xl p-4">
+    <p class="sporti-section-label mb-1">{% trans "Lien de pari" %}</p>
+    <p class="text-[11px] text-navy-900/40 dark:text-white/35 mb-3">{% trans "Choisissez une plateforme déjà enregistrée, ou ajoutez-en une nouvelle à la volée." %}</p>
+
+    <div class="flex flex-wrap gap-2" id="platform-pill-row">
+        <button type="button" class="platform-pill-new" data-platform-pill="none">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg>
+            {% trans "Aucun lien" %}
+        </button>
+        {% for link in platform_links %}
+        <button type="button" class="platform-pill" data-platform-pill="{{ link.id }}" data-color="{{ link.badge_color }}"
+                style="background-color:{{ link.badge_color }}1f; border-color:{{ link.badge_color }}55; color:{{ link.badge_color }};">
+            {{ link.display_name }}
+        </button>
+        {% endfor %}
+        <button type="button" class="platform-pill-new" data-platform-pill="new">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            {% trans "Nouvelle" %}
+        </button>
+    </div>
+
+    <div id="platform-new-fields" class="hidden mt-3 space-y-3">
+        <div class="field-group !mb-0">
+            <label for="{{ form.custom_platform_name.id_for_label }}" class="field-label">{{ form.custom_platform_name.label }}</label>
+            {{ form.custom_platform_name }}
+        </div>
+        <div class="field-group !mb-0">
+            <label for="{{ form.custom_bet_url.id_for_label }}" class="field-label">{{ form.custom_bet_url.label }}</label>
+            {{ form.custom_bet_url }}
+            <p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ form.custom_bet_url.help_text }}</p>
+        </div>
+    </div>
+
+    <div class="hidden">{{ form.external_link }}</div>
+
+    <div class="field-group mt-3 !mb-0">
+        <label for="{{ form.coupon_code.id_for_label }}" class="field-label">{{ form.coupon_code.label }}</label>
+        {{ form.coupon_code }}
+        <p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ form.coupon_code.help_text }}</p>
+    </div>
+</div>
+
+<script>
+(function () {
+    const select = document.getElementById("{{ form.external_link.id_for_label }}");
+    const nameInput = document.getElementById("{{ form.custom_platform_name.id_for_label }}");
+    const urlInput = document.getElementById("{{ form.custom_bet_url.id_for_label }}");
+    const newFieldsWrap = document.getElementById("platform-new-fields");
+    const pills = document.querySelectorAll("#platform-pill-row [data-platform-pill]");
+
+    function paintBrandPill(pill, active) {
+        if (!pill.classList.contains("platform-pill")) return;
+        const color = pill.dataset.color;
+        if (active) {
+            pill.style.backgroundColor = color;
+            pill.style.borderColor = "transparent";
+            pill.style.color = "#fff";
+            pill.style.boxShadow = `0 0 12px ${color}88`;
+        } else {
+            pill.style.backgroundColor = color + "1f";
+            pill.style.borderColor = color + "55";
+            pill.style.color = color;
+            pill.style.boxShadow = "none";
+        }
+    }
+
+    function activate(pillValue) {
+        pills.forEach((p) => {
+            const isActive = p.dataset.platformPill === pillValue;
+            p.classList.toggle("platform-pill-new-active", isActive && p.classList.contains("platform-pill-new"));
+            paintBrandPill(p, isActive);
+        });
+        if (pillValue === "new") {
+            if (select) select.value = "";
+            newFieldsWrap.classList.remove("hidden");
+        } else {
+            newFieldsWrap.classList.add("hidden");
+            if (nameInput) nameInput.value = "";
+            if (urlInput) urlInput.value = "";
+            if (select) select.value = pillValue === "none" ? "" : pillValue;
+        }
+    }
+
+    pills.forEach((pill) => {
+        pill.addEventListener("click", () => activate(pill.dataset.platformPill));
+    });
+
+    const initial = select ? select.value : "";
+    if (initial) {
+        activate(initial);
+    } else if (nameInput && nameInput.value.trim()) {
+        activate("new");
+    } else {
+        activate("none");
+    }
+})();
+</script>

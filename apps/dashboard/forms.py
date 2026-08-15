@@ -138,10 +138,8 @@ class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
     custom_platform_name = forms.CharField(
         max_length=100,
         required=False,
-        label="Ou saisir le nom d'une nouvelle plateforme",
-        help_text=(
-            "Cree (ou reutilise) une plateforme recommandee a la volee, " "sans quitter cet ecran."
-        ),
+        label="Nom de la plateforme",
+        help_text="Sera enregistree comme favori, reutilisable sur les prochains pronostics.",
     )
 
     class Meta:
@@ -168,10 +166,11 @@ class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
             "confidence": "Confiance % (optionnel)",
             "is_featured": "Match phare (Top matchs)",
             "external_link": "Plateforme de paris recommandee (optionnel)",
-            "custom_bet_url": "Ou lien personnalise (optionnel)",
+            "custom_bet_url": "Lien vers cette plateforme",
             "result": "Resultat",
             "is_published": "Visible par les clients",
         }
+        help_texts = {"custom_bet_url": "Ex: https://exemple.com/parrainage"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -182,7 +181,7 @@ class PredictionForm(_StyledPredictionFormMixin, forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         platform_name = self.cleaned_data.get("custom_platform_name", "").strip()
-        if platform_name and not instance.external_link_id:
+        if platform_name:
             instance.external_link = _get_or_create_platform_link(
                 platform_name, self.cleaned_data.get("custom_bet_url")
             )
@@ -199,10 +198,8 @@ class PredictionCoreForm(_StyledPredictionFormMixin, forms.ModelForm):
     custom_platform_name = forms.CharField(
         max_length=100,
         required=False,
-        label="Ou saisir le nom d'une nouvelle plateforme",
-        help_text=(
-            "Cree (ou reutilise) une plateforme recommandee a la volee, " "sans quitter cet ecran."
-        ),
+        label="Nom de la plateforme",
+        help_text="Sera enregistree comme favori, reutilisable sur les prochains pronostics.",
     )
 
     class Meta:
@@ -224,9 +221,10 @@ class PredictionCoreForm(_StyledPredictionFormMixin, forms.ModelForm):
             "confidence": "Confiance % (optionnel)",
             "is_featured": "Match phare (Top matchs)",
             "external_link": "Plateforme de paris recommandee (optionnel)",
-            "custom_bet_url": "Ou lien personnalise (optionnel)",
+            "custom_bet_url": "Lien vers cette plateforme",
             "is_published": "Visible par les clients",
         }
+        help_texts = {"custom_bet_url": "Ex: https://exemple.com/parrainage"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -237,7 +235,7 @@ class PredictionCoreForm(_StyledPredictionFormMixin, forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         platform_name = self.cleaned_data.get("custom_platform_name", "").strip()
-        if platform_name and not instance.external_link_id:
+        if platform_name:
             instance.external_link = _get_or_create_platform_link(
                 platform_name, self.cleaned_data.get("custom_bet_url")
             )

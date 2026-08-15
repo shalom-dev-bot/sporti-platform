@@ -54,7 +54,7 @@
     <div class="glass-panel rounded-2xl p-4">
         <p class="sporti-section-label mb-2">{% trans "Pronostic" %}</p>
         {% for field in form %}
-        {% if field.name != "event" and field.name != "result" and field.field.widget.input_type != "checkbox" %}
+        {% if field.name != "event" and field.name != "result" and field.name != "external_link" and field.name != "custom_platform_name" and field.name != "custom_bet_url" and field.name != "coupon_code" and field.field.widget.input_type != "checkbox" %}
         <div class="field-group">
             <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
             {{ field }}
@@ -64,6 +64,8 @@
         {% endif %}
         {% endfor %}
     </div>
+
+    {% include "dashboard/_platform_link_picker.html" with form=form platform_links=platform_links %}
 
     <div class="glass-panel rounded-2xl p-4">
         <p class="sporti-section-label mb-2">{% trans "Options" %}</p>

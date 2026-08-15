@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-15 10:31+0100\n"
+"POT-Creation-Date: 2026-08-15 11:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,63 +94,63 @@ msgstr "Profil de l'entreprise mis a jour."
 msgid "Message d'accueil mis a jour."
 msgstr "Message d'accueil mis a jour."
 
-#: apps/dashboard/views.py:450
+#: apps/dashboard/views.py:461
 msgid "Lien ajoute."
 msgstr "Lien ajoute."
 
-#: apps/dashboard/views.py:465
+#: apps/dashboard/views.py:476
 msgid "Lien mis a jour."
 msgstr "Lien mis a jour."
 
-#: apps/dashboard/views.py:480
+#: apps/dashboard/views.py:491
 msgid "Lien supprime."
 msgstr "Lien supprime."
 
-#: apps/dashboard/views.py:502
+#: apps/dashboard/views.py:513
 msgid "Equipe ajoutee."
 msgstr "Equipe ajoutee."
 
-#: apps/dashboard/views.py:517
+#: apps/dashboard/views.py:528
 msgid "Equipe mise a jour."
 msgstr "Equipe mise a jour."
 
-#: apps/dashboard/views.py:532
+#: apps/dashboard/views.py:543
 msgid "Equipe supprimee."
 msgstr "Equipe supprimee."
 
-#: apps/dashboard/views.py:554
+#: apps/dashboard/views.py:565
 msgid "Evenement ajoute."
 msgstr "Evenement ajoute."
 
-#: apps/dashboard/views.py:569
+#: apps/dashboard/views.py:580
 msgid "Evenement mis a jour."
 msgstr "Evenement mis a jour."
 
-#: apps/dashboard/views.py:584
+#: apps/dashboard/views.py:595
 msgid "Evenement supprime."
 msgstr "Evenement supprime."
 
-#: apps/dashboard/views.py:679
+#: apps/dashboard/views.py:690
 msgid "Pronostic ajoute."
 msgstr "Pronostic ajoute."
 
-#: apps/dashboard/views.py:725
+#: apps/dashboard/views.py:737
 msgid "Pronostic mis a jour."
 msgstr "Pronostic mis a jour."
 
-#: apps/dashboard/views.py:742
+#: apps/dashboard/views.py:759
 msgid "Pronostic supprime."
 msgstr "Pronostic supprime."
 
-#: apps/dashboard/views.py:844
+#: apps/dashboard/views.py:861
 msgid "Ce match a deja ete importe."
 msgstr "Ce match a deja ete importe."
 
-#: apps/dashboard/views.py:854
+#: apps/dashboard/views.py:871
 msgid "Donnees du match manquantes, relancez la recherche."
 msgstr "Donnees du match manquantes, relancez la recherche."
 
-#: apps/dashboard/views.py:880
+#: apps/dashboard/views.py:897
 msgid "Match importe. Ajoute maintenant ton pronostic."
 msgstr "Match importe. Ajoute maintenant ton pronostic."
 
@@ -344,7 +344,7 @@ msgstr "Retour"
 #: templates/dashboard/company_settings.html:157
 #: templates/dashboard/event_form.html:34
 #: templates/dashboard/link_form.html:31
-#: templates/dashboard/prediction_form.html:81
+#: templates/dashboard/prediction_form.html:83
 #: templates/dashboard/team_form.html:25
 msgid "Enregistrer"
 msgstr "Enregistrer"
@@ -795,6 +795,28 @@ msgstr "Aucun message"
 #: templates/dashboard/_conversations_sidebar.html:33
 msgid "Aucune conversation pour le moment."
 msgstr "Aucune conversation pour le moment."
+
+#: templates/dashboard/_platform_link_picker.html:3
+msgid "Lien de pari"
+msgstr "Lien de pari"
+
+#: templates/dashboard/_platform_link_picker.html:4
+msgid ""
+"Choisissez une plateforme déjà enregistrée, ou ajoutez-en une nouvelle à la "
+"volée."
+msgstr ""
+"Choisissez une plateforme déjà enregistrée, ou ajoutez-en une nouvelle à la "
+"volée."
+
+#: templates/dashboard/_platform_link_picker.html:9
+#| msgid "Ajouter un lien"
+msgid "Aucun lien"
+msgstr "Aucun lien"
+
+#: templates/dashboard/_platform_link_picker.html:19
+#| msgid "Nouveau lien"
+msgid "Nouvelle"
+msgstr "Nouvelle"
 
 #: templates/dashboard/change_password.html:6
 #: templates/dashboard/company_settings.html:8
@@ -1306,49 +1328,45 @@ msgstr "Extérieur"
 msgid "Double chance"
 msgstr "Double chance"
 
-#: templates/dashboard/prediction_create_form.html:101
-msgid "Lien de pari"
-msgstr "Lien de pari"
-
-#: templates/dashboard/prediction_create_form.html:124
-#: templates/dashboard/prediction_form.html:69
+#: templates/dashboard/prediction_create_form.html:103
+#: templates/dashboard/prediction_form.html:71
 msgid "Options"
 msgstr "Options"
 
-#: templates/dashboard/prediction_create_form.html:136
+#: templates/dashboard/prediction_create_form.html:115
 msgid "Statut"
 msgstr "Statut"
 
-#: templates/dashboard/prediction_create_form.html:138
+#: templates/dashboard/prediction_create_form.html:117
 msgid "Brouillon"
 msgstr "Brouillon"
 
-#: templates/dashboard/prediction_create_form.html:139
+#: templates/dashboard/prediction_create_form.html:118
 msgid "Publier maintenant"
 msgstr "Publier maintenant"
 
-#: templates/dashboard/prediction_create_form.html:146
+#: templates/dashboard/prediction_create_form.html:125
 msgid "Enregistrer le pronostic"
 msgstr "Enregistrer le pronostic"
 
-#: templates/dashboard/prediction_create_form.html:207
+#: templates/dashboard/prediction_create_form.html:186
 msgid "l’équipe à domicile"
 msgstr "l’équipe à domicile"
 
-#: templates/dashboard/prediction_create_form.html:208
+#: templates/dashboard/prediction_create_form.html:187
 msgid "l’équipe à l’extérieur"
 msgstr "l’équipe à l’extérieur"
 
-#: templates/dashboard/prediction_create_form.html:220
-#: templates/dashboard/prediction_create_form.html:222
+#: templates/dashboard/prediction_create_form.html:199
+#: templates/dashboard/prediction_create_form.html:201
 msgid "gagne"
 msgstr "gagne"
 
-#: templates/dashboard/prediction_create_form.html:221
+#: templates/dashboard/prediction_create_form.html:200
 msgid "Match nul"
 msgstr "Match nul"
 
-#: templates/dashboard/prediction_create_form.html:223
+#: templates/dashboard/prediction_create_form.html:202
 msgid "ou match nul (double chance)"
 msgstr "ou match nul (double chance)"
 
@@ -1374,7 +1392,6 @@ msgid "importer un match réel"
 msgstr "importer un match réel"
 
 #: templates/dashboard/prediction_form.html:29
-#| msgid "Match nul"
 msgid "Match"
 msgstr "Match"
 
@@ -1392,7 +1409,7 @@ msgstr "Gagné"
 msgid "Perdu"
 msgstr "Perdu"
 
-#: templates/dashboard/prediction_form.html:81
+#: templates/dashboard/prediction_form.html:83
 msgid "Ajouter le pronostic"
 msgstr "Ajouter le pronostic"
 
@@ -1615,7 +1632,6 @@ msgid "Forme récente"
 msgstr "Forme récente"
 
 #: templates/predictions/list.html:239
-#| msgid "réussite"
 msgid "de réussite"
 msgstr "de réussite"
 

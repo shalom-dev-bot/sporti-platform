@@ -375,6 +375,24 @@
     box-shadow: 0 0 14px rgba(55, 92, 255, 0.4);
   }
 
+  .platform-pill {
+    @apply flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold
+           border transition-colors duration-150 shrink-0 cursor-pointer;
+  }
+  .platform-pill-new {
+    @apply flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold shrink-0
+           bg-navy-900/5 dark:bg-white/5 border border-dashed border-navy-900/20 dark:border-white/20
+           text-navy-900/60 dark:text-white/60 transition-colors duration-150;
+  }
+  .platform-pill-new:hover {
+    @apply border-accent-500/50 text-accent-600 dark:text-accent-400;
+  }
+  .platform-pill-new-active {
+    @apply text-white border-transparent border-solid;
+    background: linear-gradient(135deg, #1f46dd, #375dff);
+    box-shadow: 0 0 14px rgba(55, 92, 255, 0.4);
+  }
+
   .status-toggle-btn {
     @apply py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wide
            bg-navy-900/5 dark:bg-white/5 border border-navy-900/10 dark:border-white/10

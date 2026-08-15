@@ -429,6 +429,17 @@ def _link_badge_color(link):
     return _SOCIAL_BRAND_COLORS.get(link.platform, "#94a3b8")
 
 
+def _platform_links_for_picker():
+    """Plateformes deja enregistrees, pretes pour le selecteur en pastilles
+    du formulaire de pronostic (choisir une plateforme existante vs en
+    saisir une nouvelle)."""
+    links = list(ExternalLink.objects.filter(category="platform").order_by("order", "id"))
+    for link in links:
+        link.badge_color = _link_badge_color(link)
+        link.display_name = link.label or link.get_platform_display()
+    return links
+
+
 @login_required(login_url="/gestion/connexion/")
 @user_passes_test(_is_staff, login_url="/gestion/connexion/")
 def links_list(request):
@@ -710,6 +721,7 @@ def prediction_create(request):
             "prediction_form": prediction_form,
             "existing_event": existing_event,
             "all_events": all_events,
+            "platform_links": _platform_links_for_picker(),
         },
     )
 
@@ -729,7 +741,12 @@ def prediction_edit(request, prediction_id):
     return render(
         request,
         "dashboard/prediction_form.html",
-        {"form": form, "is_edit": True, "prediction": prediction},
+        {
+            "form": form,
+            "is_edit": True,
+            "prediction": prediction,
+            "platform_links": _platform_links_for_picker(),
+        },
     )
 
 

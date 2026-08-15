@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-15 10:31+0100\n"
+"POT-Creation-Date: 2026-08-15 11:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,63 +93,63 @@ msgstr "Company profile updated."
 msgid "Message d'accueil mis a jour."
 msgstr "Welcome message updated."
 
-#: apps/dashboard/views.py:450
+#: apps/dashboard/views.py:461
 msgid "Lien ajoute."
 msgstr "Link added."
 
-#: apps/dashboard/views.py:465
+#: apps/dashboard/views.py:476
 msgid "Lien mis a jour."
 msgstr "Link updated."
 
-#: apps/dashboard/views.py:480
+#: apps/dashboard/views.py:491
 msgid "Lien supprime."
 msgstr "Link deleted."
 
-#: apps/dashboard/views.py:502
+#: apps/dashboard/views.py:513
 msgid "Equipe ajoutee."
 msgstr "Team added."
 
-#: apps/dashboard/views.py:517
+#: apps/dashboard/views.py:528
 msgid "Equipe mise a jour."
 msgstr "Team updated."
 
-#: apps/dashboard/views.py:532
+#: apps/dashboard/views.py:543
 msgid "Equipe supprimee."
 msgstr "Team deleted."
 
-#: apps/dashboard/views.py:554
+#: apps/dashboard/views.py:565
 msgid "Evenement ajoute."
 msgstr "Event added."
 
-#: apps/dashboard/views.py:569
+#: apps/dashboard/views.py:580
 msgid "Evenement mis a jour."
 msgstr "Event updated."
 
-#: apps/dashboard/views.py:584
+#: apps/dashboard/views.py:595
 msgid "Evenement supprime."
 msgstr "Event deleted."
 
-#: apps/dashboard/views.py:679
+#: apps/dashboard/views.py:690
 msgid "Pronostic ajoute."
 msgstr "Prediction added."
 
-#: apps/dashboard/views.py:725
+#: apps/dashboard/views.py:737
 msgid "Pronostic mis a jour."
 msgstr "Prediction updated."
 
-#: apps/dashboard/views.py:742
+#: apps/dashboard/views.py:759
 msgid "Pronostic supprime."
 msgstr "Prediction deleted."
 
-#: apps/dashboard/views.py:844
+#: apps/dashboard/views.py:861
 msgid "Ce match a deja ete importe."
 msgstr "This match has already been imported."
 
-#: apps/dashboard/views.py:854
+#: apps/dashboard/views.py:871
 msgid "Donnees du match manquantes, relancez la recherche."
 msgstr "Missing match data, redo the search."
 
-#: apps/dashboard/views.py:880
+#: apps/dashboard/views.py:897
 msgid "Match importe. Ajoute maintenant ton pronostic."
 msgstr "Match imported. Now add your prediction."
 
@@ -340,7 +340,7 @@ msgstr "Back"
 #: templates/dashboard/company_settings.html:157
 #: templates/dashboard/event_form.html:34
 #: templates/dashboard/link_form.html:31
-#: templates/dashboard/prediction_form.html:81
+#: templates/dashboard/prediction_form.html:83
 #: templates/dashboard/team_form.html:25
 msgid "Enregistrer"
 msgstr "Save"
@@ -790,6 +790,26 @@ msgstr "No messages"
 #: templates/dashboard/_conversations_sidebar.html:33
 msgid "Aucune conversation pour le moment."
 msgstr "No conversations yet."
+
+#: templates/dashboard/_platform_link_picker.html:3
+msgid "Lien de pari"
+msgstr "Betting link"
+
+#: templates/dashboard/_platform_link_picker.html:4
+msgid ""
+"Choisissez une plateforme déjà enregistrée, ou ajoutez-en une nouvelle à la "
+"volée."
+msgstr "Choose an existing platform, or add a new one on the fly."
+
+#: templates/dashboard/_platform_link_picker.html:9
+#| msgid "Ajouter un lien"
+msgid "Aucun lien"
+msgstr "No link"
+
+#: templates/dashboard/_platform_link_picker.html:19
+#| msgid "Nouveau lien"
+msgid "Nouvelle"
+msgstr "New"
 
 #: templates/dashboard/change_password.html:6
 #: templates/dashboard/company_settings.html:8
@@ -1299,49 +1319,45 @@ msgstr "Away"
 msgid "Double chance"
 msgstr "Double chance"
 
-#: templates/dashboard/prediction_create_form.html:101
-msgid "Lien de pari"
-msgstr "Betting link"
-
-#: templates/dashboard/prediction_create_form.html:124
-#: templates/dashboard/prediction_form.html:69
+#: templates/dashboard/prediction_create_form.html:103
+#: templates/dashboard/prediction_form.html:71
 msgid "Options"
 msgstr "Options"
 
-#: templates/dashboard/prediction_create_form.html:136
+#: templates/dashboard/prediction_create_form.html:115
 msgid "Statut"
 msgstr "Status"
 
-#: templates/dashboard/prediction_create_form.html:138
+#: templates/dashboard/prediction_create_form.html:117
 msgid "Brouillon"
 msgstr "Draft"
 
-#: templates/dashboard/prediction_create_form.html:139
+#: templates/dashboard/prediction_create_form.html:118
 msgid "Publier maintenant"
 msgstr "Publish now"
 
-#: templates/dashboard/prediction_create_form.html:146
+#: templates/dashboard/prediction_create_form.html:125
 msgid "Enregistrer le pronostic"
 msgstr "Save prediction"
 
-#: templates/dashboard/prediction_create_form.html:207
+#: templates/dashboard/prediction_create_form.html:186
 msgid "l’équipe à domicile"
 msgstr "the home team"
 
-#: templates/dashboard/prediction_create_form.html:208
+#: templates/dashboard/prediction_create_form.html:187
 msgid "l’équipe à l’extérieur"
 msgstr "the away team"
 
-#: templates/dashboard/prediction_create_form.html:220
-#: templates/dashboard/prediction_create_form.html:222
+#: templates/dashboard/prediction_create_form.html:199
+#: templates/dashboard/prediction_create_form.html:201
 msgid "gagne"
 msgstr "wins"
 
-#: templates/dashboard/prediction_create_form.html:221
+#: templates/dashboard/prediction_create_form.html:200
 msgid "Match nul"
 msgstr "Draw"
 
-#: templates/dashboard/prediction_create_form.html:223
+#: templates/dashboard/prediction_create_form.html:202
 msgid "ou match nul (double chance)"
 msgstr "or draw (double chance)"
 
@@ -1367,7 +1383,6 @@ msgid "importer un match réel"
 msgstr "import a real match"
 
 #: templates/dashboard/prediction_form.html:29
-#| msgid "Match nul"
 msgid "Match"
 msgstr "Match"
 
@@ -1385,7 +1400,7 @@ msgstr "Won"
 msgid "Perdu"
 msgstr "Lost"
 
-#: templates/dashboard/prediction_form.html:81
+#: templates/dashboard/prediction_form.html:83
 msgid "Ajouter le pronostic"
 msgstr "Add prediction"
 
@@ -1608,7 +1623,6 @@ msgid "Forme récente"
 msgstr "Recent form"
 
 #: templates/predictions/list.html:239
-#| msgid "réussite"
 msgid "de réussite"
 msgstr "success rate"
 

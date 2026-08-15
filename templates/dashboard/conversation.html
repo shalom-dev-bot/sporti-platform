@@ -206,6 +206,12 @@
 
     const conversationId = {{ conversation.id }};
     const ADMIN_AVATAR_URL = {% if user.display_avatar_url %}"{{ user.display_avatar_url }}"{% else %}null{% endif %};
+    const SPORTI_DELETE_LABELS = {
+        deleteForEveryone: "{% trans 'Supprimer pour tout le monde' %}",
+        deleteForMe: "{% trans 'Supprimer pour moi' %}",
+        cancel: "{% trans 'Annuler' %}",
+        selected: "{% trans '1 message sélectionné' %}",
+    };
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     let socket;
     const thread = document.getElementById("chat-thread");
@@ -220,7 +226,6 @@
         socket.send(JSON.stringify({ type: "reaction", message_id: messageId, emoji }));
     }
     function deleteMessage(messageId) {
-        if (!confirm("{% trans 'Supprimer ce message ?' %}")) return;
         socket.send(JSON.stringify({ type: "delete_message", message_id: messageId }));
     }
     function sendTextMessage(text) {
@@ -246,7 +251,7 @@
             const initial = (row.dataset.initialEmojis || "").split(",").filter(Boolean);
             renderReactionBadges(row, initial);
         }
-        attachReactionUI(bubble, messageId, sendReaction, bubble.classList.contains("sporti-bubble-client"), deleteMessage, "{% trans 'Supprimer' %}");
+        attachReactionUI(bubble, messageId, sendReaction, bubble.classList.contains("sporti-bubble-client"), deleteMessage, SPORTI_DELETE_LABELS);
     });
 
     // Les messages vocaux deja existants au chargement (historique
@@ -372,7 +377,7 @@
         const reactionsRow = document.createElement("div");
         reactionsRow.className = "reactions-row";
         div.appendChild(reactionsRow);
-        attachReactionUI(div, data.id, sendReaction, data.is_staff, deleteMessage, "{% trans 'Supprimer' %}");
+        attachReactionUI(div, data.id, sendReaction, data.is_staff, deleteMessage, SPORTI_DELETE_LABELS);
 
         thread.appendChild(div);
         scrollToBottom();

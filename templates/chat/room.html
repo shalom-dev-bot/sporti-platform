@@ -143,6 +143,12 @@
     const CURRENT_USER_ID = {{ user.id|default:"null" }};
     const IS_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
     const MY_AVATAR_URL = {% if user.display_avatar_url %}"{{ user.display_avatar_url }}"{% else %}null{% endif %};
+    const SPORTI_DELETE_LABELS = {
+        deleteForEveryone: "{% trans 'Supprimer pour tout le monde' %}",
+        deleteForMe: "{% trans 'Supprimer pour moi' %}",
+        cancel: "{% trans 'Annuler' %}",
+        selected: "{% trans '1 message sélectionné' %}",
+    };
     function getCsrfToken() {
         return document.cookie.match(/csrftoken=([^;]+)/)?.[1] || "";
     }
@@ -296,7 +302,6 @@
 
         function deleteMessage(messageId) {
             if (!socket || socket.readyState !== WebSocket.OPEN) return;
-            if (!confirm("{% trans 'Supprimer ce message ?' %}")) return;
             socket.send(JSON.stringify({ type: "delete_message", message_id: messageId }));
         }
 
@@ -497,7 +502,7 @@
             const initialEmojis = (msg.reactions || []).map((r) => r.emoji);
             renderReactionBadges(reactionsRow, initialEmojis);
             bubble.appendChild(reactionsRow);
-            attachReactionUI(bubble, msg.id, sendReaction, isMine, deleteMessage, "{% trans 'Supprimer' %}");
+            attachReactionUI(bubble, msg.id, sendReaction, isMine, deleteMessage, SPORTI_DELETE_LABELS);
 
             const quoteBlock = bubble.querySelector(".sporti-quote-block");
             if (quoteBlock) {

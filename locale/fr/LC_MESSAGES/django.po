@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-15 11:13+0100\n"
+"POT-Creation-Date: 2026-08-15 21:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -481,14 +481,14 @@ msgid "Voir maintenant"
 msgstr "Voir maintenant"
 
 #: templates/chat/hub.html:94 templates/chat/room.html:27
-#: templates/chat/room.html:565 templates/dashboard/conversation.html:278
+#: templates/chat/room.html:570 templates/dashboard/conversation.html:300
 #: templates/dashboard/home.html:21
 msgid "En ligne"
 msgstr "En ligne"
 
 #: templates/chat/hub.html:94 templates/chat/room.html:27
-#: templates/chat/room.html:568 templates/dashboard/conversation.html:25
-#: templates/dashboard/conversation.html:278 templates/offline/offline.html:4
+#: templates/chat/room.html:573 templates/dashboard/conversation.html:25
+#: templates/dashboard/conversation.html:300 templates/offline/offline.html:4
 msgid "Hors ligne"
 msgstr "Hors ligne"
 
@@ -635,7 +635,9 @@ msgstr "Écrivez votre message…"
 msgid "Message vocal"
 msgstr "Message vocal"
 
-#: templates/chat/room.html:95 templates/dashboard/conversation.html:104
+#: templates/chat/room.html:95 templates/chat/room.html:149
+#: templates/dashboard/conversation.html:104
+#: templates/dashboard/conversation.html:212
 #: templates/socialaccount/login.html:32
 msgid "Annuler"
 msgstr "Annuler"
@@ -652,68 +654,68 @@ msgstr "Plateformes recommandées"
 msgid "Retrouvez-moi sur"
 msgstr "Retrouvez-moi sur"
 
-#: templates/chat/room.html:299 templates/dashboard/conversation.html:206
-msgid "Supprimer ce message ?"
-msgstr "Supprimer ce message ?"
+#: templates/chat/room.html:147 templates/dashboard/conversation.html:210
+msgid "Supprimer pour tout le monde"
+msgstr "Supprimer pour tout le monde"
 
-#: templates/chat/room.html:310 templates/chat/room.html:443
+#: templates/chat/room.html:148 templates/dashboard/conversation.html:211
+#| msgid "Supprimer ce pronostic ?"
+msgid "Supprimer pour moi"
+msgstr "Supprimer pour moi"
+
+#: templates/chat/room.html:150 templates/dashboard/conversation.html:213
+msgid "1 message sélectionné"
+msgstr "1 message sélectionné"
+
+#: templates/chat/room.html:315 templates/chat/room.html:448
 #: templates/dashboard/conversation.html:48
-#: templates/dashboard/conversation.html:324
+#: templates/dashboard/conversation.html:346
 msgid "📎 Pièce jointe"
 msgstr "📎 Pièce jointe"
 
-#: templates/chat/room.html:316
+#: templates/chat/room.html:321
 msgid "Vous"
 msgstr "Vous"
 
-#: templates/chat/room.html:318
+#: templates/chat/room.html:323
 msgid "Message"
 msgstr "Message"
 
-#: templates/chat/room.html:342
+#: templates/chat/room.html:347
 msgid "Répondre"
 msgstr "Répondre"
 
-#: templates/chat/room.html:398 templates/dashboard/fixtures_search.html:22
+#: templates/chat/room.html:403 templates/dashboard/fixtures_search.html:22
 #: templates/predictions/list.html:77
 msgid "Aujourd'hui"
 msgstr "Aujourd'hui"
 
-#: templates/chat/room.html:399
+#: templates/chat/room.html:404
 msgid "Hier"
 msgstr "Hier"
 
-#: templates/chat/room.html:500 templates/dashboard/conversation.html:232
-#: templates/dashboard/conversation.html:358
-#: templates/dashboard/events_list.html:30
-#: templates/dashboard/links_list.html:53
-#: templates/dashboard/predictions_list.html:127
-#: templates/dashboard/teams_list.html:32
-msgid "Supprimer"
-msgstr "Supprimer"
-
-#: templates/chat/room.html:714 templates/chat/room.html:724
-#: templates/chat/room.html:872
+#: templates/chat/room.html:719 templates/chat/room.html:729
+#: templates/chat/room.html:877
 msgid "Un instant, la conversation se charge encore…"
 msgstr "Un instant, la conversation se charge encore…"
 
-#: templates/chat/room.html:739 templates/dashboard/conversation.html:454
+#: templates/chat/room.html:744 templates/dashboard/conversation.html:476
 msgid "Échec de l'envoi du fichier."
 msgstr "Échec de l'envoi du fichier."
 
-#: templates/chat/room.html:751 templates/dashboard/conversation.html:457
+#: templates/chat/room.html:756 templates/dashboard/conversation.html:479
 msgid "Échec de l'envoi du fichier, vérifiez votre connexion."
 msgstr "Échec de l'envoi du fichier, vérifiez votre connexion."
 
-#: templates/chat/room.html:811 templates/dashboard/conversation.html:514
+#: templates/chat/room.html:816 templates/dashboard/conversation.html:536
 msgid "Échec de l'envoi du vocal."
 msgstr "Échec de l'envoi du vocal."
 
-#: templates/chat/room.html:823 templates/dashboard/conversation.html:519
+#: templates/chat/room.html:828 templates/dashboard/conversation.html:541
 msgid "Échec de l'envoi du vocal, vérifiez votre connexion."
 msgstr "Échec de l'envoi du vocal, vérifiez votre connexion."
 
-#: templates/chat/room.html:876 templates/dashboard/conversation.html:568
+#: templates/chat/room.html:881 templates/dashboard/conversation.html:590
 msgid ""
 "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous "
 "êtes actuellement sur"
@@ -721,7 +723,7 @@ msgstr ""
 "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous "
 "êtes actuellement sur"
 
-#: templates/chat/room.html:876 templates/dashboard/conversation.html:568
+#: templates/chat/room.html:881 templates/dashboard/conversation.html:590
 msgid ""
 "si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi "
 "que vous fassiez."
@@ -729,12 +731,12 @@ msgstr ""
 "si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi "
 "que vous fassiez."
 
-#: templates/chat/room.html:884 templates/dashboard/company_settings.html:285
-#: templates/dashboard/conversation.html:576
+#: templates/chat/room.html:889 templates/dashboard/company_settings.html:285
+#: templates/dashboard/conversation.html:598
 msgid "Microphone inaccessible :"
 msgstr "Microphone inaccessible :"
 
-#: templates/chat/room.html:884 templates/dashboard/conversation.html:576
+#: templates/chat/room.html:889 templates/dashboard/conversation.html:598
 msgid "Vérifiez les autorisations du navigateur."
 msgstr "Vérifiez les autorisations du navigateur."
 
@@ -809,12 +811,10 @@ msgstr ""
 "volée."
 
 #: templates/dashboard/_platform_link_picker.html:9
-#| msgid "Ajouter un lien"
 msgid "Aucun lien"
 msgstr "Aucun lien"
 
 #: templates/dashboard/_platform_link_picker.html:19
-#| msgid "Nouveau lien"
 msgid "Nouvelle"
 msgstr "Nouvelle"
 
@@ -1020,6 +1020,13 @@ msgstr "Modifier"
 #: templates/dashboard/events_list.html:28
 msgid "Supprimer cet événement ?"
 msgstr "Supprimer cet événement ?"
+
+#: templates/dashboard/events_list.html:30
+#: templates/dashboard/links_list.html:53
+#: templates/dashboard/predictions_list.html:127
+#: templates/dashboard/teams_list.html:32
+msgid "Supprimer"
+msgstr "Supprimer"
 
 #: templates/dashboard/events_list.html:38
 msgid "Aucun événement pour le moment."
@@ -1662,6 +1669,9 @@ msgstr ""
 #: templates/socialaccount/login.html:29
 msgid "Continuer"
 msgstr "Continuer"
+
+#~ msgid "Supprimer ce message ?"
+#~ msgstr "Supprimer ce message ?"
 
 #, python-format
 #~ msgid "Import impossible : %(error)s"

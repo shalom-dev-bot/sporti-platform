@@ -21,26 +21,84 @@
 </div>
 {% endif %}
 
-<div class="glass-panel rounded-2xl p-4 lg:p-6 max-w-lg">
-    <form method="post">
-        {% csrf_token %}
-        {% for field in form %}
-        <div class="field-group">
-            {% if field.field.widget.input_type == "checkbox" %}
-                <label class="flex items-center gap-2.5 text-sm text-navy-900/70 dark:text-white/80">
-                    {{ field }} {{ field.label }}
-                </label>
-            {% else %}
-                <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
-                {{ field }}
+<form method="post" class="max-w-lg space-y-4">
+    {% csrf_token %}
+
+    {% if is_edit %}
+    <div class="glass-panel rounded-2xl p-4">
+        <p class="sporti-section-label mb-2">{% trans "Match" %}</p>
+        <div class="flex items-center gap-2 mb-1">
+            {% if prediction.event.home_team.display_logo_url %}
+                <img src="{{ prediction.event.home_team.display_logo_url }}" alt="" class="w-7 h-7 object-contain rounded-full bg-white p-1 shrink-0">
             {% endif %}
+            <span class="text-sm font-semibold">{{ prediction.event.home_team.name }} <span class="text-navy-900/35 dark:text-white/30 font-normal">vs</span> {{ prediction.event.away_team.name }}</span>
+            {% if prediction.event.away_team.display_logo_url %}
+                <img src="{{ prediction.event.away_team.display_logo_url }}" alt="" class="w-7 h-7 object-contain rounded-full bg-white p-1 shrink-0">
+            {% endif %}
+        </div>
+        <p class="text-[11px] text-navy-900/40 dark:text-white/40">{{ prediction.event.competition }} &middot; {{ prediction.event.kickoff_at|date:"d M Y, H:i" }}</p>
+        <div class="hidden">{{ form.event }}</div>
+    </div>
+
+    <div class="glass-panel rounded-2xl p-4">
+        <p class="sporti-section-label mb-2">{% trans "Résultat" %}</p>
+        <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" class="status-toggle-btn {% if prediction.result == 'pending' %}status-toggle-btn-active{% endif %}" data-result="pending">{% trans "En attente" %}</button>
+            <button type="button" class="status-toggle-btn {% if prediction.result == 'won' %}status-toggle-btn-active{% endif %}" data-result="won" style="{% if prediction.result == 'won' %}background:linear-gradient(to right,#059669,#10b981);color:#fff;{% endif %}">{% trans "Gagné" %}</button>
+            <button type="button" class="status-toggle-btn {% if prediction.result == 'lost' %}status-toggle-btn-active{% endif %}" data-result="lost" style="{% if prediction.result == 'lost' %}background:linear-gradient(to right,#dc2626,#ef4444);color:#fff;{% endif %}">{% trans "Perdu" %}</button>
+        </div>
+        <div class="hidden">{{ form.result }}</div>
+    </div>
+    {% endif %}
+
+    <div class="glass-panel rounded-2xl p-4">
+        <p class="sporti-section-label mb-2">{% trans "Pronostic" %}</p>
+        {% for field in form %}
+        {% if field.name != "event" and field.name != "result" and field.field.widget.input_type != "checkbox" %}
+        <div class="field-group">
+            <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+            {{ field }}
             {% if field.help_text %}<p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{{ field.help_text }}</p>{% endif %}
             {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         </div>
+        {% endif %}
         {% endfor %}
-        <button type="submit" class="btn-primary w-full sm:w-auto">
-            {% if is_edit %}{% trans "Enregistrer" %}{% else %}{% trans "Ajouter le pronostic" %}{% endif %}
-        </button>
-    </form>
-</div>
+    </div>
+
+    <div class="glass-panel rounded-2xl p-4">
+        <p class="sporti-section-label mb-2">{% trans "Options" %}</p>
+        {% for field in form %}
+        {% if field.field.widget.input_type == "checkbox" %}
+        <label class="toggle-row !border-0 !py-1.5 cursor-pointer">
+            <span class="text-sm text-navy-900/70 dark:text-white/80">{{ field.label }}</span>
+            {{ field }}
+        </label>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-sm font-semibold shadow-[0_0_18px_rgba(55,92,255,0.35)]">
+        {% if is_edit %}{% trans "Enregistrer" %}{% else %}{% trans "Ajouter le pronostic" %}{% endif %}
+    </button>
+</form>
+
+{% if is_edit %}
+<script>
+    (function () {
+        const resultInput = document.getElementById("{{ form.result.id_for_label }}");
+        document.querySelectorAll("[data-result]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll("[data-result]").forEach((b) => {
+                    b.classList.remove("status-toggle-btn-active");
+                    b.removeAttribute("style");
+                });
+                btn.classList.add("status-toggle-btn-active");
+                if (btn.dataset.result === "won") btn.style.cssText = "background:linear-gradient(to right,#059669,#10b981);color:#fff;";
+                if (btn.dataset.result === "lost") btn.style.cssText = "background:linear-gradient(to right,#dc2626,#ef4444);color:#fff;";
+                if (resultInput) resultInput.value = btn.dataset.result;
+            });
+        });
+    })();
+</script>
+{% endif %}
 {% endblock %}

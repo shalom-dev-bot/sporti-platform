@@ -11,6 +11,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 COPY static/css/src ./static/css/src
+COPY static/js ./static/js
 COPY tailwind.config.js ./
 COPY templates ./templates
 COPY apps ./apps

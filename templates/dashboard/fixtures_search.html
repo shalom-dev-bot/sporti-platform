@@ -43,18 +43,6 @@
     </script>
 
     <div class="field-group !mb-0">
-        <label for="id_league" class="field-label">{% trans "Compétition" %}</label>
-        <select id="id_league" name="league" class="field-input">
-            <option value="">{% trans "Toutes compétitions" %}</option>
-            {% for league_value, league_label in popular_leagues %}
-            <option value="{{ league_value }}" {% if league_id == league_value|stringformat:"s" %}selected{% endif %}>
-                {{ league_label }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div class="field-group !mb-0">
         <label for="id_statut" class="field-label">{% trans "Statut du match" %}</label>
         <select id="id_statut" name="statut" class="field-input">
             <option value="" {% if not statut %}selected{% endif %}>{% trans "Tous" %}</option>
@@ -93,10 +81,18 @@
 {% endif %}
 
 {% if competitions %}
-<p class="sporti-section-label mb-2">{% trans "Résultat" %}</p>
-<div class="space-y-2">
+<div class="flex items-center justify-between gap-2 mb-2">
+    <p class="sporti-section-label !mb-0">{% trans "Résultat" %}</p>
+    <p class="text-[11px] text-navy-900/45 dark:text-white/40">{{ competitions|length }} {% trans "compétitions" %}</p>
+</div>
+<div class="relative mb-2">
+    <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-navy-900/30 dark:text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="competition-filter-input" placeholder="{% trans 'Filtrer par compétition (ex: Premier League)…' %}" class="chats-search-input" style="padding-left:2.5rem;">
+</div>
+<p id="competition-filter-empty" class="hidden text-center text-[11px] text-navy-900/40 dark:text-white/35 py-3">{% trans "Aucune compétition ne correspond." %}</p>
+<div class="space-y-2" id="competitions-list">
     {% for comp in competitions %}
-    <details class="glass-panel rounded-2xl overflow-hidden">
+    <details class="glass-panel rounded-2xl overflow-hidden" data-competition-name="{{ comp.name|lower }}">
         <summary class="flex items-center justify-between gap-2 p-3.5 cursor-pointer select-none list-none">
             <span class="flex items-center gap-2.5 min-w-0">
                 <span class="w-8 h-8 rounded-full bg-[#1f46dd]/20 text-[#5b8def] flex items-center justify-center shrink-0">
@@ -156,4 +152,27 @@
 {% endif %}
 
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if competitions %}
+<script>
+    (function () {
+        const input = document.getElementById("competition-filter-input");
+        const list = document.getElementById("competitions-list");
+        const empty = document.getElementById("competition-filter-empty");
+        if (!input || !list) return;
+        input.addEventListener("input", () => {
+            const q = input.value.trim().toLowerCase();
+            let visibleCount = 0;
+            list.querySelectorAll("[data-competition-name]").forEach((el) => {
+                const match = !q || el.dataset.competitionName.includes(q);
+                el.classList.toggle("hidden", !match);
+                if (match) visibleCount += 1;
+            });
+            empty.classList.toggle("hidden", visibleCount > 0);
+        });
+    })();
+</script>
+{% endif %}
 {% endblock %}

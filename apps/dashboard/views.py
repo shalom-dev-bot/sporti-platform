@@ -29,7 +29,7 @@ from apps.company.forms import (
     WelcomeTextForm,
 )
 from apps.company.models import CompanyProfile, ExternalLink, WelcomeMessage
-from apps.predictions import api_football
+from apps.predictions import api_football, football_data
 from apps.predictions.models import Event, Prediction, Team
 from apps.predictions.views import LIVE_MATCH_WINDOW
 
@@ -763,13 +763,59 @@ def prediction_delete(request, prediction_id):
 # --- Import API-Football ------------------------------------------------
 
 
+def _merged_fixtures(date_str):
+    """Fusionne les resultats de football-data.org (fiable mais limite a
+    13 grandes competitions sur le plan gratuit) et d'API-Football
+    (beaucoup plus large -- petites competitions incluses -- mais un
+    plan gratuit plus fragile : deja suspendu une fois cette session, et
+    son parametre "season" est bloque des qu'une competition precise est
+    demandee, meme pour l'annee en cours).
+
+    Chaque fournisseur est appele independamment : si l'un des deux
+    echoue (quota, suspension, panne), on ignore silencieusement son
+    erreur et on garde les resultats de l'autre plutot que de faire
+    echouer toute la recherche. Erreur seulement si LES DEUX echouent."""
+    fixtures = []
+    errors = []
+
+    try:
+        fd_fixtures, _fd_quota = football_data.search_fixtures(date_str)
+        fixtures.extend(fd_fixtures)
+    except football_data.ApiFootballError as exc:
+        errors.append(str(exc))
+
+    def _dedup_key(f):
+        return (f["home_name"].strip().lower(), f["away_name"].strip().lower(), f["kickoff_at"])
+
+    seen = {_dedup_key(f) for f in fixtures}
+    try:
+        af_fixtures, _af_quota = api_football.search_fixtures(date_str)
+        for fixture in af_fixtures:
+            key = _dedup_key(fixture)
+            if key not in seen:
+                seen.add(key)
+                fixtures.append(fixture)
+    except api_football.ApiFootballError as exc:
+        errors.append(str(exc))
+
+    if not fixtures and errors:
+        raise api_football.ApiFootballError(" / ".join(errors))
+
+    fixtures.sort(key=lambda f: f["kickoff_at"] or "")
+    return fixtures
+
+
 @login_required(login_url="/gestion/connexion/")
 @user_passes_test(_is_staff, login_url="/gestion/connexion/")
 def fixtures_search(request):
-    """Recherche des matchs via l'API-Football pour une date/competition
-    donnee, afin de les importer en un clic plutot que de les saisir
-    a la main. Resultats groupes par competition, avec le quota reel de
-    requetes restantes renvoye par l'API elle-meme."""
+    """Recherche des matchs pour une date donnee (football-data.org +
+    API-Football fusionnes, voir _merged_fixtures), afin de les importer
+    en un clic plutot que de les saisir a la main. Resultats groupes par
+    competition.
+
+    Toujours une recherche non filtree par competition : le filtre se
+    fait cote client (JS) sur ce resultat unique, sans requete API
+    supplementaire -- voir le filtre "Compétition" du template."""
     today = timezone.localdate()
     periode = request.GET.get("periode", "aujourdhui")
     if periode == "demain":
@@ -779,26 +825,16 @@ def fixtures_search(request):
     else:
         periode = "aujourdhui"
         date_str = today.isoformat()
-    league_id = request.GET.get("league") or None
     statut = request.GET.get("statut") or ""
 
     competitions = []
     error = None
     already_imported_ids = set()
-    quota = None
     last_updated = None
 
     if request.GET:
         try:
-            fixtures, quota = api_football.search_fixtures(date_str, league_id=league_id)
-            if quota:
-                import logging
-
-                logging.getLogger(__name__).info(
-                    "API-Football quota : %s/%s requetes restantes",
-                    quota.get("remaining"),
-                    quota.get("limit"),
-                )
+            fixtures = _merged_fixtures(date_str)
             last_updated = timezone.now()
             if statut == "a_venir":
                 fixtures = [f for f in fixtures if f["status_short"] == "NS"]
@@ -837,10 +873,8 @@ def fixtures_search(request):
             "error": error,
             "date_str": date_str,
             "periode": periode,
-            "league_id": str(league_id) if league_id else "",
             "statut": statut,
             "already_imported_ids": already_imported_ids,
-            "popular_leagues": api_football.POPULAR_LEAGUES,
             "searched": bool(request.GET),
             "last_updated": last_updated,
         },

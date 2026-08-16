@@ -29,7 +29,7 @@ from apps.company.forms import (
     WelcomeTextForm,
 )
 from apps.company.models import CompanyProfile, ExternalLink, WelcomeMessage
-from apps.predictions import football_data as api_football
+from apps.predictions import api_football
 from apps.predictions.models import Event, Prediction, Team
 from apps.predictions.views import LIVE_MATCH_WINDOW
 

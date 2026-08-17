@@ -24,12 +24,21 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[".up.railway.app", ".o
 if EXTERNAL_HOSTNAME and EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(EXTERNAL_HOSTNAME)
 
-CSRF_TRUSTED_ORIGINS = [
-    f"https://{host.lstrip('.')}" if not host.startswith(".") else f"https://*{host}"
-    for host in ALLOWED_HOSTS
-]
+
+def _trusted_origins(host):
+    # Les deux variantes (http/https) sont toujours ajoutees : sans danger
+    # une fois le HTTPS actif (l'entree http:// devient simplement inutilisee
+    # des que Caddy redirige tout vers https://), mais indispensable pendant
+    # la periode de transition ou un VPS tourne encore en HTTP simple, avant
+    # que le nom de domaine ne soit branche.
+    if host.startswith("."):
+        return [f"https://*{host}", f"http://*{host}"]
+    return [f"https://{host}", f"http://{host}"]
+
+
+CSRF_TRUSTED_ORIGINS = [origin for host in ALLOWED_HOSTS for origin in _trusted_origins(host)]
 if EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS.append(f"https://{EXTERNAL_HOSTNAME}")
+    CSRF_TRUSTED_ORIGINS += _trusted_origins(EXTERNAL_HOSTNAME)
 
 # --- Fichiers statiques servis directement par l'appli (WhiteNoise) ---
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # noqa: F405
@@ -53,10 +62,16 @@ if not os.environ.get("REDIS_URL"):
         "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
     }
 
-# --- Securite (derriere le proxy HTTPS de Render) ---
+# --- Securite (derriere un proxy HTTPS) ---
+# Configurable (au lieu de force a True) pour permettre de tester un VPS
+# tout juste deploye en HTTP simple, avant que le nom de domaine + le
+# certificat HTTPS ne soient en place -- sans ca, le cookie de session et
+# le cookie CSRF ne sont jamais renvoyes par le navigateur en HTTP,
+# rendant meme la connexion admin impossible ("La verification CSRF a
+# echoue"). A laisser a True (defaut) des que le HTTPS est actif.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=True)
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=True)
 
 # --- E-mail (mot de passe oublie, etc.) ---
 # Sans EMAIL_HOST configure, on reste sur la console (rien n'est reellement

@@ -10,6 +10,13 @@ const SPORTI_ICON_PAUSE = '<svg viewBox="0 0 24 24" width="19" height="19" fill=
 const SPORTI_ICON_MIC_BADGE = '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="18" y2="22"/></svg>';
 const SPORTI_WAVEFORM_BARS = 40;
 
+// Les <audio> crees ici (new Audio(src)) ne sont JAMAIS ajoutes au DOM
+// (deliberement : pas besoin, .play()/.pause() marchent tres bien sur un
+// element detache) -- document.querySelectorAll("audio") ne peut donc
+// jamais les trouver. On garde nous-memes une reference vers celui en
+// cours de lecture pour pouvoir le mettre en pause quand un autre demarre.
+let sportiCurrentlyPlayingAudio = null;
+
 function sportiFormatTime(seconds) {
     if (!isFinite(seconds) || seconds < 0) seconds = 0;
     const m = Math.floor(seconds / 60);
@@ -155,12 +162,28 @@ function createVoicePlayer(src, options) {
         sportiDrawWaveform(canvas, peaks, currentRatio(), invert);
     }
 
+    function attemptPlay() {
+        const playPromise = audio.play();
+        if (!playPromise || !playPromise.catch) return;
+        playPromise.catch(() => {
+            // Sur mobile, un navigateur qui a mis l'onglet en arriere-plan
+            // (l'utilisateur "quitte" l'appli puis revient) peut avoir
+            // libere/reinitialise silencieusement les donnees de
+            // l'element audio -- un simple .play() ne suffit alors plus.
+            // On force un rechargement puis on retente une seule fois,
+            // plutot que de laisser le bouton ne rien faire sans retour.
+            audio.load();
+            audio.play().catch(() => {});
+        });
+    }
+
     btn.addEventListener("click", () => {
         if (audio.paused) {
-            document.querySelectorAll("audio").forEach((a) => {
-                if (a !== audio) a.pause();
-            });
-            audio.play().catch(() => {});
+            if (sportiCurrentlyPlayingAudio && sportiCurrentlyPlayingAudio !== audio) {
+                sportiCurrentlyPlayingAudio.pause();
+            }
+            sportiCurrentlyPlayingAudio = audio;
+            attemptPlay();
         } else {
             audio.pause();
         }
@@ -171,11 +194,13 @@ function createVoicePlayer(src, options) {
     });
     audio.addEventListener("pause", () => {
         btn.innerHTML = SPORTI_ICON_PLAY;
+        if (sportiCurrentlyPlayingAudio === audio) sportiCurrentlyPlayingAudio = null;
     });
     audio.addEventListener("ended", () => {
         btn.innerHTML = SPORTI_ICON_PLAY;
         time.textContent = sportiFormatTime(effectiveDuration());
         redraw();
+        if (sportiCurrentlyPlayingAudio === audio) sportiCurrentlyPlayingAudio = null;
     });
     audio.addEventListener("timeupdate", () => {
         const duration = effectiveDuration();

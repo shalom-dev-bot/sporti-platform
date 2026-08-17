@@ -1,35 +1,42 @@
 {% load i18n static %}
-<header class="hidden lg:flex items-center justify-between pl-8 pr-32 py-4 border-b border-navy-900/10 dark:border-white/10 shrink-0">
-    <a href="{% url 'chat:home' %}" class="flex items-center gap-3">
-        <div class="w-9 h-9 hud-corners bg-navy-950 flex items-center justify-center overflow-hidden shrink-0">
-            <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
-        </div>
-        <span class="font-display font-bold tracking-wide">SPORTI</span>
-    </a>
+<header class="hidden lg:block px-8 xl:px-12 border-b border-navy-900/10 dark:border-white/10 shrink-0">
+    <!-- Meme largeur max + centrage que le contenu en dessous (voir
+         predictions/list.html, chat/hub.html...) -- sans ca, le logo et
+         l'avatar restent colles aux bords de la fenetre alors que le
+         contenu se centre sur les grands ecrans, ce qui desaligne tout
+         et laisse un espace inutilise grandissant avec la largeur d'ecran. -->
+    <div class="max-w-[1600px] mx-auto flex items-center justify-between py-4">
+        <a href="{% url 'chat:home' %}" class="flex items-center gap-3">
+            <div class="w-9 h-9 hud-corners bg-navy-950 flex items-center justify-center overflow-hidden shrink-0">
+                <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">
+            </div>
+            <span class="font-display font-bold tracking-wide">SPORTI</span>
+        </a>
 
-    <nav class="flex items-center gap-1">
-        <a href="{% url 'chat:home' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-            {% trans "Accueil" %}
-        </a>
-        <a href="{% url 'predictions:list' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'list' and request.GET.filtre != 'historique' %}active{% endif %}">
-            {% trans "Pronostics" %}
-        </a>
-        <a href="{% url 'predictions:list' %}?filtre=historique" class="desktop-nav-link {% if request.resolver_match.url_name == 'list' and request.GET.filtre == 'historique' %}active{% endif %}">
-            {% trans "Historique" %}
-        </a>
-        <a href="{% url 'chat:room' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'room' %}active{% endif %}">
-            {% trans "Chat" %}
-        </a>
-    </nav>
+        <nav class="flex items-center gap-1">
+            <a href="{% url 'chat:home' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                {% trans "Accueil" %}
+            </a>
+            <a href="{% url 'predictions:list' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'list' and request.GET.filtre != 'historique' %}active{% endif %}">
+                {% trans "Pronostics" %}
+            </a>
+            <a href="{% url 'predictions:list' %}?filtre=historique" class="desktop-nav-link {% if request.resolver_match.url_name == 'list' and request.GET.filtre == 'historique' %}active{% endif %}">
+                {% trans "Historique" %}
+            </a>
+            <a href="{% url 'chat:room' %}" class="desktop-nav-link {% if request.resolver_match.url_name == 'room' %}active{% endif %}">
+                {% trans "Chat" %}
+            </a>
+        </nav>
 
-    <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2.5 {% if request.resolver_match.url_name == 'profile' %}text-accent-600 dark:text-accent-400{% endif %}">
-        <span class="text-sm font-medium">{{ user.first_name|default:user.username }}</span>
-        <span class="w-9 h-9 shrink-0 rounded-full hud-corners overflow-hidden bg-navy-900/10 dark:bg-white/10 flex items-center justify-center">
-            {% if user.display_avatar_url %}
-                <img src="{{ user.display_avatar_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
-            {% else %}
-                <span class="font-display font-bold text-xs text-accent-600">{{ user.username|slice:":2"|upper }}</span>
-            {% endif %}
-        </span>
-    </a>
+        <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2.5 {% if request.resolver_match.url_name == 'profile' %}text-accent-600 dark:text-accent-400{% endif %}">
+            <span class="text-sm font-medium">{{ user.first_name|default:user.username }}</span>
+            <span class="w-9 h-9 shrink-0 rounded-full hud-corners overflow-hidden bg-navy-900/10 dark:bg-white/10 flex items-center justify-center">
+                {% if user.display_avatar_url %}
+                    <img src="{{ user.display_avatar_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+                {% else %}
+                    <span class="font-display font-bold text-xs text-accent-600">{{ user.username|slice:":2"|upper }}</span>
+                {% endif %}
+            </span>
+        </a>
+    </div>
 </header>

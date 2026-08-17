@@ -77,7 +77,11 @@ def search_fixtures(date_str, league_id=None, season=None):
     Leve ApiFootballError si la cle est absente ou si l'appel echoue pour
     TOUTES les competitions ; une erreur isolee sur une seule competition
     (ex: quota atteint en cours de boucle) est ignoree pour ne pas faire
-    echouer toute la recherche.
+    echouer toute la recherche -- avec une nouvelle tentative avant
+    d'abandonner, car un simple ralentissement reseau ponctuel sur UNE
+    requete suffisait auparavant a faire disparaitre silencieusement
+    toute une competition (ex: Ligue des Champions) des resultats,
+    sans que l'admin ne s'en rende compte.
     """
     league_codes = [league_id] if league_id else [code for code, _label in POPULAR_LEAGUES]
 
@@ -85,15 +89,19 @@ def search_fixtures(date_str, league_id=None, season=None):
     last_error = None
     remaining = None
     for code in league_codes:
-        try:
-            response = requests.get(
-                f"{FOOTBALL_DATA_BASE_URL}/competitions/{code}/matches",
-                headers=_headers(),
-                params={"dateFrom": date_str, "dateTo": date_str},
-                timeout=10,
-            )
-        except requests.RequestException as exc:
-            last_error = f"Impossible de contacter football-data.org : {exc}"
+        response = None
+        for attempt in range(2):
+            try:
+                response = requests.get(
+                    f"{FOOTBALL_DATA_BASE_URL}/competitions/{code}/matches",
+                    headers=_headers(),
+                    params={"dateFrom": date_str, "dateTo": date_str},
+                    timeout=15,
+                )
+                break
+            except requests.RequestException as exc:
+                last_error = f"Impossible de contacter football-data.org : {exc}"
+        if response is None:
             continue
 
         remaining_header = response.headers.get("X-Requests-Available-Minute")

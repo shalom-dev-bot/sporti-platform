@@ -47,22 +47,30 @@ def search_fixtures(date_str, league_id=None, season=None):
     par competition si league_id est fourni. Renvoie une liste de
     dicts normalises, triee par heure de coup d'envoi.
 
-    Leve ApiFootballError si la cle est absente ou si l'appel echoue.
+    Leve ApiFootballError si la cle est absente ou si l'appel echoue
+    (apres une nouvelle tentative, un simple ralentissement reseau
+    ponctuel ne doit pas suffire a faire echouer toute la recherche).
     """
     params = {"date": date_str}
     if league_id:
         params["league"] = league_id
         params["season"] = season or int(date_str[:4])
 
-    try:
-        response = requests.get(
-            f"{settings.API_FOOTBALL_BASE_URL}/fixtures",
-            headers=_headers(),
-            params=params,
-            timeout=10,
-        )
-    except requests.RequestException as exc:
-        raise ApiFootballError(f"Impossible de contacter l'API-Football : {exc}") from exc
+    response = None
+    last_exc = None
+    for attempt in range(2):
+        try:
+            response = requests.get(
+                f"{settings.API_FOOTBALL_BASE_URL}/fixtures",
+                headers=_headers(),
+                params=params,
+                timeout=15,
+            )
+            break
+        except requests.RequestException as exc:
+            last_exc = exc
+    if response is None:
+        raise ApiFootballError(f"Impossible de contacter l'API-Football : {last_exc}") from last_exc
 
     if response.status_code != 200:
         raise ApiFootballError(f"L'API-Football a repondu avec le code {response.status_code}.")

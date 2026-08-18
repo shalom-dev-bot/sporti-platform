@@ -17,6 +17,29 @@ const SPORTI_WAVEFORM_BARS = 40;
 // cours de lecture pour pouvoir le mettre en pause quand un autre demarre.
 let sportiCurrentlyPlayingAudio = null;
 
+// Tous les <audio> crees, pour pouvoir rafraichir leurs donnees des que
+// l'onglet redevient visible (voir plus bas) -- certains navigateurs
+// mobiles liberent silencieusement le buffer audio d'un onglet mis en
+// arriere-plan un moment ; sans ce rafraichissement proactif, le premier
+// clic sur "play" au retour ne fait rien (la promesse de .play() ne se
+// termine ni en succes ni en echec, donc meme un .catch() ne se declenche
+// jamais).
+const sportiAllVoiceAudios = [];
+
+if (typeof document !== "undefined") {
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState !== "visible") return;
+        sportiAllVoiceAudios.forEach((audio) => {
+            // readyState 0 (HAVE_NOTHING) = le navigateur n'a plus aucune
+            // donnee pour cet element -- signe que le buffer a ete
+            // libere pendant que l'onglet etait en arriere-plan. On ne
+            // touche pas aux autres (readyState > 0) pour ne pas perdre
+            // la position d'un vocal deja en pause en cours d'ecoute.
+            if (audio.paused && audio.readyState === 0) audio.load();
+        });
+    });
+}
+
 function sportiFormatTime(seconds) {
     if (!isFinite(seconds) || seconds < 0) seconds = 0;
     const m = Math.floor(seconds / 60);
@@ -136,6 +159,7 @@ function createVoicePlayer(src, options) {
 
     const audio = new Audio(src);
     audio.preload = "metadata";
+    sportiAllVoiceAudios.push(audio);
     // Duree fiable : ne jamais se fier a audio.duration seul, qui peut
     // rester Infinity/NaN pour les fichiers webm issus de MediaRecorder.
     // sportiAnalyzeAudio() la calcule en meme temps que l'onde sonore,
@@ -163,18 +187,40 @@ function createVoicePlayer(src, options) {
     }
 
     function attemptPlay() {
-        const playPromise = audio.play();
-        if (!playPromise || !playPromise.catch) return;
-        playPromise.catch(() => {
-            // Sur mobile, un navigateur qui a mis l'onglet en arriere-plan
-            // (l'utilisateur "quitte" l'appli puis revient) peut avoir
-            // libere/reinitialise silencieusement les donnees de
-            // l'element audio -- un simple .play() ne suffit alors plus.
-            // On force un rechargement puis on retente une seule fois,
-            // plutot que de laisser le bouton ne rien faire sans retour.
+        // Sur mobile, un navigateur qui a mis l'onglet en arriere-plan
+        // (l'utilisateur "quitte" l'appli puis revient) peut avoir
+        // libere/reinitialise silencieusement les donnees de l'element
+        // audio -- un simple .play() ne suffit alors plus. Deux filets de
+        // securite : si la promesse est rejetee (cas normal), ET un
+        // "chien de garde" au cas ou elle ne se termine ni en succes ni en
+        // echec (reste en attente indefiniment, vu sur certains
+        // navigateurs mobiles) -- sans ca le clic ne fait rien, sans
+        // meme une erreur a rattraper.
+        let recovered = false;
+        function recover() {
+            if (recovered) return;
+            recovered = true;
             audio.load();
             audio.play().catch(() => {});
-        });
+        }
+        const watchdog = setTimeout(() => {
+            if (audio.paused) recover();
+        }, 1200);
+        audio.addEventListener(
+            "playing",
+            () => {
+                recovered = true;
+                clearTimeout(watchdog);
+            },
+            { once: true }
+        );
+        const playPromise = audio.play();
+        if (playPromise && playPromise.catch) {
+            playPromise.catch(() => {
+                clearTimeout(watchdog);
+                recover();
+            });
+        }
     }
 
     btn.addEventListener("click", () => {

@@ -21,7 +21,8 @@ import requests
 FOOTBALL_DATA_BASE_URL = "https://api.football-data.org/v4"
 
 # Codes de competition football-data.org (pas les memes identifiants que
-# l'API-Football) -- limite aux competitions couvertes par le plan gratuit.
+# l'API-Football) -- la liste complete couverte par le plan gratuit de ce
+# compte (verifie via /v4/competitions).
 POPULAR_LEAGUES = [
     ("PL", "Premier League (Angleterre)"),
     ("ELC", "Championship (Angleterre)"),
@@ -31,7 +32,11 @@ POPULAR_LEAGUES = [
     ("BL1", "Bundesliga (Allemagne)"),
     ("DED", "Eredivisie (Pays-Bas)"),
     ("PPL", "Primeira Liga (Portugal)"),
+    ("BSA", "Serie A (Bresil)"),
     ("CL", "Ligue des Champions"),
+    ("CLI", "Copa Libertadores"),
+    ("EC", "Championnat d'Europe"),
+    ("WC", "Coupe du Monde"),
 ]
 
 _STATUS_MAP = {

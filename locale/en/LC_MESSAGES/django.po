@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-16 23:34+0100\n"
+"POT-Creation-Date: 2026-08-18 12:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -141,15 +141,15 @@ msgstr "Prediction updated."
 msgid "Pronostic supprime."
 msgstr "Prediction deleted."
 
-#: apps/dashboard/views.py:895
+#: apps/dashboard/views.py:951
 msgid "Ce match a deja ete importe."
 msgstr "This match has already been imported."
 
-#: apps/dashboard/views.py:905
+#: apps/dashboard/views.py:961
 msgid "Donnees du match manquantes, relancez la recherche."
 msgstr "Missing match data, redo the search."
 
-#: apps/dashboard/views.py:931
+#: apps/dashboard/views.py:979
 msgid "Match importe. Ajoute maintenant ton pronostic."
 msgstr "Match imported. Now add your prediction."
 
@@ -359,13 +359,13 @@ msgstr "Change language"
 msgid "Changer de theme"
 msgstr "Switch theme"
 
-#: templates/chat/_bottom_nav.html:3 templates/chat/_top_navbar.html:12
+#: templates/chat/_bottom_nav.html:3 templates/chat/_top_navbar.html:18
 #: templates/dashboard/_admin_top.html:11
 #: templates/dashboard/_bottom_nav.html:3 templates/dashboard/home.html:108
 msgid "Accueil"
 msgstr "Home"
 
-#: templates/chat/_bottom_nav.html:8 templates/chat/_top_navbar.html:15
+#: templates/chat/_bottom_nav.html:8 templates/chat/_top_navbar.html:21
 #: templates/chat/home.html:61 templates/chat/hub.html:149
 #: templates/dashboard/_admin_top.html:13
 #: templates/dashboard/_bottom_nav.html:16 templates/dashboard/home.html:81
@@ -376,12 +376,12 @@ msgstr "Home"
 msgid "Pronostics"
 msgstr "Predictions"
 
-#: templates/chat/_bottom_nav.html:16 templates/chat/_top_navbar.html:18
+#: templates/chat/_bottom_nav.html:16 templates/chat/_top_navbar.html:24
 #: templates/predictions/list.html:94
 msgid "Historique"
 msgstr "History"
 
-#: templates/chat/_bottom_nav.html:21 templates/chat/_top_navbar.html:21
+#: templates/chat/_bottom_nav.html:21 templates/chat/_top_navbar.html:27
 msgid "Chat"
 msgstr "Chat"
 
@@ -1026,7 +1026,7 @@ msgstr "No events yet."
 
 #: templates/dashboard/fixtures_search.html:3
 #: templates/dashboard/fixtures_search.html:7
-#: templates/dashboard/fixtures_search.html:57
+#: templates/dashboard/fixtures_search.html:70
 msgid "Recharger les matchs"
 msgstr "Reload matches"
 
@@ -1057,43 +1057,63 @@ msgid "Choisir une date"
 msgstr "Choose a date"
 
 #: templates/dashboard/fixtures_search.html:46
+#| msgid "compétitions"
+msgid "Compétition"
+msgstr "Competition"
+
+#: templates/dashboard/fixtures_search.html:48
+#| msgid "Toutes compétitions"
+msgid "Toutes compétitions (couverture maximale)"
+msgstr "All competitions (maximum coverage)"
+
+#: templates/dashboard/fixtures_search.html:55
+msgid ""
+"« Toutes compétitions » combine deux sources pour tout couvrir, grandes et "
+"petites ligues. Choisir une compétition ici n'utilise que la source dédiée, "
+"plus fiable pour cette ligue précise."
+msgstr ""
+"\"All competitions\" combines two sources for full coverage, big and small "
+"leagues alike. Choosing a specific competition here uses only that dedicated"
+" source, more reliable for this particular league."
+
+#: templates/dashboard/fixtures_search.html:59
 msgid "Statut du match"
 msgstr "Match status"
 
-#: templates/dashboard/fixtures_search.html:48
+#: templates/dashboard/fixtures_search.html:61
 #: templates/dashboard/predictions_list.html:39
 #: templates/predictions/list.html:72
 msgid "Tous"
 msgstr "All"
 
-#: templates/dashboard/fixtures_search.html:49
+#: templates/dashboard/fixtures_search.html:62
 #: templates/dashboard/predictions_list.html:44
 #: templates/dashboard/predictions_list.html:88
 msgid "À venir"
 msgstr "Upcoming"
 
-#: templates/dashboard/fixtures_search.html:50
+#: templates/dashboard/fixtures_search.html:63
 msgid "En cours"
 msgstr "In progress"
 
-#: templates/dashboard/fixtures_search.html:51
+#: templates/dashboard/fixtures_search.html:64
 #: templates/dashboard/predictions_list.html:98
 msgid "Terminé"
 msgstr "Finished"
 
-#: templates/dashboard/fixtures_search.html:62
+#: templates/dashboard/fixtures_search.html:75
 msgid "Dernière mise à jour"
 msgstr "Last updated"
 
-#: templates/dashboard/fixtures_search.html:64
+#: templates/dashboard/fixtures_search.html:77
 msgid "Échec"
 msgstr "Failed"
 
-#: templates/dashboard/fixtures_search.html:66
+#: templates/dashboard/fixtures_search.html:79
 msgid "Succès"
 msgstr "Success"
 
-#: templates/dashboard/fixtures_search.html:77
+#: templates/dashboard/fixtures_search.html:90
 msgid ""
 "Ajoute ta clé dans le fichier .env : API_FOOTBALL_KEY=ta-cle-ici, puis "
 "relance le serveur."
@@ -1101,43 +1121,42 @@ msgstr ""
 "Add your key in the .env file: API_FOOTBALL_KEY=your-key-here, then restart "
 "the server."
 
-#: templates/dashboard/fixtures_search.html:85
+#: templates/dashboard/fixtures_search.html:98
 #: templates/dashboard/prediction_form.html:44
 msgid "Résultat"
 msgstr "Result"
 
-#: templates/dashboard/fixtures_search.html:86
-#| msgid "Compétition"
+#: templates/dashboard/fixtures_search.html:99
 msgid "compétitions"
 msgstr "competitions"
 
-#: templates/dashboard/fixtures_search.html:90
+#: templates/dashboard/fixtures_search.html:103
 msgid "Filtrer par compétition (ex: Premier League)…"
 msgstr "Filter by competition (e.g. Premier League)…"
 
-#: templates/dashboard/fixtures_search.html:92
+#: templates/dashboard/fixtures_search.html:105
 msgid "Aucune compétition ne correspond."
 msgstr "No competition matches."
 
-#: templates/dashboard/fixtures_search.html:103
+#: templates/dashboard/fixtures_search.html:116
 msgid "matchs trouvés"
 msgstr "matches found"
 
-#: templates/dashboard/fixtures_search.html:115
+#: templates/dashboard/fixtures_search.html:128
 #: templates/dashboard/predictions_list.html:78
 #: templates/predictions/list.html:146
 msgid "VS"
 msgstr "VS"
 
-#: templates/dashboard/fixtures_search.html:125
+#: templates/dashboard/fixtures_search.html:138
 msgid "Déjà importé"
 msgstr "Already imported"
 
-#: templates/dashboard/fixtures_search.html:138
+#: templates/dashboard/fixtures_search.html:151
 msgid "Importer"
 msgstr "Import"
 
-#: templates/dashboard/fixtures_search.html:150
+#: templates/dashboard/fixtures_search.html:163
 msgid "Aucun match trouvé pour cette date/compétition."
 msgstr "No matches found for this date/competition."
 
@@ -1662,9 +1681,6 @@ msgstr "You are about to sign in using a third-party Google account."
 #: templates/socialaccount/login.html:29
 msgid "Continuer"
 msgstr "Continue"
-
-#~ msgid "Toutes compétitions"
-#~ msgstr "All competitions"
 
 #~ msgid "Supprimer ce message ?"
 #~ msgstr "Delete this message?"

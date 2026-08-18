@@ -43,6 +43,19 @@
     </script>
 
     <div class="field-group !mb-0">
+        <label for="id_league" class="field-label">{% trans "Compétition" %}</label>
+        <select id="id_league" name="league" class="field-input">
+            <option value="">{% trans "Toutes compétitions (couverture maximale)" %}</option>
+            {% for league_value, league_label in popular_leagues %}
+            <option value="{{ league_value }}" {% if league_id == league_value %}selected{% endif %}>
+                {{ league_label }}
+            </option>
+            {% endfor %}
+        </select>
+        <p class="mt-1.5 text-[11px] text-navy-900/40 dark:text-white/35">{% trans "« Toutes compétitions » combine deux sources pour tout couvrir, grandes et petites ligues. Choisir une compétition ici n'utilise que la source dédiée, plus fiable pour cette ligue précise." %}</p>
+    </div>
+
+    <div class="field-group !mb-0">
         <label for="id_statut" class="field-label">{% trans "Statut du match" %}</label>
         <select id="id_statut" name="statut" class="field-input">
             <option value="" {% if not statut %}selected{% endif %}>{% trans "Tous" %}</option>

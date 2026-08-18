@@ -33,7 +33,7 @@
         </div>
     </header>
 
-    <div class="thin-scroll flex-1 min-h-0 overflow-y-auto px-4 lg:px-8 xl:px-12 pt-1 pb-1.5 lg:py-6">
+    <div class="thin-scroll flex-1 min-h-0 overflow-y-auto px-4 lg:px-8 xl:px-12 pt-1 pb-24 lg:py-6">
         <div class="h-full flex flex-col lg:max-w-[1600px] lg:mx-auto">
 
         <!-- En-tete -->
@@ -199,7 +199,15 @@
         </div>
 
         <!-- Citation -->
-        <div class="flex-1 min-h-12 max-h-16 lg:min-h-20 lg:max-h-24 mt-1.5 lg:mt-3 relative rounded-[12px] lg:rounded-[16px] overflow-hidden glass-panel">
+        <!-- flex-1 sans max-h : le conteneur scrollable de la page occupe
+             toujours toute la hauteur disponible (flex-1 sur son propre
+             parent), meme quand le contenu est court -- sans ca, l'espace
+             restant apparaissait vide sous cette carte au lieu d'etre
+             rempli par elle. Un max-h avait ete ajoute plus tot pour
+             eviter que la carte ne devienne trop dominante ; min-h
+             suffit desormais a garder une taille raisonnable tout en la
+             laissant grandir pour combler l'espace. -->
+        <div class="flex-1 min-h-16 lg:min-h-24 mt-1.5 lg:mt-3 relative rounded-[12px] lg:rounded-[16px] overflow-hidden glass-panel">
             <img src="{% static 'images/design/promo-ball.jpg' %}" alt="" class="absolute inset-0 w-full h-full object-cover object-right opacity-60">
             <div class="absolute inset-0 bg-gradient-to-r from-[#07111f] via-[#07111f]/80 to-transparent"></div>
             <div class="relative z-10 h-full flex flex-col justify-center px-2.5 lg:px-5 py-1 max-w-[75%]">

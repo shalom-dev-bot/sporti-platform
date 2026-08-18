@@ -118,6 +118,12 @@
         </div>
     </div>
 
+    <!-- Espace reserve pour la barre du bas, desormais fixed (voir
+         .bottom-nav-bar) -- sans ca, quoi que ce soit qui se retrouve en
+         dernier (composer ou liens, #links-section etant affiche/cache
+         selon le contexte) se fait recouvrir par la barre flottante. -->
+    <div class="h-24 lg:hidden shrink-0"></div>
+
     {% include "chat/_bottom_nav.html" %}
     </div>
 </div>

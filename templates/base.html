@@ -3,16 +3,26 @@
 <html lang="{{ LANGUAGE_CODE|default:'fr' }}" class="dark">
 <head>
     <script>
-        // Fixe la hauteur reelle de l'ecran une seule fois, avant le rendu,
-        // pour eviter le "saut" du a la barre d'adresse mobile qui se
-        // retracte juste apres le chargement (dvh recalculerait en direct).
+        // Fixe la hauteur reelle de l'ecran, recalculee a chaque
+        // changement -- y compris l'ouverture du clavier mobile, qui ne
+        // declenche PAS toujours l'evenement resize classique de window
+        // (surtout iOS Safari, ou window.innerHeight ne bouge pas quand
+        // le clavier s'ouvre). window.visualViewport, lui, le reflete de
+        // facon fiable sur toutes les plateformes -- sans ca, la zone de
+        // messages restait calculee sur l'ancienne hauteur (plein ecran)
+        // et se retrouvait cachee derriere le clavier au lieu de se
+        // reduire pour rester visible au-dessus, comme sur WhatsApp.
         (function () {
             function setAppHeight() {
-                document.documentElement.style.setProperty("--app-height", window.innerHeight + "px");
+                const h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+                document.documentElement.style.setProperty("--app-height", h + "px");
             }
             setAppHeight();
             window.addEventListener("resize", setAppHeight);
             window.addEventListener("orientationchange", setAppHeight);
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener("resize", setAppHeight);
+            }
         })();
     </script>
     <meta charset="UTF-8">

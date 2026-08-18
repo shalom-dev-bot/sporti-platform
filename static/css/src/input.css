@@ -540,10 +540,21 @@
   display: none;
 }
 .bottom-nav-bar {
+  /* Fixe (pas juste dernier enfant du flex column) : sans ca, des que le
+     contenu de la page depasse la hauteur de l'ecran, c'est le SCROLL DE
+     LA PAGE ENTIERE qui prend le relais au lieu du scroll interne prevu,
+     et la barre du bas remonte avec le contenu au lieu de rester en place
+     comme sur WhatsApp/toute app mobile. */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
   display: flex;
   justify-content: space-between;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 249, 252, 0.98));
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(12px);

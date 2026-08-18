@@ -763,6 +763,42 @@ def prediction_delete(request, prediction_id):
 # --- Import API-Football ------------------------------------------------
 
 
+def _existing_event_signatures():
+    """Equipes + horaire de tous les evenements deja en base, normalises
+    pour comparaison insensible a la casse. football-data.org et
+    API-Football n'utilisent pas les memes identifiants pour le meme
+    match reel (api_football_id ne suffit donc pas a detecter un import
+    en double si le match a ete trouve via l'autre fournisseur) -- le nom
+    des equipes + l'horaire de coup d'envoi restent, eux, identiques
+    d'un fournisseur a l'autre."""
+    return {
+        (home.strip().lower(), away.strip().lower(), kickoff)
+        for home, away, kickoff in Event.objects.values_list(
+            "home_team__name", "away_team__name", "kickoff_at"
+        )
+    }
+
+
+def _fixture_signature(home_name, away_name, kickoff_dt):
+    return ((home_name or "").strip().lower(), (away_name or "").strip().lower(), kickoff_dt)
+
+
+def _get_or_create_team(api_id, name, logo_url):
+    """Comme Team.objects.get_or_create(api_football_id=...), mais tente
+    aussi une correspondance par nom avant de creer -- Team.name est
+    unique, donc creer une equipe deja connue (importee via l'autre
+    fournisseur, avec un api_football_id different) provoquerait une
+    erreur d'integrite plutot que de la reutiliser."""
+    name = (name or "").strip()
+    team = Team.objects.filter(api_football_id=api_id).first()
+    if team:
+        return team
+    team = Team.objects.filter(name__iexact=name).first()
+    if team:
+        return team
+    return Team.objects.create(api_football_id=api_id, name=name, logo_url=logo_url)
+
+
 def _merged_fixtures(date_str):
     """Fusionne les resultats de football-data.org (fiable mais limite a
     13 grandes competitions sur le plan gratuit) et d'API-Football
@@ -829,7 +865,6 @@ def fixtures_search(request):
 
     competitions = []
     error = None
-    already_imported_ids = set()
     last_updated = None
 
     if request.GET:
@@ -849,11 +884,12 @@ def fixtures_search(request):
                 fixture["kickoff_dt"] = (
                     parse_datetime(fixture["kickoff_at"]) if fixture.get("kickoff_at") else None
                 )
-            already_imported_ids = set(
-                Event.objects.filter(
-                    api_football_id__in=[f["api_id"] for f in fixtures]
-                ).values_list("api_football_id", flat=True)
-            )
+            existing_signatures = _existing_event_signatures()
+            for fixture in fixtures:
+                signature = _fixture_signature(
+                    fixture.get("home_name"), fixture.get("away_name"), fixture["kickoff_dt"]
+                )
+                fixture["already_imported"] = signature in existing_signatures
 
             grouped = {}
             for fixture in fixtures:
@@ -874,7 +910,6 @@ def fixtures_search(request):
             "date_str": date_str,
             "periode": periode,
             "statut": statut,
-            "already_imported_ids": already_imported_ids,
             "searched": bool(request.GET),
             "last_updated": last_updated,
         },
@@ -891,6 +926,18 @@ def fixture_import(request, api_fixture_id):
         return redirect("dashboard:fixtures_search")
 
     existing_event = Event.objects.filter(api_football_id=api_fixture_id).first()
+    if not existing_event:
+        # api_football_id seul ne suffit pas : football-data.org et
+        # API-Football n'utilisent pas le meme identifiant pour le meme
+        # match reel, donc un match deja importe via l'un des deux
+        # fournisseurs ne serait pas detecte si retrouve via l'autre.
+        # Equipes + horaire de coup d'envoi, eux, restent identiques.
+        kickoff_dt = parse_datetime(request.POST.get("kickoff_at") or "")
+        existing_event = Event.objects.filter(
+            home_team__name__iexact=request.POST.get("home_name", "").strip(),
+            away_team__name__iexact=request.POST.get("away_name", "").strip(),
+            kickoff_at=kickoff_dt,
+        ).first()
     if existing_event:
         messages.info(request, _("Ce match a deja ete importe."))
         return redirect("dashboard:event_edit", event_id=existing_event.id)
@@ -905,19 +952,11 @@ def fixture_import(request, api_fixture_id):
         messages.error(request, _("Donnees du match manquantes, relancez la recherche."))
         return redirect("dashboard:fixtures_search")
 
-    home_team, _home_created = Team.objects.get_or_create(
-        api_football_id=home_id,
-        defaults={
-            "name": request.POST.get("home_name", ""),
-            "logo_url": request.POST.get("home_logo", ""),
-        },
+    home_team = _get_or_create_team(
+        home_id, request.POST.get("home_name", ""), request.POST.get("home_logo", "")
     )
-    away_team, _away_created = Team.objects.get_or_create(
-        api_football_id=away_id,
-        defaults={
-            "name": request.POST.get("away_name", ""),
-            "logo_url": request.POST.get("away_logo", ""),
-        },
+    away_team = _get_or_create_team(
+        away_id, request.POST.get("away_name", ""), request.POST.get("away_logo", "")
     )
 
     event = Event.objects.create(

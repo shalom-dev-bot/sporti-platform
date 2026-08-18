@@ -36,8 +36,11 @@
     </div>
 </header>
 
-<!-- Barre mobile : menu + logo + notifications + avatar -->
-<header class="flex lg:hidden items-center justify-between px-4 pt-2 pb-1 shrink-0">
+<!-- Barre mobile : menu + logo + notifications + avatar. pr-44 reserve la
+     place de la barre fixe langue/theme/installer (top-utility-bar,
+     fixed top-0 right-0) -- sinon elle passe par-dessus et cache le
+     bouton notifications. -->
+<header class="flex lg:hidden items-center justify-between pl-4 pr-44 pt-2 pb-1 shrink-0">
     <a href="{% url 'dashboard:settings_hub' %}" class="sporti-chat-icon-btn" aria-label="{% trans 'Menu' %}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
     </a>

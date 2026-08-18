@@ -62,12 +62,12 @@
         <button
             id="pwa-install-btn"
             type="button"
-            class="hidden items-center gap-1.5 h-10 pl-3 pr-3.5 rounded-full
+            class="hidden items-center justify-center gap-1.5 w-10 h-10 lg:w-auto lg:justify-start lg:px-3.5 rounded-full
                    bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-xs font-semibold
                    shadow-[0_0_14px_rgba(55,92,255,0.4)]"
         >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            {% trans "Installer" %}
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span class="hidden lg:inline">{% trans "Installer" %}</span>
         </button>
     </nav>
 

@@ -5,8 +5,11 @@
 <div class="chats-shell">
     {% include "chat/_top_navbar.html" %}
 
-    <!-- Barre mobile : logo + notifications + avatar -->
-    <header class="flex lg:hidden items-center justify-between px-4 pt-3 pb-1 shrink-0">
+    <!-- Barre mobile : logo + notifications + avatar. pr-44 (au lieu de
+         px-4 symetrique) reserve la place de la barre fixe langue/theme/
+         installer (top-utility-bar, fixed top-0 right-0) -- sinon elle
+         passe par-dessus et cache le bouton notifications. -->
+    <header class="flex lg:hidden items-center justify-between pl-4 pr-44 pt-3 pb-1 shrink-0">
         <a href="{% url 'chat:home' %}" class="flex items-center gap-2 min-w-0">
             <div class="w-8 h-8 rounded-full overflow-hidden bg-navy-900 border border-accent-400/30 flex items-center justify-center shrink-0">
                 <img src="{% static 'images/sporti-logo.png' %}" alt="SPORTI" class="w-full h-full object-cover">

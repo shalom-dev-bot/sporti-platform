@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-18 12:14+0100\n"
+"POT-Creation-Date: 2026-08-18 13:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -351,13 +351,33 @@ msgstr "Save"
 msgid "Déconnexion"
 msgstr "Log out"
 
-#: templates/base.html:32
+#: templates/base.html:40
 msgid "Changer de langue"
 msgstr "Change language"
 
-#: templates/base.html:42
+#: templates/base.html:50
 msgid "Changer de theme"
 msgstr "Switch theme"
+
+#: templates/base.html:70
+msgid "Installer"
+msgstr "Install"
+
+#: templates/base.html:76
+msgid "Installer SPORTI"
+msgstr "Install SPORTI"
+
+#: templates/base.html:78
+msgid "Appuyez sur le bouton Partager"
+msgstr "Tap the Share button"
+
+#: templates/base.html:78
+msgid "puis « Sur l'écran d'accueil »."
+msgstr "then \"Add to Home Screen\"."
+
+#: templates/base.html:81
+msgid "Compris"
+msgstr "Got it"
 
 #: templates/chat/_bottom_nav.html:3 templates/chat/_top_navbar.html:18
 #: templates/dashboard/_admin_top.html:11
@@ -1057,12 +1077,10 @@ msgid "Choisir une date"
 msgstr "Choose a date"
 
 #: templates/dashboard/fixtures_search.html:46
-#| msgid "compétitions"
 msgid "Compétition"
 msgstr "Competition"
 
 #: templates/dashboard/fixtures_search.html:48
-#| msgid "Toutes compétitions"
 msgid "Toutes compétitions (couverture maximale)"
 msgstr "All competitions (maximum coverage)"
 

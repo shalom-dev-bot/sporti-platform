@@ -20,6 +20,14 @@
     <title>{% block title %}SPORTI{% endblock %}</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <meta name="theme-color" content="#2D6CDF">
+    <!-- iOS Safari ignore totalement manifest.json/beforeinstallprompt pour
+         l'installation (contrairement a Chrome/Android) -- sans ces balises
+         "Ajouter a l'ecran d'accueil" ne cree qu'un simple signet Safari
+         avec une icone generique, au lieu d'une vraie app plein ecran. -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SPORTI">
+    <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
     <link rel="stylesheet" href="{% static 'css/dist/sporti.css' %}?v={{ STATIC_VERSION }}">
     {% block extra_head %}{% endblock %}
 </head>
@@ -51,7 +59,29 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
         </button>
+        <button
+            id="pwa-install-btn"
+            type="button"
+            class="hidden items-center gap-1.5 h-10 pl-3 pr-3.5 rounded-full
+                   bg-gradient-to-r from-[#1f46dd] to-[#375dff] text-white text-xs font-semibold
+                   shadow-[0_0_14px_rgba(55,92,255,0.4)]"
+        >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {% trans "Installer" %}
+        </button>
     </nav>
+
+    <div id="pwa-ios-hint" class="hidden fixed inset-0 z-[70] items-end lg:items-center justify-center bg-black/50">
+        <div class="w-full lg:max-w-xs bg-surface-light dark:bg-navy-850 rounded-t-2xl lg:rounded-2xl p-5 text-center">
+            <p class="text-sm font-semibold mb-1.5">{% trans "Installer SPORTI" %}</p>
+            <p class="text-xs text-navy-900/60 dark:text-white/60 leading-relaxed">
+                {% trans "Appuyez sur le bouton Partager" %} <span class="inline-block align-middle">&#8679;</span> {% trans "puis « Sur l'écran d'accueil »." %}
+            </p>
+            <button type="button" id="pwa-ios-hint-close" class="mt-4 w-full py-2.5 rounded-xl bg-navy-900/5 dark:bg-white/10 text-sm font-medium">
+                {% trans "Compris" %}
+            </button>
+        </div>
+    </div>
     <main>
         {% block content %}{% endblock %}
     </main>
@@ -95,6 +125,59 @@
                 navigator.serviceWorker.register("/service-worker.js").catch(() => {});
             });
         }
+
+        // Bouton "Installer" -- Chrome/Android/Edge/desktop supportent
+        // beforeinstallprompt (installation programmatique en un clic).
+        // iOS Safari ne le supporte JAMAIS : aucune API ne permet de
+        // declencher l'installation, seul le menu Partager -> "Sur l'ecran
+        // d'accueil" le peut -- on affiche donc les instructions a la place.
+        (function () {
+            const btn = document.getElementById("pwa-install-btn");
+            const iosHint = document.getElementById("pwa-ios-hint");
+            const iosHintClose = document.getElementById("pwa-ios-hint-close");
+            if (!btn) return;
+
+            const isStandalone =
+                window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+            if (isStandalone) return;
+
+            const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            let deferredPrompt = null;
+
+            if (isIos) {
+                btn.classList.remove("hidden");
+                btn.classList.add("flex");
+                btn.addEventListener("click", () => {
+                    iosHint.classList.remove("hidden");
+                    iosHint.classList.add("flex");
+                });
+                if (iosHintClose) {
+                    iosHintClose.addEventListener("click", () => {
+                        iosHint.classList.add("hidden");
+                        iosHint.classList.remove("flex");
+                    });
+                }
+            } else {
+                window.addEventListener("beforeinstallprompt", (event) => {
+                    event.preventDefault();
+                    deferredPrompt = event;
+                    btn.classList.remove("hidden");
+                    btn.classList.add("flex");
+                });
+                btn.addEventListener("click", async () => {
+                    if (!deferredPrompt) return;
+                    btn.classList.add("hidden");
+                    btn.classList.remove("flex");
+                    deferredPrompt.prompt();
+                    await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                });
+                window.addEventListener("appinstalled", () => {
+                    btn.classList.add("hidden");
+                    btn.classList.remove("flex");
+                });
+            }
+        })();
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>

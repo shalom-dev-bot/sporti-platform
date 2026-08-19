@@ -861,13 +861,33 @@
   border-radius: 9999px;
 }
 
-/* Clavier mobile ouvert (voir le focus/blur sur #message-input dans
-   room.html) : les liens plateformes/reseaux et la barre du bas ne
-   sont d'aucune utilite pendant la saisie et ne faisaient que grignoter
-   l'espace deja reduit du fil de messages -- masques le temps de la
-   saisie, comme le fait WhatsApp. !important pour l'emporter quoi que
-   la logique JS propre de #links-section (renderLinks) ait deja
-   decide, sans avoir a s'y raccorder. */
+/* Le body garde par defaut min-height:100vh (min-h-screen, utilise sur
+   d'autres pages avec un scroll de page normal) -- mais 100vh reste la
+   hauteur PLEINE de l'ecran meme quand le clavier mobile est ouvert
+   (contrairement a --app-height, tenu a jour via visualViewport dans
+   base.html). Sur les pages de chat (client ou admin, toutes deux
+   identifiables par leur fil #chat-thread/.sporti-chat-thread), le body
+   se retrouvait donc plus haut que la zone reellement visible : le
+   clavier semblait laisser un vide, et faisait apparaitre un scroll de
+   PAGE (tout l'ecran qui glisse) plutot que le scroll interne prevu du
+   fil de messages. On fige le body sur --app-height et on lui interdit
+   son propre scroll : seul #chat-thread doit scroller. */
+body:has(.sporti-chat-thread) {
+  height: var(--app-height, 100vh);
+  min-height: var(--app-height, 100vh);
+  overflow: hidden;
+}
+
+/* Clavier mobile ouvert (detecte via la hauteur de visualViewport dans
+   base.html, pas juste focus/blur -- un clavier ferme via le bouton
+   retour du clavier, plutot qu'en tapant ailleurs, ne declenche pas
+   toujours un blur, ce qui laissait ces elements caches en permanence) :
+   les liens plateformes/reseaux et la barre du bas ne sont d'aucune
+   utilite pendant la saisie et ne faisaient que grignoter l'espace deja
+   reduit du fil de messages -- masques le temps de la saisie, comme le
+   fait WhatsApp. !important pour l'emporter quoi que la logique JS
+   propre de #links-section (renderLinks) ait deja decide, sans avoir a
+   s'y raccorder. */
 .keyboard-open #links-section,
 .keyboard-open #bottom-nav-spacer,
 .keyboard-open .bottom-nav-bar {

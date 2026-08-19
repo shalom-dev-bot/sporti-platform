@@ -17,12 +17,6 @@
             <span class="font-display font-bold text-sm tracking-wide">SPORTI</span>
         </a>
         <div class="flex items-center gap-2 shrink-0">
-            <button type="button" class="relative w-9 h-9 rounded-full bg-navy-900/5 dark:bg-white/5 border border-navy-900/10 dark:border-white/10 flex items-center justify-center" aria-label="{% trans 'Notifications' %}">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-                </svg>
-                <span class="absolute top-1.5 right-2 w-1.5 h-1.5 rounded-full bg-accent-400"></span>
-            </button>
             <a href="{% url 'accounts:profile' %}" class="w-9 h-9 shrink-0 rounded-full overflow-hidden border border-accent-400/40 shadow-glow-sm flex items-center justify-center bg-navy-900">
                 {% if user.display_avatar_url %}
                     <img src="{{ user.display_avatar_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">

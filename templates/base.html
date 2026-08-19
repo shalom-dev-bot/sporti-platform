@@ -13,9 +13,21 @@
         // et se retrouvait cachee derriere le clavier au lieu de se
         // reduire pour rester visible au-dessus, comme sur WhatsApp.
         (function () {
+            let baselineHeight = null;
             function setAppHeight() {
                 const h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
                 document.documentElement.style.setProperty("--app-height", h + "px");
+                if (baselineHeight === null || h > baselineHeight) baselineHeight = h;
+                if (document.body) {
+                    // Un clavier virtuel reduit la hauteur visible d'au moins
+                    // ~120px -- une simple rotation/redimensionnement ne
+                    // descend pas sous ce seuil. Fiable meme quand le clavier
+                    // se ferme via son propre bouton (pas un tap ailleurs) :
+                    // ca ne declenche pas toujours un blur sur le champ, mais
+                    // la hauteur, elle, remonte forcement.
+                    const keyboardLikelyOpen = baselineHeight - h > 120;
+                    document.body.classList.toggle("keyboard-open", keyboardLikelyOpen);
+                }
             }
             setAppHeight();
             window.addEventListener("resize", setAppHeight);
@@ -23,6 +35,15 @@
             if (window.visualViewport) {
                 window.visualViewport.addEventListener("resize", setAppHeight);
             }
+            // Reaction immediate au tap (pas d'attente du resize du
+            // viewport, parfois legerement differe) : sur toute page qui a
+            // un champ #message-input (chat client ou admin).
+            document.addEventListener("DOMContentLoaded", () => {
+                const input = document.getElementById("message-input");
+                if (input) {
+                    input.addEventListener("focus", () => document.body.classList.add("keyboard-open"));
+                }
+            });
         })();
     </script>
     <meta charset="UTF-8">

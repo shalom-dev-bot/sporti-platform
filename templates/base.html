@@ -14,19 +14,33 @@
         // reduire pour rester visible au-dessus, comme sur WhatsApp.
         (function () {
             let baselineHeight = null;
+            function isMessageInputFocused() {
+                const input = document.getElementById("message-input");
+                return !!(input && document.activeElement === input);
+            }
             function setAppHeight() {
                 const h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
                 document.documentElement.style.setProperty("--app-height", h + "px");
                 if (baselineHeight === null || h > baselineHeight) baselineHeight = h;
                 if (document.body) {
-                    // Un clavier virtuel reduit la hauteur visible d'au moins
-                    // ~120px -- une simple rotation/redimensionnement ne
-                    // descend pas sous ce seuil. Fiable meme quand le clavier
-                    // se ferme via son propre bouton (pas un tap ailleurs) :
-                    // ca ne declenche pas toujours un blur sur le champ, mais
-                    // la hauteur, elle, remonte forcement.
-                    const keyboardLikelyOpen = baselineHeight - h > 120;
-                    document.body.classList.toggle("keyboard-open", keyboardLikelyOpen);
+                    // Seuil volontairement large (200px) : la barre d'adresse
+                    // mobile qui se retracte au scroll ne fait typiquement
+                    // varier la hauteur que de ~50-100px -- un seuil trop bas
+                    // (120px) confondait ca avec un vrai clavier et bloquait
+                    // .keyboard-open en permanence (liens/barre du bas caches
+                    // pour de bon, meme sans clavier). On n'ACTIVE la classe
+                    // via la hauteur que si le champ message a bien le focus
+                    // (sinon un simple changement de barre d'adresse pourrait
+                    // encore la declencher a tort) ; on la RETIRE des que la
+                    // hauteur remonte, focus ou pas -- c'est ce qui rattrape
+                    // le clavier ferme via son propre bouton plutot qu'un tap
+                    // ailleurs (pas toujours de blur dans ce cas).
+                    const shrunkALot = baselineHeight - h > 200;
+                    if (shrunkALot && isMessageInputFocused()) {
+                        document.body.classList.add("keyboard-open");
+                    } else if (!shrunkALot) {
+                        document.body.classList.remove("keyboard-open");
+                    }
                 }
             }
             setAppHeight();
@@ -35,13 +49,14 @@
             if (window.visualViewport) {
                 window.visualViewport.addEventListener("resize", setAppHeight);
             }
-            // Reaction immediate au tap (pas d'attente du resize du
-            // viewport, parfois legerement differe) : sur toute page qui a
-            // un champ #message-input (chat client ou admin).
+            // Reaction immediate au tap/perte de focus (pas d'attente du
+            // resize du viewport, parfois legerement differe) : sur toute
+            // page qui a un champ #message-input (chat client ou admin).
             document.addEventListener("DOMContentLoaded", () => {
                 const input = document.getElementById("message-input");
                 if (input) {
                     input.addEventListener("focus", () => document.body.classList.add("keyboard-open"));
+                    input.addEventListener("blur", () => document.body.classList.remove("keyboard-open"));
                 }
             });
         })();

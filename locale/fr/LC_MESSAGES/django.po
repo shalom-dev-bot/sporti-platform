@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-18 13:09+0100\n"
+"POT-Creation-Date: 2026-08-19 10:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,105 +52,115 @@ msgstr "Telephone"
 msgid "Profil mis a jour."
 msgstr "Profil mis a jour."
 
-#: apps/dashboard/views.py:137
+#: apps/dashboard/views.py:133
 msgid "Nouveau membre"
 msgstr "Nouveau membre"
 
-#: apps/dashboard/views.py:138
+#: apps/dashboard/views.py:134
 #, python-format
 msgid "%(user)s a rejoint SPORTI"
 msgstr "%(user)s a rejoint SPORTI"
 
-#: apps/dashboard/views.py:150
+#: apps/dashboard/views.py:146
 msgid "Pronostic publié"
 msgstr "Pronostic publié"
 
-#: apps/dashboard/views.py:163
+#: apps/dashboard/views.py:159
 msgid "Nouveau message"
 msgstr "Nouveau message"
 
-#: apps/dashboard/views.py:164
+#: apps/dashboard/views.py:160
 #, python-format
 msgid "De : %(sender)s"
 msgstr "De : %(sender)s"
 
-#: apps/dashboard/views.py:287
+#: apps/dashboard/views.py:283
 msgid "Nom d'utilisateur modifie avec succes."
 msgstr "Nom d'utilisateur modifie avec succes."
 
-#: apps/dashboard/views.py:295
+#: apps/dashboard/views.py:291
 msgid "Mot de passe modifie avec succes."
 msgstr "Mot de passe modifie avec succes."
 
-#: apps/dashboard/views.py:372
+#: apps/dashboard/views.py:368
 msgid "Profil administrateur mis a jour."
 msgstr "Profil administrateur mis a jour."
 
-#: apps/dashboard/views.py:376
+#: apps/dashboard/views.py:372
 msgid "Profil de l'entreprise mis a jour."
 msgstr "Profil de l'entreprise mis a jour."
 
-#: apps/dashboard/views.py:380 apps/dashboard/views.py:389
+#: apps/dashboard/views.py:376 apps/dashboard/views.py:385
 msgid "Message d'accueil mis a jour."
 msgstr "Message d'accueil mis a jour."
 
-#: apps/dashboard/views.py:461
+#: apps/dashboard/views.py:392
+#| msgid "Message d'accueil mis a jour."
+msgid "Message d'accueil (texte) efface."
+msgstr "Message d'accueil (texte) efface."
+
+#: apps/dashboard/views.py:398
+#| msgid "Message d'accueil mis a jour."
+msgid "Message d'accueil (vocal) efface."
+msgstr "Message d'accueil (vocal) efface."
+
+#: apps/dashboard/views.py:470
 msgid "Lien ajoute."
 msgstr "Lien ajoute."
 
-#: apps/dashboard/views.py:476
+#: apps/dashboard/views.py:485
 msgid "Lien mis a jour."
 msgstr "Lien mis a jour."
 
-#: apps/dashboard/views.py:491
+#: apps/dashboard/views.py:500
 msgid "Lien supprime."
 msgstr "Lien supprime."
 
-#: apps/dashboard/views.py:513
+#: apps/dashboard/views.py:522
 msgid "Equipe ajoutee."
 msgstr "Equipe ajoutee."
 
-#: apps/dashboard/views.py:528
+#: apps/dashboard/views.py:537
 msgid "Equipe mise a jour."
 msgstr "Equipe mise a jour."
 
-#: apps/dashboard/views.py:543
+#: apps/dashboard/views.py:552
 msgid "Equipe supprimee."
 msgstr "Equipe supprimee."
 
-#: apps/dashboard/views.py:565
+#: apps/dashboard/views.py:574
 msgid "Evenement ajoute."
 msgstr "Evenement ajoute."
 
-#: apps/dashboard/views.py:580
+#: apps/dashboard/views.py:589
 msgid "Evenement mis a jour."
 msgstr "Evenement mis a jour."
 
-#: apps/dashboard/views.py:595
+#: apps/dashboard/views.py:604
 msgid "Evenement supprime."
 msgstr "Evenement supprime."
 
-#: apps/dashboard/views.py:690
+#: apps/dashboard/views.py:699
 msgid "Pronostic ajoute."
 msgstr "Pronostic ajoute."
 
-#: apps/dashboard/views.py:737
+#: apps/dashboard/views.py:746
 msgid "Pronostic mis a jour."
 msgstr "Pronostic mis a jour."
 
-#: apps/dashboard/views.py:759
+#: apps/dashboard/views.py:768
 msgid "Pronostic supprime."
 msgstr "Pronostic supprime."
 
-#: apps/dashboard/views.py:951
+#: apps/dashboard/views.py:960
 msgid "Ce match a deja ete importe."
 msgstr "Ce match a deja ete importe."
 
-#: apps/dashboard/views.py:961
+#: apps/dashboard/views.py:970
 msgid "Donnees du match manquantes, relancez la recherche."
 msgstr "Donnees du match manquantes, relancez la recherche."
 
-#: apps/dashboard/views.py:979
+#: apps/dashboard/views.py:988
 msgid "Match importe. Ajoute maintenant ton pronostic."
 msgstr "Match importe. Ajoute maintenant ton pronostic."
 
@@ -189,7 +199,7 @@ msgstr "E-mail"
 
 #: templates/account/login.html:42 templates/dashboard/change_password.html:3
 #: templates/dashboard/change_password.html:29
-#: templates/dashboard/company_settings.html:169
+#: templates/dashboard/company_settings.html:191
 #: templates/dashboard/login.html:27 templates/dashboard/settings_hub.html:66
 msgid "Mot de passe"
 msgstr "Mot de passe"
@@ -212,7 +222,7 @@ msgstr "Mot de passe oublié ?"
 
 #: templates/account/login.html:69
 #: templates/account/password_reset_from_key_done.html:15
-#: templates/chat/room.html:132 templates/dashboard/login.html:41
+#: templates/chat/room.html:141 templates/dashboard/login.html:41
 msgid "Se connecter"
 msgstr "Se connecter"
 
@@ -221,7 +231,7 @@ msgid "ou"
 msgstr "ou"
 
 #: templates/account/login.html:77 templates/account/signup.html:3
-#: templates/chat/room.html:133
+#: templates/chat/room.html:142
 msgid "Créer un compte"
 msgstr "Créer un compte"
 
@@ -328,11 +338,11 @@ msgid "Connectez-vous"
 msgstr "Connectez-vous"
 
 #: templates/accounts/profile.html:3 templates/accounts/profile.html:13
-#: templates/chat/room.html:41
+#: templates/chat/room.html:44
 msgid "Mon profil"
 msgstr "Mon profil"
 
-#: templates/accounts/profile.html:10 templates/chat/room.html:17
+#: templates/accounts/profile.html:10 templates/chat/room.html:20
 #: templates/dashboard/conversation.html:17
 msgid "Retour"
 msgstr "Retour"
@@ -340,8 +350,8 @@ msgstr "Retour"
 #: templates/accounts/profile.html:62
 #: templates/dashboard/company_settings.html:48
 #: templates/dashboard/company_settings.html:84
-#: templates/dashboard/company_settings.html:108
-#: templates/dashboard/company_settings.html:157
+#: templates/dashboard/company_settings.html:109
+#: templates/dashboard/company_settings.html:169
 #: templates/dashboard/event_form.html:34
 #: templates/dashboard/link_form.html:31
 #: templates/dashboard/prediction_form.html:83
@@ -349,37 +359,37 @@ msgstr "Retour"
 msgid "Enregistrer"
 msgstr "Enregistrer"
 
-#: templates/accounts/profile.html:72 templates/chat/room.html:44
+#: templates/accounts/profile.html:72 templates/chat/room.html:47
 #: templates/dashboard/_admin_top.html:32
 #: templates/dashboard/settings_hub.html:76
 msgid "Déconnexion"
 msgstr "Déconnexion"
 
-#: templates/base.html:40
+#: templates/base.html:50
 msgid "Changer de langue"
 msgstr "Changer de langue"
 
-#: templates/base.html:50
+#: templates/base.html:60
 msgid "Changer de theme"
 msgstr "Changer de theme"
 
-#: templates/base.html:70
+#: templates/base.html:80
 msgid "Installer"
 msgstr "Installer"
 
-#: templates/base.html:76
+#: templates/base.html:86
 msgid "Installer SPORTI"
 msgstr "Installer SPORTI"
 
-#: templates/base.html:78
+#: templates/base.html:88
 msgid "Appuyez sur le bouton Partager"
 msgstr "Appuyez sur le bouton Partager"
 
-#: templates/base.html:78
+#: templates/base.html:88
 msgid "puis « Sur l'écran d'accueil »."
 msgstr "puis « Sur l'écran d'accueil »."
 
-#: templates/base.html:81
+#: templates/base.html:91
 msgid "Compris"
 msgstr "Compris"
 
@@ -390,18 +400,18 @@ msgid "Accueil"
 msgstr "Accueil"
 
 #: templates/chat/_bottom_nav.html:8 templates/chat/_top_navbar.html:21
-#: templates/chat/home.html:61 templates/chat/hub.html:149
+#: templates/chat/home.html:61 templates/chat/hub.html:152
 #: templates/dashboard/_admin_top.html:13
 #: templates/dashboard/_bottom_nav.html:16 templates/dashboard/home.html:81
 #: templates/dashboard/predictions_list.html:3
 #: templates/dashboard/predictions_list.html:11
-#: templates/predictions/list.html:3 templates/predictions/list.html:56
-#: templates/predictions/list.html:219
+#: templates/predictions/list.html:3 templates/predictions/list.html:59
+#: templates/predictions/list.html:222
 msgid "Pronostics"
 msgstr "Pronostics"
 
 #: templates/chat/_bottom_nav.html:16 templates/chat/_top_navbar.html:24
-#: templates/predictions/list.html:94
+#: templates/predictions/list.html:97
 msgid "Historique"
 msgstr "Historique"
 
@@ -454,69 +464,69 @@ msgstr "Quotidien"
 msgid "Sécurisé. Fiable. 100%% Sport."
 msgstr "Sécurisé. Fiable. 100%% Sport."
 
-#: templates/chat/hub.html:17 templates/chat/room.html:32
-#: templates/dashboard/_admin_top.html:51 templates/predictions/list.html:17
+#: templates/chat/hub.html:20 templates/chat/room.html:35
+#: templates/dashboard/_admin_top.html:54 templates/predictions/list.html:20
 msgid "Notifications"
 msgstr "Notifications"
 
-#: templates/chat/hub.html:38 templates/dashboard/home.html:16
-#: templates/predictions/list.html:39
+#: templates/chat/hub.html:41 templates/dashboard/home.html:16
+#: templates/predictions/list.html:42
 msgid "Bonjour"
 msgstr "Bonjour"
 
-#: templates/chat/hub.html:39
+#: templates/chat/hub.html:42
 msgid "Prêt pour les pronostics d'aujourd'hui ?"
 msgstr "Prêt pour les pronostics d'aujourd'hui ?"
 
-#: templates/chat/hub.html:51
+#: templates/chat/hub.html:54
 msgid "NOUVEAU"
 msgstr "NOUVEAU"
 
-#: templates/chat/hub.html:54
+#: templates/chat/hub.html:57
 msgid "nouveaux"
 msgstr "nouveaux"
 
-#: templates/chat/hub.html:55
+#: templates/chat/hub.html:58
 msgid "pronostics Premium"
 msgstr "pronostics Premium"
 
-#: templates/chat/hub.html:57
+#: templates/chat/hub.html:60
 msgid "sont disponibles aujourd'hui."
 msgstr "sont disponibles aujourd'hui."
 
-#: templates/chat/hub.html:61
+#: templates/chat/hub.html:64
 msgid "PRONOSTICS"
 msgstr "PRONOSTICS"
 
-#: templates/chat/hub.html:64
+#: templates/chat/hub.html:67
 msgid "Pronostics Premium"
 msgstr "Pronostics Premium"
 
-#: templates/chat/hub.html:66
+#: templates/chat/hub.html:69
 msgid "Analyses professionnelles, chaque jour."
 msgstr "Analyses professionnelles, chaque jour."
 
-#: templates/chat/hub.html:69
+#: templates/chat/hub.html:72
 msgid "Voir maintenant"
 msgstr "Voir maintenant"
 
-#: templates/chat/hub.html:94 templates/chat/room.html:27
-#: templates/chat/room.html:570 templates/dashboard/conversation.html:300
+#: templates/chat/hub.html:97 templates/chat/room.html:30
+#: templates/chat/room.html:579 templates/dashboard/conversation.html:300
 #: templates/dashboard/home.html:21
 msgid "En ligne"
 msgstr "En ligne"
 
-#: templates/chat/hub.html:94 templates/chat/room.html:27
-#: templates/chat/room.html:573 templates/dashboard/conversation.html:25
+#: templates/chat/hub.html:97 templates/chat/room.html:30
+#: templates/chat/room.html:582 templates/dashboard/conversation.html:25
 #: templates/dashboard/conversation.html:300 templates/offline/offline.html:4
 msgid "Hors ligne"
 msgstr "Hors ligne"
 
-#: templates/chat/hub.html:97 templates/predictions/list.html:62
+#: templates/chat/hub.html:100 templates/predictions/list.html:65
 msgid "Parler avec"
 msgstr "Parler avec"
 
-#: templates/chat/hub.html:99
+#: templates/chat/hub.html:102
 msgid ""
 "Réponses en quelques minutes. Posez vos questions et obtenez des conseils "
 "personnalisés."
@@ -524,217 +534,217 @@ msgstr ""
 "Réponses en quelques minutes. Posez vos questions et obtenez des conseils "
 "personnalisés."
 
-#: templates/chat/hub.html:103
+#: templates/chat/hub.html:106
 msgid "Commencer la discussion"
 msgstr "Commencer la discussion"
 
-#: templates/chat/hub.html:116
+#: templates/chat/hub.html:119
 msgid "Voir les pronostics"
 msgstr "Voir les pronostics"
 
-#: templates/chat/hub.html:119 templates/chat/hub.html:149
+#: templates/chat/hub.html:122 templates/chat/hub.html:152
 #: templates/dashboard/home.html:33 templates/dashboard/home.html:41
-#: templates/dashboard/home.html:49 templates/predictions/list.html:219
+#: templates/dashboard/home.html:49 templates/predictions/list.html:222
 msgid "aujourd'hui"
 msgstr "aujourd'hui"
 
-#: templates/chat/hub.html:124
+#: templates/chat/hub.html:127
 msgid "Réussite"
 msgstr "Réussite"
 
-#: templates/chat/hub.html:128
+#: templates/chat/hub.html:131
 msgid "Gagnants"
 msgstr "Gagnants"
 
-#: templates/chat/hub.html:134
+#: templates/chat/hub.html:137
 msgid "Accéder aux pronostics"
 msgstr "Accéder aux pronostics"
 
-#: templates/chat/hub.html:143
+#: templates/chat/hub.html:146
 msgid "Statistiques"
 msgstr "Statistiques"
 
-#: templates/chat/hub.html:154 templates/predictions/list.html:224
+#: templates/chat/hub.html:157 templates/predictions/list.html:227
 msgid "Membres"
 msgstr "Membres"
 
-#: templates/chat/hub.html:154 templates/predictions/list.html:224
+#: templates/chat/hub.html:157 templates/predictions/list.html:227
 msgid "actifs"
 msgstr "actifs"
 
-#: templates/chat/hub.html:159 templates/predictions/list.html:214
+#: templates/chat/hub.html:162 templates/predictions/list.html:217
 msgid "Taux de"
 msgstr "Taux de"
 
-#: templates/chat/hub.html:159 templates/predictions/list.html:214
+#: templates/chat/hub.html:162 templates/predictions/list.html:217
 msgid "réussite"
 msgstr "réussite"
 
-#: templates/chat/hub.html:163 templates/predictions/list.html:56
+#: templates/chat/hub.html:166 templates/predictions/list.html:59
 msgid "Premium"
 msgstr "Premium"
 
-#: templates/chat/hub.html:164
+#: templates/chat/hub.html:167
 msgid "Abonnement"
 msgstr "Abonnement"
 
-#: templates/chat/hub.html:164
+#: templates/chat/hub.html:167
 msgid "actif"
 msgstr "actif"
 
-#: templates/chat/hub.html:172
+#: templates/chat/hub.html:175
 msgid "Pourquoi"
 msgstr "Pourquoi"
 
-#: templates/chat/hub.html:177
+#: templates/chat/hub.html:180
 msgid "Analyses professionnelles"
 msgstr "Analyses professionnelles"
 
-#: templates/chat/hub.html:178
+#: templates/chat/hub.html:181
 msgid "Nos experts analysent chaque match en détail."
 msgstr "Nos experts analysent chaque match en détail."
 
-#: templates/chat/hub.html:182
+#: templates/chat/hub.html:185
 msgid "Mises à jour quotidiennes"
 msgstr "Mises à jour quotidiennes"
 
-#: templates/chat/hub.html:183
+#: templates/chat/hub.html:186
 msgid "Pronostics frais et analyses chaque jour."
 msgstr "Pronostics frais et analyses chaque jour."
 
-#: templates/chat/hub.html:187
+#: templates/chat/hub.html:190
 msgid "Support rapide"
 msgstr "Support rapide"
 
-#: templates/chat/hub.html:188
+#: templates/chat/hub.html:191
 msgid "Notre équipe est là pour vous aider 24/7."
 msgstr "Notre équipe est là pour vous aider 24/7."
 
-#: templates/chat/hub.html:192
+#: templates/chat/hub.html:195
 msgid "Paiements sécurisés"
 msgstr "Paiements sécurisés"
 
-#: templates/chat/hub.html:193
+#: templates/chat/hub.html:196
 #, python-format
 msgid "Transactions 100%% sécurisées."
 msgstr "Transactions 100%% sécurisées."
 
-#: templates/chat/hub.html:204
+#: templates/chat/hub.html:215
 msgid "La discipline bat toujours la chance."
 msgstr "La discipline bat toujours la chance."
 
-#: templates/chat/hub.html:205
+#: templates/chat/hub.html:216
 msgid "Restez concentré, restez gagnant."
 msgstr "Restez concentré, restez gagnant."
 
-#: templates/chat/room.html:37 templates/dashboard/_admin_top.html:41
+#: templates/chat/room.html:40 templates/dashboard/_admin_top.html:44
 msgid "Menu"
 msgstr "Menu"
 
-#: templates/chat/room.html:53 templates/dashboard/conversation.html:73
+#: templates/chat/room.html:56 templates/dashboard/conversation.html:73
 msgid "Fermer"
 msgstr "Fermer"
 
-#: templates/chat/room.html:66
+#: templates/chat/room.html:69
 msgid "Annuler la réponse"
 msgstr "Annuler la réponse"
 
-#: templates/chat/room.html:70 templates/dashboard/conversation.html:81
+#: templates/chat/room.html:73 templates/dashboard/conversation.html:81
 msgid "Joindre un fichier"
 msgstr "Joindre un fichier"
 
-#: templates/chat/room.html:75 templates/dashboard/conversation.html:86
+#: templates/chat/room.html:78 templates/dashboard/conversation.html:86
 msgid "Emoji"
 msgstr "Emoji"
 
-#: templates/chat/room.html:83
+#: templates/chat/room.html:86
 msgid "Écrivez votre message…"
 msgstr "Écrivez votre message…"
 
-#: templates/chat/room.html:85 templates/dashboard/conversation.html:94
+#: templates/chat/room.html:88 templates/dashboard/conversation.html:94
 msgid "Message vocal"
 msgstr "Message vocal"
 
-#: templates/chat/room.html:95 templates/chat/room.html:149
+#: templates/chat/room.html:98 templates/chat/room.html:158
 #: templates/dashboard/conversation.html:104
 #: templates/dashboard/conversation.html:212
 #: templates/socialaccount/login.html:32
 msgid "Annuler"
 msgstr "Annuler"
 
-#: templates/chat/room.html:101 templates/dashboard/conversation.html:110
+#: templates/chat/room.html:104 templates/dashboard/conversation.html:110
 msgid "Envoyer"
 msgstr "Envoyer"
 
-#: templates/chat/room.html:109 templates/dashboard/conversation.html:118
+#: templates/chat/room.html:112 templates/dashboard/conversation.html:118
 msgid "Plateformes recommandées"
 msgstr "Plateformes recommandées"
 
-#: templates/chat/room.html:113
+#: templates/chat/room.html:116
 msgid "Retrouvez-moi sur"
 msgstr "Retrouvez-moi sur"
 
-#: templates/chat/room.html:147 templates/dashboard/conversation.html:210
+#: templates/chat/room.html:156 templates/dashboard/conversation.html:210
 msgid "Supprimer pour tout le monde"
 msgstr "Supprimer pour tout le monde"
 
-#: templates/chat/room.html:148 templates/dashboard/conversation.html:211
+#: templates/chat/room.html:157 templates/dashboard/conversation.html:211
 msgid "Supprimer pour moi"
 msgstr "Supprimer pour moi"
 
-#: templates/chat/room.html:150 templates/dashboard/conversation.html:213
+#: templates/chat/room.html:159 templates/dashboard/conversation.html:213
 msgid "1 message sélectionné"
 msgstr "1 message sélectionné"
 
-#: templates/chat/room.html:315 templates/chat/room.html:448
+#: templates/chat/room.html:324 templates/chat/room.html:457
 #: templates/dashboard/conversation.html:48
 #: templates/dashboard/conversation.html:346
 msgid "📎 Pièce jointe"
 msgstr "📎 Pièce jointe"
 
-#: templates/chat/room.html:321
+#: templates/chat/room.html:330
 msgid "Vous"
 msgstr "Vous"
 
-#: templates/chat/room.html:323
+#: templates/chat/room.html:332
 msgid "Message"
 msgstr "Message"
 
-#: templates/chat/room.html:347
+#: templates/chat/room.html:356
 msgid "Répondre"
 msgstr "Répondre"
 
-#: templates/chat/room.html:403 templates/dashboard/fixtures_search.html:22
-#: templates/predictions/list.html:77
+#: templates/chat/room.html:412 templates/dashboard/fixtures_search.html:22
+#: templates/predictions/list.html:80
 msgid "Aujourd'hui"
 msgstr "Aujourd'hui"
 
-#: templates/chat/room.html:404
+#: templates/chat/room.html:413
 msgid "Hier"
 msgstr "Hier"
 
-#: templates/chat/room.html:719 templates/chat/room.html:729
-#: templates/chat/room.html:877
+#: templates/chat/room.html:728 templates/chat/room.html:738
+#: templates/chat/room.html:886
 msgid "Un instant, la conversation se charge encore…"
 msgstr "Un instant, la conversation se charge encore…"
 
-#: templates/chat/room.html:744 templates/dashboard/conversation.html:476
+#: templates/chat/room.html:753 templates/dashboard/conversation.html:476
 msgid "Échec de l'envoi du fichier."
 msgstr "Échec de l'envoi du fichier."
 
-#: templates/chat/room.html:756 templates/dashboard/conversation.html:479
+#: templates/chat/room.html:765 templates/dashboard/conversation.html:479
 msgid "Échec de l'envoi du fichier, vérifiez votre connexion."
 msgstr "Échec de l'envoi du fichier, vérifiez votre connexion."
 
-#: templates/chat/room.html:816 templates/dashboard/conversation.html:536
+#: templates/chat/room.html:825 templates/dashboard/conversation.html:536
 msgid "Échec de l'envoi du vocal."
 msgstr "Échec de l'envoi du vocal."
 
-#: templates/chat/room.html:828 templates/dashboard/conversation.html:541
+#: templates/chat/room.html:837 templates/dashboard/conversation.html:541
 msgid "Échec de l'envoi du vocal, vérifiez votre connexion."
 msgstr "Échec de l'envoi du vocal, vérifiez votre connexion."
 
-#: templates/chat/room.html:881 templates/dashboard/conversation.html:590
+#: templates/chat/room.html:890 templates/dashboard/conversation.html:590
 msgid ""
 "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous "
 "êtes actuellement sur"
@@ -742,7 +752,7 @@ msgstr ""
 "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost. Vous "
 "êtes actuellement sur"
 
-#: templates/chat/room.html:881 templates/dashboard/conversation.html:590
+#: templates/chat/room.html:890 templates/dashboard/conversation.html:590
 msgid ""
 "si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi "
 "que vous fassiez."
@@ -750,12 +760,12 @@ msgstr ""
 "si ce n'est pas https:// ni localhost, le navigateur bloque le micro quoi "
 "que vous fassiez."
 
-#: templates/chat/room.html:889 templates/dashboard/company_settings.html:285
+#: templates/chat/room.html:898 templates/dashboard/company_settings.html:307
 #: templates/dashboard/conversation.html:598
 msgid "Microphone inaccessible :"
 msgstr "Microphone inaccessible :"
 
-#: templates/chat/room.html:889 templates/dashboard/conversation.html:598
+#: templates/chat/room.html:898 templates/dashboard/conversation.html:598
 msgid "Vérifiez les autorisations du navigateur."
 msgstr "Vérifiez les autorisations du navigateur."
 
@@ -916,51 +926,62 @@ msgstr "Français"
 msgid "Anglais"
 msgstr "Anglais"
 
-#: templates/dashboard/company_settings.html:114
+#: templates/dashboard/company_settings.html:113
+#: templates/dashboard/company_settings.html:172
+#| msgid "Message de bienvenue (texte)"
+msgid "Effacer ce message de bienvenue ?"
+msgstr "Effacer ce message de bienvenue ?"
+
+#: templates/dashboard/company_settings.html:118
+#: templates/dashboard/company_settings.html:177
+msgid "Effacer"
+msgstr "Effacer"
+
+#: templates/dashboard/company_settings.html:126
 msgid "Message de bienvenue (vocal)"
 msgstr "Message de bienvenue (vocal)"
 
-#: templates/dashboard/company_settings.html:115
+#: templates/dashboard/company_settings.html:127
 msgid "Message vocal lu par défaut dans le chat."
 msgstr "Message vocal lu par défaut dans le chat."
 
-#: templates/dashboard/company_settings.html:121
+#: templates/dashboard/company_settings.html:133
 msgid ""
 "Vocal actuel -- en enregistrer ou en importer un nouveau le remplacera."
 msgstr ""
 "Vocal actuel -- en enregistrer ou en importer un nouveau le remplacera."
 
-#: templates/dashboard/company_settings.html:125
+#: templates/dashboard/company_settings.html:137
 msgid "Enregistrer un vocal"
 msgstr "Enregistrer un vocal"
 
-#: templates/dashboard/company_settings.html:131
-#: templates/dashboard/company_settings.html:230
+#: templates/dashboard/company_settings.html:143
+#: templates/dashboard/company_settings.html:252
 msgid "Enregistrer directement un message vocal"
 msgstr "Enregistrer directement un message vocal"
 
-#: templates/dashboard/company_settings.html:138
+#: templates/dashboard/company_settings.html:150
 msgid "Recommencer"
 msgstr "Recommencer"
 
-#: templates/dashboard/company_settings.html:142
+#: templates/dashboard/company_settings.html:154
 msgid "Envoyer ce message vocal"
 msgstr "Envoyer ce message vocal"
 
-#: templates/dashboard/company_settings.html:146
+#: templates/dashboard/company_settings.html:158
 msgid "— ou —"
 msgstr "— ou —"
 
-#: templates/dashboard/company_settings.html:149
+#: templates/dashboard/company_settings.html:161
 msgid "Importer un fichier audio"
 msgstr "Importer un fichier audio"
 
-#: templates/dashboard/company_settings.html:261
+#: templates/dashboard/company_settings.html:283
 msgid "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost."
 msgstr "Le microphone nécessite une connexion sécurisée (HTTPS) ou localhost."
 
-#: templates/dashboard/company_settings.html:277
-#: templates/dashboard/company_settings.html:281
+#: templates/dashboard/company_settings.html:299
+#: templates/dashboard/company_settings.html:303
 msgid "Enregistrement…"
 msgstr "Enregistrement…"
 
@@ -1107,7 +1128,7 @@ msgstr "Statut du match"
 
 #: templates/dashboard/fixtures_search.html:61
 #: templates/dashboard/predictions_list.html:39
-#: templates/predictions/list.html:72
+#: templates/predictions/list.html:75
 msgid "Tous"
 msgstr "Tous"
 
@@ -1169,7 +1190,7 @@ msgstr "matchs trouvés"
 
 #: templates/dashboard/fixtures_search.html:128
 #: templates/dashboard/predictions_list.html:78
-#: templates/predictions/list.html:146
+#: templates/predictions/list.html:149
 msgid "VS"
 msgstr "VS"
 
@@ -1356,7 +1377,7 @@ msgstr "✓ Champs pré-remplis, modifiez-les si besoin avant d'enregistrer."
 
 #: templates/dashboard/prediction_create_form.html:82
 #: templates/dashboard/prediction_form.html:55
-#: templates/predictions/list.html:158
+#: templates/predictions/list.html:161
 msgid "Pronostic"
 msgstr "Pronostic"
 
@@ -1448,12 +1469,12 @@ msgid "En attente"
 msgstr "En attente"
 
 #: templates/dashboard/prediction_form.html:47
-#: templates/predictions/list.html:128
+#: templates/predictions/list.html:131
 msgid "Gagné"
 msgstr "Gagné"
 
 #: templates/dashboard/prediction_form.html:48
-#: templates/predictions/list.html:130
+#: templates/predictions/list.html:133
 msgid "Perdu"
 msgstr "Perdu"
 
@@ -1479,7 +1500,7 @@ msgstr "Importer un match"
 
 #: templates/dashboard/predictions_list.html:52
 #: templates/dashboard/predictions_list.html:95
-#: templates/predictions/list.html:85
+#: templates/predictions/list.html:88
 msgid "Live"
 msgstr "Live"
 
@@ -1603,95 +1624,95 @@ msgstr "Verifiez votre connexion internet, puis reessayez."
 msgid "Reessayer"
 msgstr "Reessayer"
 
-#: templates/predictions/list.html:40
+#: templates/predictions/list.html:43
 msgid "Prêt à gagner aujourd'hui ?"
 msgstr "Prêt à gagner aujourd'hui ?"
 
-#: templates/predictions/list.html:45
+#: templates/predictions/list.html:48
 msgid "pronostics"
 msgstr "pronostics"
 
-#: templates/predictions/list.html:45
+#: templates/predictions/list.html:48
 msgid "disponibles aujourd'hui"
 msgstr "disponibles aujourd'hui"
 
-#: templates/predictions/list.html:59
+#: templates/predictions/list.html:62
 msgid "Analyses professionnelles. Cotes optimisées et confiance élevée."
 msgstr "Analyses professionnelles. Cotes optimisées et confiance élevée."
 
-#: templates/predictions/list.html:89
+#: templates/predictions/list.html:92
 msgid "Top matchs"
 msgstr "Top matchs"
 
-#: templates/predictions/list.html:107
+#: templates/predictions/list.html:110
 msgid "TOP MATCH"
 msgstr "TOP MATCH"
 
-#: templates/predictions/list.html:121
+#: templates/predictions/list.html:124
 msgid "LIVE"
 msgstr "LIVE"
 
-#: templates/predictions/list.html:132
+#: templates/predictions/list.html:135
 msgid "confiance"
 msgstr "confiance"
 
-#: templates/predictions/list.html:165
+#: templates/predictions/list.html:168
 msgid "Cote"
 msgstr "Cote"
 
-#: templates/predictions/list.html:175
+#: templates/predictions/list.html:178
 msgid "PARIEZ AVEC"
 msgstr "PARIEZ AVEC"
 
-#: templates/predictions/list.html:183
+#: templates/predictions/list.html:186
 msgid "PARIEZ"
 msgstr "PARIEZ"
 
-#: templates/predictions/list.html:185
+#: templates/predictions/list.html:188
 msgid "Voir l'offre"
 msgstr "Voir l'offre"
 
-#: templates/predictions/list.html:193
+#: templates/predictions/list.html:196
 msgid "Code coupon"
 msgstr "Code coupon"
 
-#: templates/predictions/list.html:197
+#: templates/predictions/list.html:200
 msgid "Offre exclusive"
 msgstr "Offre exclusive"
 
-#: templates/predictions/list.html:197
+#: templates/predictions/list.html:200
 msgid "Code"
 msgstr "Code"
 
-#: templates/predictions/list.html:204
+#: templates/predictions/list.html:207
 msgid "Aucun pronostic pour le moment. Revenez bientôt !"
 msgstr "Aucun pronostic pour le moment. Revenez bientôt !"
 
-#: templates/predictions/list.html:229
+#: templates/predictions/list.html:232
 msgid "Paiements"
 msgstr "Paiements"
 
-#: templates/predictions/list.html:229
+#: templates/predictions/list.html:232
 msgid "sécurisés"
 msgstr "sécurisés"
 
-#: templates/predictions/list.html:238
+#: templates/predictions/list.html:241
 msgid "Forme récente"
 msgstr "Forme récente"
 
-#: templates/predictions/list.html:239
+#: templates/predictions/list.html:242
 msgid "de réussite"
 msgstr "de réussite"
 
-#: templates/predictions/list.html:260
+#: templates/predictions/list.html:263
 msgid "Une question sur un pronostic ?"
 msgstr "Une question sur un pronostic ?"
 
-#: templates/predictions/list.html:261
+#: templates/predictions/list.html:264
 msgid "Discute directement avec l'équipe SPORTI."
 msgstr "Discute directement avec l'équipe SPORTI."
 
-#: templates/predictions/list.html:265
+#: templates/predictions/list.html:268
 msgid "Discuter"
 msgstr "Discuter"
 

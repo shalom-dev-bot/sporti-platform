@@ -105,12 +105,8 @@ def dashboard_home(request):
             .count()
         )
 
-        visits_today = (
-            SiteVisit.objects.filter(date=today).values_list("count", flat=True).first() or 0
-        )
-        visits_yesterday = (
-            SiteVisit.objects.filter(date=yesterday).values_list("count", flat=True).first() or 0
-        )
+        visits_today = SiteVisit.objects.filter(date=today).count()
+        visits_yesterday = SiteVisit.objects.filter(date=yesterday).count()
         if visits_yesterday:
             visits_change_percent = round(
                 (visits_today - visits_yesterday) / visits_yesterday * 100, 1
@@ -387,6 +383,19 @@ def company_settings(request):
             welcome_obj.is_audio_enabled = True
         welcome_obj.save()
         messages.success(request, _("Message d'accueil mis a jour."))
+        return redirect("dashboard:company_settings")
+    if form_type == "welcome_text_clear":
+        welcome.text_fr = ""
+        welcome.text_en = ""
+        welcome.is_text_enabled = False
+        welcome.save()
+        messages.success(request, _("Message d'accueil (texte) efface."))
+        return redirect("dashboard:company_settings")
+    if form_type == "welcome_audio_clear":
+        welcome.audio_file.delete(save=False)
+        welcome.is_audio_enabled = False
+        welcome.save()
+        messages.success(request, _("Message d'accueil (vocal) efface."))
         return redirect("dashboard:company_settings")
 
     return render(

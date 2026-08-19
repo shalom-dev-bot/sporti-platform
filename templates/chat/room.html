@@ -122,7 +122,7 @@
          .bottom-nav-bar) -- sans ca, quoi que ce soit qui se retrouve en
          dernier (composer ou liens, #links-section etant affiche/cache
          selon le contexte) se fait recouvrir par la barre flottante. -->
-    <div class="h-24 lg:hidden shrink-0"></div>
+    <div id="bottom-nav-spacer" class="h-24 lg:hidden shrink-0"></div>
 
     {% include "chat/_bottom_nav.html" %}
     </div>
@@ -705,6 +705,17 @@
         input.addEventListener("input", () => {
             sendTyping(true);
             updateMicSendIcon();
+        });
+        // Clavier mobile ouvert : masque les liens plateformes/reseaux et
+        // la barre du bas (voir la regle .keyboard-open dans input.css)
+        // pour laisser le maximum de place au fil de messages, plutot que
+        // de les laisser grignoter le peu d'espace restant au-dessus du
+        // clavier -- comme sur WhatsApp.
+        input.addEventListener("focus", () => {
+            document.body.classList.add("keyboard-open");
+        });
+        input.addEventListener("blur", () => {
+            document.body.classList.remove("keyboard-open");
         });
         function sendTyping(isTyping) {
             if (!socket || socket.readyState !== WebSocket.OPEN) return;

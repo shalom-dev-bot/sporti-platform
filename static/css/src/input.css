@@ -861,6 +861,19 @@
   border-radius: 9999px;
 }
 
+/* Clavier mobile ouvert (voir le focus/blur sur #message-input dans
+   room.html) : les liens plateformes/reseaux et la barre du bas ne
+   sont d'aucune utilite pendant la saisie et ne faisaient que grignoter
+   l'espace deja reduit du fil de messages -- masques le temps de la
+   saisie, comme le fait WhatsApp. !important pour l'emporter quoi que
+   la logique JS propre de #links-section (renderLinks) ait deja
+   decide, sans avoir a s'y raccorder. */
+.keyboard-open #links-section,
+.keyboard-open #bottom-nav-spacer,
+.keyboard-open .bottom-nav-bar {
+  display: none !important;
+}
+
 .sporti-date-sep {
   align-self: center;
   padding: 0.3rem 0.9rem;
